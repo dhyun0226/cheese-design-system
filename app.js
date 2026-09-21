@@ -1,6 +1,10 @@
 const $ = (selector, context = document) => context.querySelector(selector)
 const $$ = (selector, context = document) => [...context.querySelectorAll(selector)]
 
+if (window.lucide) {
+  window.lucide.createIcons({ attrs: { 'aria-hidden': 'true', focusable: 'false' } })
+}
+
 const catalogLink = $('.sidebar a[href="#catalog"]')
 if (catalogLink && !$('.sidebar a[href="#component-lab"]')) {
   catalogLink.insertAdjacentHTML('beforebegin', '<a href="#component-lab">Component Lab</a>')

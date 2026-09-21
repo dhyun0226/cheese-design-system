@@ -4,9 +4,27 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist"],
-  "peerDependencies": { "react": ">=18", "react-dom": ">=18" },
-  "dependencies": { "@cheese/css": "0.1.0", "radix-ui": "^1.4.3" },
-  "scripts": { "build": "tsc -b", "typecheck": "tsc -b --pretty false", "clean": "tsc -b --clean" }
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "@cheese/css": "0.1.0",
+    "lucide-react": "^0.544.0",
+    "radix-ui": "^1.4.3"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty false",
+    "clean": "tsc -b --clean"
+  }
 }

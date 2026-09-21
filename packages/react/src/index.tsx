@@ -1,5 +1,7 @@
 import * as React from 'react'
 import { Checkbox, Dialog, Switch, Tabs } from 'radix-ui'
+export { Search, Plus, X, Check, ChevronDown, ChevronLeft, ChevronRight, Calendar, Clock, User, Users, Settings, Bell, Upload, Download, Trash2, Pencil, MoreHorizontal, Info, CircleAlert, CircleCheck, Eye, EyeOff, Lock, LogOut, Menu } from 'lucide-react'
+export type { LucideIcon, LucideProps } from 'lucide-react'
 
 export type ButtonVariant = 'primary' | 'accent' | 'weak' | 'critical'
 

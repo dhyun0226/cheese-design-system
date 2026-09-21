@@ -47,3 +47,7 @@
 .cs-check input { accent-color:var(--cs-cheese-500); }
 .cs-badge.brand { background:var(--cs-cheese-100);color:#6b5400; }
 .skeleton-row span { flex:1;height:11px;border-radius:5px;background:var(--cs-neutral-100); }
+.cs-icon { width:20px;height:20px;flex:none;stroke-width:1.75; }
+.cs-icon.sm { width:16px;height:16px; }
+.cs-icon.lg { width:24px;height:24px; }
+.cs-icon-button .cs-icon { pointer-events:none; }
