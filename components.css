@@ -10,6 +10,7 @@
 .cs-tree { display: grid; gap: 4px; font-size: 13px; }
 .cs-tree [role="treeitem"] { min-height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 9px; border-radius: 8px; }
 .cs-tree [role="treeitem"]:hover { background: var(--cs-bg-muted); }
+.cs-tree [role="treeitem"].active { background: var(--cs-cheese-100); color: var(--cs-space-black); }
 .cs-tree [aria-level="2"] { margin-left: 20px; }
 .cs-toolbar { display: inline-flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid var(--cs-border-neutral); border-radius: 11px; background: var(--cs-bg-layer); }
 .cs-toolbar button { min-width: 32px; height: 32px; border: 0; border-radius: 7px; background: transparent; font: 600 13px/1 inherit; }
@@ -51,3 +52,25 @@
 .cs-icon.sm { width:16px;height:16px; }
 .cs-icon.lg { width:24px;height:24px; }
 .cs-icon-button .cs-icon { pointer-events:none; }
+
+/* Extended component catalog */
+.cs-slider{width:100%;accent-color:var(--cs-cheese-500)}
+.cs-tags{display:flex;flex-wrap:wrap;gap:6px;min-height:42px;padding:5px;border:1px solid var(--cs-border-neutral);border-radius:10px;background:var(--cs-bg-layer)}
+.cs-tags .cs-chip{min-height:30px}.cs-tags input{min-width:90px;flex:1;border:0;outline:0;background:transparent;font:inherit}
+.cs-combobox{position:relative}.cs-combobox-panel,.cs-listbox{max-height:180px;overflow:auto;padding:5px;border:1px solid var(--cs-border-neutral);border-radius:11px;background:var(--cs-bg-layer);box-shadow:var(--cs-shadow-2)}
+.cs-combobox-panel{position:absolute;top:47px;left:0;right:0;z-index:20}.cs-option{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:36px;padding:0 10px;border:0;border-radius:7px;background:transparent;text-align:left;font:inherit}.cs-option:hover,.cs-option[aria-selected="true"]{background:var(--cs-bg-brand-weak)}
+.cs-editable{display:flex;gap:8px;align-items:center}.cs-editable [contenteditable]{min-width:160px;padding:8px 10px;border-bottom:1px solid var(--cs-border-neutral);outline:0}.cs-editable [contenteditable]:focus{border-color:var(--cs-cheese-500)}
+.cs-color-picker{display:flex;align-items:center;gap:10px}.cs-color-picker input[type="color"]{width:38px;height:38px;padding:3px;border:1px solid var(--cs-border-neutral);border-radius:50%;background:var(--cs-bg-layer)}
+.cs-date-group{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:7px}.cs-date-group.compact{grid-template-columns:1fr 1fr}.cs-date-group span{text-align:center;color:var(--cs-fg-muted);font-size:12px}
+.cs-month-grid,.cs-year-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.cs-month-grid button,.cs-year-grid button{min-height:34px;border:1px solid var(--cs-border-neutral);border-radius:8px;background:var(--cs-bg-layer);font:inherit}.cs-month-grid button.active,.cs-year-grid button.active{border-color:var(--cs-cheese-500);background:var(--cs-cheese-100)}
+.cs-nav-menu,.cs-menubar{display:flex;align-items:center;gap:4px;padding:4px;border:1px solid var(--cs-border-neutral);border-radius:11px;background:var(--cs-bg-layer)}.cs-nav-menu button,.cs-menubar button{min-height:34px;padding:0 11px;border:0;border-radius:7px;background:transparent;font:inherit}.cs-nav-menu button:hover,.cs-menubar button:hover,.cs-nav-menu button.active{background:var(--cs-bg-muted)}
+.cs-collapsible{border:1px solid var(--cs-border-neutral);border-radius:11px;background:var(--cs-bg-layer)}.cs-collapsible>button{display:flex;justify-content:space-between;width:100%;padding:12px 14px;border:0;background:transparent;font:inherit}.cs-collapsible-content{padding:0 14px 14px;color:var(--cs-fg-muted);font-size:12px}
+.cs-hover-card{position:relative;display:inline-flex}.cs-hover-card-content{position:absolute;left:0;bottom:calc(100% + 8px);z-index:25;width:220px;padding:14px;border:1px solid var(--cs-border-neutral);border-radius:13px;background:var(--cs-bg-layer);box-shadow:var(--cs-shadow-3);font-size:12px}
+.cs-context-area{min-height:86px;display:grid;place-items:center;border:1px dashed var(--cs-border-neutral);border-radius:11px;color:var(--cs-fg-muted);font-size:12px}.cs-context-menu{position:fixed;z-index:100;min-width:150px;padding:5px;border:1px solid var(--cs-border-neutral);border-radius:10px;background:var(--cs-bg-layer);box-shadow:var(--cs-shadow-3)}
+.cs-scroll-area{height:130px;overflow:auto;padding:12px;border:1px solid var(--cs-border-neutral);border-radius:11px;background:var(--cs-bg-layer);scrollbar-color:var(--cs-neutral-400) transparent;scrollbar-width:thin}.cs-scroll-area p{margin:0 0 12px;font-size:12px;line-height:1.6}
+.cs-bottom-sheet{position:fixed;left:50%;bottom:0;z-index:90;width:min(620px,100%);padding:12px 24px 28px;transform:translate(-50%,110%);border-radius:20px 20px 0 0;background:var(--cs-bg-layer);box-shadow:0 -20px 60px rgb(0 0 0 / 18%);transition:transform .22s}.cs-bottom-sheet.open{transform:translate(-50%,0)}.cs-bottom-sheet:before{content:"";display:block;width:38px;height:4px;margin:0 auto 18px;border-radius:99px;background:var(--cs-neutral-300)}
+.cs-separator{width:100%;height:1px;border:0;background:var(--cs-border-neutral)}.cs-aspect-ratio{aspect-ratio:16/9;display:grid;place-items:center;width:100%;border-radius:12px;background:linear-gradient(135deg,var(--cs-neutral-100),var(--cs-cheese-100));font-size:12px}
+.cs-splitter{display:grid;grid-template-columns:1fr 7px 1fr;min-height:110px;border:1px solid var(--cs-border-neutral);border-radius:11px;overflow:hidden}.cs-splitter>div{display:grid;place-items:center;background:var(--cs-bg-layer);font-size:12px}.cs-splitter>button{padding:0;border:0;border-inline:1px solid var(--cs-border-neutral);background:var(--cs-bg-muted);cursor:col-resize}
+.cs-drawer-scrim,.cs-sheet-scrim{position:fixed;inset:0;z-index:84;background:rgb(0 0 0 / 36%)}
+.cs-tooltip-trigger{position:relative}.cs-tooltip-trigger:focus:after,.cs-tooltip-trigger:hover:after{content:attr(data-tooltip);position:absolute;bottom:calc(100% + 8px);left:50%;z-index:30;transform:translateX(-50%);width:max-content;padding:7px 9px;border-radius:7px;background:var(--cs-space-black);color:#fff;font-size:11px;font-weight:500}
+.cs-rating button[aria-checked="false"]{color:var(--cs-neutral-300)}.catalog-grid span[data-cheese="true"]{cursor:pointer;transition:transform .14s,box-shadow .14s}.catalog-grid span[data-cheese="true"]:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgb(0 0 0 / 7%)}

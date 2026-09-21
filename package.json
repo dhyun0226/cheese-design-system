@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present"
+    "clean": "npm run clean --workspaces --if-present",
+    "verify:catalog": "node scripts/verify-catalog.mjs"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
