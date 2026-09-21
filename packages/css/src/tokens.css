@@ -1,0 +1,13 @@
+:root {
+  --cheese-color-space-black: #111111;
+  --cheese-color-lunar-white: #ffffff;
+  --cheese-color-moon-gray: #f4f4f0;
+  --cheese-color-gold: #ffc928;
+  --cheese-color-gold-weak: #fff3cc;
+  --cheese-color-positive: #21834f;
+  --cheese-color-critical: #d83b3b;
+  --cheese-font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --cheese-radius-control: 8px;
+  --cheese-radius-overlay: 16px;
+  --cheese-focus-ring: 0 0 0 3px rgb(255 201 40 / 65%);
+}

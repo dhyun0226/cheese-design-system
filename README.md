@@ -29,6 +29,17 @@ Primitive Tokens
 
 Vue 제품 구현에서는 Reka UI(구 Radix Vue)를 Headless Primitive 계층으로 사용합니다. Calendar, Date Picker, Dialog, Select처럼 접근성 동작이 복잡한 컴포넌트는 Reka UI가 상태·포커스·키보드·locale을 담당하고 CHEESE는 토큰, 스타일 Recipe와 업무 패턴을 담당합니다.
 
+## Packages
+
+```text
+@cheese/tokens  Framework-independent tokens and TypeScript API
+@cheese/css     Framework-independent CSS variables and recipes
+@cheese/react   React components powered by Radix UI primitives
+@cheese/vue     Vue 3 components powered by Reka UI primitives
+```
+
+All four packages share the same color, typography, sizing, and accessibility contract. Pretendard Variable handles Korean, Latin, and numbers consistently. Controls use explicit heights plus flex centering instead of relying on font line boxes for vertical alignment.
+
 ## Included
 
 - Foundations: Color, Typography, Spacing, Radius, Elevation
@@ -49,6 +60,14 @@ Vue 제품 구현에서는 Reka UI(구 Radix Vue)를 Headless Primitive 계층�
 
 ```bash
 python -m http.server 8080
+```
+
+Package validation:
+
+```bash
+npm install
+npm run typecheck
+npm run build
 ```
 
 ## License

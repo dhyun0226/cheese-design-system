@@ -68,6 +68,11 @@
 .primitive-map { display: grid; gap: 8px; }
 .primitive-map div { display: grid; grid-template-columns: 150px 1fr; gap: 14px; padding: 12px; border-bottom: 1px solid var(--cs-border-neutral); font-size: 11px; }
 .primitive-map code { color: var(--cs-cheese-700); font-weight: 700; }
+.catalog-group + .catalog-group { margin-top: 22px; }
+.catalog-group h3 { margin: 0 0 10px; font-size: 13px; }
+.catalog-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.catalog-grid span { padding: 10px 12px; border: 1px solid var(--cs-border-neutral); border-radius: 8px; background: var(--cs-bg-layer); font-size: 11px; }
+.catalog-grid span[data-cheese="true"] { border-color: var(--cs-cheese-300); background: var(--cs-cheese-100); font-weight: 700; }
 
-@media (max-width: 850px) { .field-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .calendar-grid { grid-template-columns: 1fr; } }
-@media (max-width: 560px) { .field-grid { grid-template-columns: 1fr; } .cs-stepper { grid-template-columns: 1fr 1fr; gap: 12px; } .cs-stepper div::after { display: none; } .definition-list { grid-template-columns: 1fr; } .definition-list dt { padding-bottom: 0; border-bottom: 0; } }
+@media (max-width: 850px) { .field-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .calendar-grid { grid-template-columns: 1fr; } .catalog-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 560px) { .field-grid { grid-template-columns: 1fr; } .cs-stepper { grid-template-columns: 1fr 1fr; gap: 12px; } .cs-stepper div::after { display: none; } .definition-list { grid-template-columns: 1fr; } .definition-list dt { padding-bottom: 0; border-bottom: 0; } .catalog-grid { grid-template-columns: repeat(2, 1fr); } }

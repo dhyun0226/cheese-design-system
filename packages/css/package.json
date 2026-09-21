@@ -1,0 +1,12 @@
+{
+  "name": "@cheese/css",
+  "version": "0.1.0",
+  "sideEffects": ["*.css"],
+  "exports": {
+    ".": "./src/index.css",
+    "./tokens.css": "./src/tokens.css",
+    "./components.css": "./src/components.css"
+  },
+  "files": ["src"],
+  "scripts": { "build": "node -e \"console.log('@cheese/css ready')\"" }
+}

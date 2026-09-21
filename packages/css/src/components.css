@@ -1,0 +1,30 @@
+.cheese-button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-control);
+  background: var(--cheese-color-space-black);
+  color: var(--cheese-color-lunar-white);
+  font: 600 14px/1.2 var(--cheese-font-family);
+}
+.cheese-button[data-variant="accent"] { background: var(--cheese-color-gold); color: var(--cheese-color-space-black); }
+.cheese-button[data-variant="weak"] { background: var(--cheese-color-gold-weak); color: var(--cheese-color-space-black); }
+.cheese-button[data-variant="critical"] { background: var(--cheese-color-critical); }
+.cheese-button:focus-visible, .cheese-input:focus-visible { outline: 0; box-shadow: var(--cheese-focus-ring); }
+.cheese-input { width: 100%; height: 42px; padding: 0 12px; border: 1px solid #dfdfda; border-radius: var(--cheese-radius-control); background: var(--cheese-color-lunar-white); color: var(--cheese-color-space-black); font: 400 14px/1.5 var(--cheese-font-family); }
+.cheese-dialog { width: min(430px, calc(100vw - 40px)); padding: 24px; border-radius: var(--cheese-radius-overlay); background: var(--cheese-color-lunar-white); font-family: var(--cheese-font-family); box-shadow: 0 26px 80px rgb(0 0 0 / 22%); }
+.cheese-textarea { min-height: 104px; padding-top: 11px; resize: vertical; }
+.cheese-select { appearance: auto; }
+.cheese-field { display: flex; flex-direction: column; gap: 7px; font-family: var(--cheese-font-family); }
+.cheese-label { font-size: 13px; font-weight: 600; line-height: 1.4; }
+.cheese-field small { min-height: 18px; color: #686864; font-size: 12px; line-height: 1.5; }
+.cheese-field small[data-error="true"] { color: var(--cheese-color-critical); }
+.cheese-card { padding: 18px; border: 1px solid #dfdfda; border-radius: 12px; background: var(--cheese-color-lunar-white); font-family: var(--cheese-font-family); }
+.cheese-badge { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: 999px; background: #eeeeea; font: 600 11px/1 var(--cheese-font-family); }
+.cheese-badge[data-tone="brand"] { background: var(--cheese-color-gold-weak); }
+.cheese-badge[data-tone="positive"] { background: #e3f5ea; color: var(--cheese-color-positive); }
+.cheese-badge[data-tone="critical"] { background: #ffe9e7; color: var(--cheese-color-critical); }

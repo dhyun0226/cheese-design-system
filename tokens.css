@@ -46,7 +46,7 @@
 }
 [data-theme="dark"] { color-scheme: dark; --cs-bg-canvas: #111111; --cs-bg-layer: #1c1c1a; --cs-fg-neutral: #f8f8f5; --cs-fg-muted: #aaa9a3; --cs-border-neutral: #393936; }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--cs-bg-canvas); color: var(--cs-fg-neutral); font-family: Inter, "Noto Sans KR", sans-serif; }
+body { margin: 0; background: var(--cs-bg-canvas); color: var(--cs-fg-neutral); font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-synthesis: none; text-rendering: optimizeLegibility; }
 button, input, select, textarea { font: inherit; color: inherit; }
 a { color: inherit; }
 button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible { outline: 0; box-shadow: var(--cs-focus); }
