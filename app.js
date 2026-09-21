@@ -5,6 +5,104 @@ if (window.lucide) {
   window.lucide.createIcons({ attrs: { 'aria-hidden': 'true', focusable: 'false' } })
 }
 
+const splitShowcases = {
+  'Checkbox · Radio Group · Switch': [
+    ['Checkbox', ['label:nth-child(1)']],
+    ['Radio Group', ['label:nth-child(2)', 'label:nth-child(3)']],
+    ['Switch', ['label:nth-child(4)']],
+  ],
+  'Slider · Number Field': [['Slider', ['label']], ['Number Field', ['.cs-number']]],
+  'Editable · Color Picker': [['Editable', ['.cs-editable']], ['Color Picker', ['.cs-color-picker']]],
+  'Date Field · Date Picker': [['Date Field', ['input']], ['Date Picker', ['button']]],
+  'Date Range Field · Picker': [['Date Range Field', ['.cs-date-group']], ['Date Range Picker', ['.cs-date-group']]],
+  'Time Field · Time Range': [['Time Field', ['input:first-child']], ['Time Range Field', ['.cs-date-group']]],
+  'Accordion · Collapsible': [['Accordion', ['details']], ['Collapsible', ['.cs-collapsible']]],
+  'Breadcrumb · Pagination': [['Breadcrumb', ['.cs-breadcrumb']], ['Pagination', ['.cs-pagination']]],
+  'Navigation Menu · Menubar': [['Navigation Menu', ['.cs-nav-menu']], ['Menubar', ['.cs-menubar']]],
+  'Tabs · Toggle Group': [['Tabs', ['.cs-tabs']], ['Toggle Group', ['.cs-toolbar']]],
+  'Tree · Toolbar': [['Tree', ['.cs-tree']], ['Toolbar', ['.cs-toolbar']]],
+  'Popover · Tooltip · Hover Card': [['Popover', ['.menu-wrap']], ['Tooltip', ['.cs-tooltip-trigger']], ['Hover Card', ['.cs-hover-card']]],
+  'Dropdown · Context Menu': [['Dropdown Menu', ['.menu-wrap']], ['Context Menu', ['.cs-context-area', '.cs-context-menu']]],
+  'Toast · Progress': [['Toast', ['button']], ['Progress', ['progress']]],
+  'Drawer · Bottom Sheet': [['Drawer', ['[data-play-drawer]']], ['Bottom Sheet', ['[data-sheet-open]', '[data-sheet-scrim]', '[data-sheet]']]],
+  'Badge · Avatar · Card': [['Avatar', ['.cs-avatar']], ['Badge', ['.cs-badge']], ['Card', ['.cs-card']]],
+  'Table · List': [['Table', ['table']], ['List', ['.cs-list']]],
+  'Separator · Aspect Ratio': [['Separator', ['span:first-child', '.cs-separator', 'span:nth-child(3)']], ['Aspect Ratio', ['.cs-aspect-ratio']]],
+  'Skeleton · Empty State': [['Skeleton', ['.skeleton-row']], ['Empty State', ['.cs-empty']]],
+  'Timeline · Carousel': [['Timeline', ['.timeline']], ['Carousel', ['.cs-carousel']]],
+  'Dialog · Alert Dialog': [['Dialog', ['[data-play-dialog]']], ['Alert Dialog', ['[data-play-alert]']]],
+}
+
+function slugify(value) {
+  return `component-${value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`
+}
+
+$$('.sample-card').forEach((card) => {
+  const title = $('header b', card)?.textContent.trim()
+  const definitions = splitShowcases[title]
+  if (!definitions) {
+    card.dataset.component = title
+    card.id ||= slugify(title)
+    return
+  }
+  definitions.forEach(([name, selectors]) => {
+    const next = document.createElement('article')
+    next.className = 'sample-card'
+    next.dataset.component = name
+    next.id = slugify(name)
+    next.innerHTML = `<header><p>COMPONENT</p><b>${name}</b><span>${name}의 기본 상태와 실제 상호작용을 확인합니다.</span></header><div class="sample-body column"></div>`
+    const body = $('.sample-body', next)
+    selectors.forEach((selector) => $$(selector, $('.sample-body', card)).forEach((node) => body.append(node.cloneNode(true))))
+    card.before(next)
+  })
+  card.remove()
+})
+
+const componentGroups = [
+  ['Form & Selection', 'form-selection'],
+  ['Date & Time', 'date-time'],
+  ['Navigation & Disclosure', 'navigation-disclosure'],
+  ['Overlay & Feedback', 'overlay-feedback'],
+  ['Data & Layout', 'data-layout'],
+]
+
+const componentNavigation = document.createElement('nav')
+componentNavigation.className = 'component-navigation'
+componentNavigation.setAttribute('aria-label', '컴포넌트 탐색')
+componentGroups.forEach(([groupName, sectionId], index) => {
+  const catalogGroup = $$('.catalog-group').find((group) => $('h3', group)?.textContent.trim() === groupName)
+  const details = document.createElement('details')
+  details.open = index === 0
+  details.innerHTML = `<summary><span>${groupName}</span><small>${$$('.catalog-grid span', catalogGroup).length}</small></summary><div></div>`
+  $$('.catalog-grid span', catalogGroup).forEach((item) => {
+    const name = item.textContent.trim()
+    const exactCard = $$('.sample-card').find((card) => card.dataset.component === name)
+    const link = document.createElement('a')
+    link.href = exactCard ? `#${exactCard.id}` : `#${sectionId}`
+    link.textContent = name
+    $('div', details).append(link)
+  })
+  componentNavigation.append(details)
+})
+
+const oldComponentLabel = $$('.sidebar p').find((label) => label.textContent.trim() === 'COMPONENTS')
+if (oldComponentLabel) {
+  let sibling = oldComponentLabel.nextElementSibling
+  while (sibling && sibling.tagName !== 'P') {
+    const next = sibling.nextElementSibling
+    sibling.remove()
+    sibling = next
+  }
+  oldComponentLabel.after(componentNavigation)
+}
+
+const componentCount = $('.status div:nth-child(2) b')
+if (componentCount) componentCount.textContent = '63'
+
+if (location.hash) {
+  requestAnimationFrame(() => document.querySelector(location.hash)?.scrollIntoView({ block: 'start' }))
+}
+
 let toastTimer
 const toast = $('[data-toast]')
 
@@ -279,6 +377,18 @@ $$('.catalog-group').forEach((group) => {
     }
   })
 })
+
+const componentLinks = $$('.component-navigation a')
+const componentObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (!entry.isIntersecting) return
+    componentLinks.forEach((link) => link.classList.toggle('active', link.hash === `#${entry.target.id}`))
+    const activeLink = componentLinks.find((link) => link.classList.contains('active'))
+    const details = activeLink?.closest('details')
+    if (details) details.open = true
+  })
+}, { rootMargin: '-25% 0px -65% 0px' })
+$$('.sample-card[id]').forEach((card) => componentObserver.observe(card))
 
 $('[data-search]').addEventListener('input', (event) => {
   const query = event.target.value.trim().toLowerCase()
