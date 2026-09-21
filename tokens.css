@@ -15,10 +15,6 @@
   --cs-cheese-300: #f4d77b;
   --cs-cheese-500: #ffc928;
   --cs-cheese-700: #806b20;
-  --cs-ignition-100: #fff1d6;
-  --cs-ignition-500: #ffa200;
-  --cs-ignition-600: #dc8500;
-  --cs-ignition-700: #8a5600;
   --cs-green-100: #e3f5ea;
   --cs-green-600: #21834f;
   --cs-red-100: #ffe9e7;
@@ -28,7 +24,6 @@
   --cs-bg-brand-signature: var(--cs-cheese-500);
   --cs-bg-brand-weak: var(--cs-cheese-100);
   --cs-bg-action-primary: var(--cs-space-black);
-  --cs-bg-action-ignition: var(--cs-ignition-500);
   --cs-bg-positive: var(--cs-green-600);
   --cs-bg-critical: var(--cs-red-600);
   --cs-fg-neutral: var(--cs-space-black);
