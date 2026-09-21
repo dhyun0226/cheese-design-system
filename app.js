@@ -66,13 +66,50 @@ const componentGroups = [
   ['Data & Layout', 'data-layout'],
 ]
 
+const readyComponents = new Set(['Button', 'Input', 'Textarea', 'Native Select', 'Field', 'Card', 'Badge', 'Dialog', 'Tree'])
+const componentDescriptions = {
+  Tree: '계층형 데이터를 펼치고 접으며 탐색합니다. 방향키 이동, 선택 상태, 확장 상태를 포함한 제품용 구현이 필요합니다.',
+  Dialog: '현재 화면의 흐름을 잠시 멈추고 확인이나 입력이 필요한 작업을 처리합니다.',
+  Button: '사용자의 명확한 행동을 시작합니다. 한 화면의 Primary Action은 가능한 한 하나만 사용합니다.',
+  Input: '짧은 텍스트를 입력합니다. Label, Description, Error와 함께 Field 안에서 사용하는 것을 권장합니다.',
+  Table: '구조화된 업무 데이터를 비교하고 정렬합니다. 모바일에서는 정보 우선순위를 다시 설계해야 합니다.',
+}
+
+$$('.sample-card').forEach((card) => {
+  const name = card.dataset.component
+  const ready = readyComponents.has(name)
+  card.dataset.status = ready ? 'ready' : 'preview'
+  const header = $('header', card)
+  if (!header) return
+  const status = document.createElement('em')
+  status.className = `component-status ${ready ? 'ready' : 'preview'}`
+  status.textContent = ready ? 'Ready' : 'Preview'
+  header.prepend(status)
+  let description = $('header span', card)
+  if (!description) {
+    description = document.createElement('span')
+    header.append(description)
+  }
+  description.textContent = componentDescriptions[name] || (ready
+    ? `${name}은 CHEESE 패키지에서 재사용할 수 있는 스타일 구현체입니다.`
+    : `${name}은 인터랙션과 시각 방향을 검증하는 Preview입니다. 아직 React/Vue 제품 컴포넌트는 아닙니다.`)
+})
+
+$$('.catalog-grid span').forEach((item) => {
+  const ready = readyComponents.has(item.textContent.trim())
+  item.removeAttribute('data-cheese')
+  item.dataset.status = ready ? 'ready' : 'preview'
+})
+const catalogDescription = $('#catalog header span')
+if (catalogDescription) catalogDescription.textContent = 'Ready는 패키지에서 재사용 가능한 구현체이며, Preview는 시각·인터랙션을 검증 중인 데모입니다.'
+
 const componentNavigation = document.createElement('nav')
 componentNavigation.className = 'component-navigation'
 componentNavigation.setAttribute('aria-label', '컴포넌트 탐색')
-componentGroups.forEach(([groupName, sectionId], index) => {
+componentGroups.forEach(([groupName, sectionId]) => {
   const catalogGroup = $$('.catalog-group').find((group) => $('h3', group)?.textContent.trim() === groupName)
   const details = document.createElement('details')
-  details.open = index === 0
+  details.open = false
   details.innerHTML = `<summary><span>${groupName}</span><small>${$$('.catalog-grid span', catalogGroup).length}</small></summary><div></div>`
   $$('.catalog-grid span', catalogGroup).forEach((item) => {
     const name = item.textContent.trim()
@@ -97,10 +134,53 @@ if (oldComponentLabel) {
 }
 
 const componentCount = $('.status div:nth-child(2) b')
-if (componentCount) componentCount.textContent = '63'
+if (componentCount) componentCount.textContent = `${readyComponents.size} Ready`
 
-if (location.hash) {
-  requestAnimationFrame(() => document.querySelector(location.hash)?.scrollIntoView({ block: 'start' }))
+const componentLinks = $$('.component-navigation a')
+const componentSections = componentGroups.map(([, id]) => document.getElementById(id))
+function showComponent(name, updateHash = true) {
+  const card = $$('.sample-card').find((item) => item.dataset.component === name)
+  if (!card) return
+  document.body.classList.add('component-focus')
+  $('.hero').hidden = true
+  $$('.doc').forEach((section) => { section.hidden = section !== card.closest('.doc') })
+  $$('.sample-card').forEach((item) => { item.hidden = item !== card })
+  card.hidden = false
+  const section = card.closest('.doc')
+  section.hidden = false
+  let back = $('.component-back', section)
+  if (!back) {
+    back = document.createElement('button')
+    back.className = 'component-back'
+    back.innerHTML = '← 전체 컴포넌트'
+    back.onclick = showAllComponents
+    section.prepend(back)
+  }
+  componentLinks.forEach((link) => link.classList.toggle('active', link.textContent.trim() === name))
+  const activeLink = componentLinks.find((link) => link.classList.contains('active'))
+  if (activeLink) activeLink.closest('details').open = true
+  if (updateHash) history.replaceState(null, '', `#${card.id}`)
+  window.scrollTo({ top: 0, behavior: 'instant' })
+}
+
+function showAllComponents() {
+  document.body.classList.remove('component-focus')
+  $('.hero').hidden = false
+  $$('.doc,.sample-card').forEach((item) => { item.hidden = false })
+  componentLinks.forEach((link) => link.classList.remove('active'))
+  history.replaceState(null, '', '#overview')
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+componentLinks.forEach((link) => {
+  const card = link.hash ? document.querySelector(link.hash) : null
+  if (!card) return
+  link.onclick = (event) => { event.preventDefault(); showComponent(card.dataset.component) }
+})
+
+if (location.hash.startsWith('#component-')) {
+  const initialCard = document.querySelector(location.hash)
+  if (initialCard) requestAnimationFrame(() => showComponent(initialCard.dataset.component, false))
 }
 
 let toastTimer
@@ -363,12 +443,11 @@ const catalogTargets = {
   'Data & Layout': 'data-layout',
 }
 $$('.catalog-group').forEach((group) => {
-  const target = document.getElementById(catalogTargets[$('h3', group).textContent])
   $$('.catalog-grid span', group).forEach((item) => {
     item.tabIndex = 0
     item.setAttribute('role', 'link')
     item.setAttribute('aria-label', `${item.textContent} 예제 보기`)
-    item.onclick = () => target?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    item.onclick = () => showComponent(item.textContent.trim())
     item.onkeydown = (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault()
@@ -378,7 +457,6 @@ $$('.catalog-group').forEach((group) => {
   })
 })
 
-const componentLinks = $$('.component-navigation a')
 const componentObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     if (!entry.isIntersecting) return

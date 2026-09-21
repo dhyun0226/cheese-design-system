@@ -1,5 +1,6 @@
 export { default as Button } from './Button.vue'
 export { default as Input } from './Input.vue'
 export { Badge, Card, NativeSelect, Textarea } from './styled'
+export { Tree, type TreeNode } from './Tree'
 export * from 'reka-ui'
 export { Search, Plus, X, Check, ChevronDown, ChevronLeft, ChevronRight, Calendar, Clock, User, Users, Settings, Bell, Upload, Download, Trash2, Pencil, MoreHorizontal, Info, CircleAlert, CircleCheck, Eye, EyeOff, Lock, LogOut, Menu } from '@lucide/vue'

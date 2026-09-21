@@ -17,4 +17,4 @@ if (items.length !== 63) throw new Error(`Expected 63 catalog items, found ${ite
 if (incomplete.length) throw new Error(`Incomplete catalog items: ${incomplete.map((match) => match[2]).join(', ')}`)
 if (missingSections.length) throw new Error(`Missing demo sections: ${missingSections.join(', ')}`)
 
-console.log(`Catalog verified: ${items.length}/63 implemented across ${requiredSections.length} interactive sections.`)
+console.log(`Catalog verified: ${items.length}/63 entries documented across ${requiredSections.length} interactive sections.`)
