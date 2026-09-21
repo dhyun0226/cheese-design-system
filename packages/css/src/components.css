@@ -28,3 +28,11 @@
 .cheese-badge[data-tone="brand"] { background: var(--cheese-color-gold-weak); }
 .cheese-badge[data-tone="positive"] { background: #e3f5ea; color: var(--cheese-color-positive); }
 .cheese-badge[data-tone="critical"] { background: #ffe9e7; color: var(--cheese-color-critical); }
+
+/* A single wrapper guarantees the same typography for native and headless controls. */
+.cheese-root,
+.cheese-root :where(button,input,select,textarea,option,optgroup) {
+  font-family: var(--cheese-font-family) !important;
+  font-synthesis: none;
+}
+.cheese-root { color: var(--cheese-color-space-black); -webkit-font-smoothing: antialiased; }

@@ -1,6 +1,11 @@
 const $ = (selector, context = document) => context.querySelector(selector)
 const $$ = (selector, context = document) => [...context.querySelectorAll(selector)]
 
+const catalogLink = $('.sidebar a[href="#catalog"]')
+if (catalogLink && !$('.sidebar a[href="#component-lab"]')) {
+  catalogLink.insertAdjacentHTML('beforebegin', '<a href="#component-lab">Component Lab</a>')
+}
+
 let toastTimer
 const toast = $('[data-toast]')
 
@@ -89,6 +94,26 @@ document.addEventListener('keydown', (event) => {
     $$('.overlay').forEach((overlay) => { overlay.hidden = true })
     menu.hidden = true
     panel.classList.remove('open')
+    $$('[data-play-popover-panel]').forEach((popover) => { popover.hidden = true })
+    $$('[data-play-popover]').forEach((button) => button.setAttribute('aria-expanded', 'false'))
+  }
+})
+
+// Component Lab uses the same production layers instead of documentation-only imitations.
+$$('[data-play-dialog]').forEach((button) => { button.onclick = () => openLayer(dialog, $('[data-close]')) })
+$$('[data-play-alert]').forEach((button) => { button.onclick = () => openLayer(alertDialog, $('[data-alert-close]')) })
+$$('[data-play-toast]').forEach((button) => { button.onclick = () => showToast('저장했습니다', 'Component Lab에서 Toast를 실행했습니다.') })
+$$('[data-play-drawer]').forEach((button) => {
+  button.onclick = () => {
+    panel.classList.add('open')
+    panel.setAttribute('aria-hidden', 'false')
+  }
+})
+$$('[data-play-popover]').forEach((button) => {
+  button.onclick = () => {
+    const popover = $('[data-play-popover-panel]', button.parentElement)
+    popover.hidden = !popover.hidden
+    button.setAttribute('aria-expanded', String(!popover.hidden))
   }
 })
 

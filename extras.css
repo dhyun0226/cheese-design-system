@@ -27,10 +27,11 @@
 .file-item b { flex: 1; }
 .file-item span { color: var(--cs-fg-muted); }
 .cs-stepper { display: grid; grid-template-columns: repeat(4, 1fr); margin-bottom: 22px; }
-.cs-stepper div { position: relative; display: flex; align-items: center; gap: 8px; color: var(--cs-fg-muted); font-size: 11px; }
-.cs-stepper div::after { content: ""; position: absolute; z-index: 0; top: 14px; left: 34px; right: 8px; height: 1px; background: var(--cs-border-neutral); }
+.cs-stepper div { position: relative; display: grid; grid-template-rows: 28px auto; justify-items: start; gap: 8px; color: var(--cs-fg-muted); font-size: 11px; }
+.cs-stepper div::after { content: ""; position: absolute; z-index: 0; top: 14px; left: 28px; right: 0; height: 1px; background: var(--cs-border-neutral); }
 .cs-stepper div:last-child::after { display: none; }
 .cs-stepper i { position: relative; z-index: 1; display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--cs-border-neutral); border-radius: 50%; background: var(--cs-bg-layer); font-style: normal; }
+.cs-stepper span { position: relative; z-index: 1; white-space: nowrap; }
 .cs-stepper .done i, .cs-stepper .active i { border-color: var(--cs-space-black); }
 .cs-stepper .done i { background: var(--cs-space-black); color: #fff; }
 .cs-stepper .active { color: var(--cs-fg-neutral); font-weight: 700; }
