@@ -1,1 +1,58 @@
-:root{color-scheme:light;--cs-neutral-0:#fff;--cs-neutral-50:#f7f7f4;--cs-neutral-100:#eee;--cs-neutral-200:#dfdfda;--cs-neutral-400:#aaa9a3;--cs-neutral-600:#686864;--cs-neutral-800:#292927;--cs-neutral-1000:#111;--cs-moon-100:#fff4b8;--cs-moon-500:#ffd83d;--cs-moon-600:#e2b800;--cs-green-100:#e3f5ea;--cs-green-600:#21834f;--cs-red-100:#ffe9e7;--cs-red-600:#d83b3b;--cs-blue-100:#eaf1ff;--cs-blue-700:#245c9b;--cs-orange-100:#fff0d4;--cs-orange-700:#8a5600;--cs-bg-canvas:var(--cs-neutral-50);--cs-bg-layer:var(--cs-neutral-0);--cs-bg-brand-solid:var(--cs-moon-500);--cs-bg-brand-weak:var(--cs-moon-100);--cs-bg-positive:var(--cs-green-600);--cs-bg-critical:var(--cs-red-600);--cs-fg-neutral:var(--cs-neutral-1000);--cs-fg-muted:var(--cs-neutral-600);--cs-border-neutral:var(--cs-neutral-200);--cs-space-1:4px;--cs-space-2:8px;--cs-space-3:12px;--cs-space-4:16px;--cs-space-6:24px;--cs-space-8:32px;--cs-radius-control:8px;--cs-radius-card:12px;--cs-radius-overlay:16px;--cs-radius-pill:999px;--cs-shadow-1:0 3px 12px rgba(0,0,0,.07);--cs-shadow-2:0 12px 35px rgba(0,0,0,.12);--cs-shadow-3:0 26px 80px rgba(0,0,0,.22);--cs-focus:0 0 0 3px rgba(255,216,61,.5)}[data-theme=dark]{color-scheme:dark;--cs-bg-canvas:#111;--cs-bg-layer:#1c1c1a;--cs-fg-neutral:#f8f8f5;--cs-fg-muted:#aaa9a3;--cs-border-neutral:#393936}*{box-sizing:border-box}body{margin:0;background:var(--cs-bg-canvas);color:var(--cs-fg-neutral);font-family:Inter,"Noto Sans KR",sans-serif}button,input,select,textarea{font:inherit;color:inherit}a{color:inherit}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible{outline:0;box-shadow:var(--cs-focus)}@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+:root {
+  color-scheme: light;
+  --cs-space-black: #111111;
+  --cs-lunar-white: #ffffff;
+  --cs-moon-gray: #f4f4f0;
+  --cs-neutral-0: var(--cs-lunar-white);
+  --cs-neutral-50: var(--cs-moon-gray);
+  --cs-neutral-100: #eeeeea;
+  --cs-neutral-200: #dfdfda;
+  --cs-neutral-400: #aaa9a3;
+  --cs-neutral-600: #686864;
+  --cs-neutral-800: #292927;
+  --cs-neutral-1000: var(--cs-space-black);
+  --cs-cheese-100: #fff3cc;
+  --cs-cheese-300: #f4d77b;
+  --cs-cheese-500: #ffc928;
+  --cs-cheese-700: #806b20;
+  --cs-ignition-100: #fff1d6;
+  --cs-ignition-500: #ffa200;
+  --cs-ignition-600: #dc8500;
+  --cs-ignition-700: #8a5600;
+  --cs-green-100: #e3f5ea;
+  --cs-green-600: #21834f;
+  --cs-red-100: #ffe9e7;
+  --cs-red-600: #d83b3b;
+  --cs-bg-canvas: var(--cs-moon-gray);
+  --cs-bg-layer: var(--cs-lunar-white);
+  --cs-bg-brand-signature: var(--cs-cheese-500);
+  --cs-bg-brand-weak: var(--cs-cheese-100);
+  --cs-bg-action-primary: var(--cs-space-black);
+  --cs-bg-action-ignition: var(--cs-ignition-500);
+  --cs-bg-positive: var(--cs-green-600);
+  --cs-bg-critical: var(--cs-red-600);
+  --cs-fg-neutral: var(--cs-space-black);
+  --cs-fg-muted: var(--cs-neutral-600);
+  --cs-border-neutral: var(--cs-neutral-200);
+  --cs-space-1: 4px;
+  --cs-space-2: 8px;
+  --cs-space-3: 12px;
+  --cs-space-4: 16px;
+  --cs-space-6: 24px;
+  --cs-space-8: 32px;
+  --cs-radius-control: 8px;
+  --cs-radius-card: 12px;
+  --cs-radius-overlay: 16px;
+  --cs-radius-pill: 999px;
+  --cs-shadow-1: 0 3px 12px rgba(0, 0, 0, .07);
+  --cs-shadow-2: 0 12px 35px rgba(0, 0, 0, .12);
+  --cs-shadow-3: 0 26px 80px rgba(0, 0, 0, .22);
+  --cs-focus: 0 0 0 3px rgba(255, 201, 40, .65);
+}
+[data-theme="dark"] { color-scheme: dark; --cs-bg-canvas: #111111; --cs-bg-layer: #1c1c1a; --cs-fg-neutral: #f8f8f5; --cs-fg-muted: #aaa9a3; --cs-border-neutral: #393936; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--cs-bg-canvas); color: var(--cs-fg-neutral); font-family: Inter, "Noto Sans KR", sans-serif; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible { outline: 0; box-shadow: var(--cs-focus); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }

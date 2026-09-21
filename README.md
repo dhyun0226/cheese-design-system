@@ -1,12 +1,20 @@
 # CHEESE Design System
 
-STARSHIP 업무 시스템을 가정해 만든 독립 디자인시스템 제안입니다. STARSHIP Entertainment의 공식 디자인시스템이 아닙니다.
+STARSHIP의 사내 제품을 가정해 만든 개인 디자인 시스템 제안입니다. STARSHIP Entertainment의 공식 디자인 시스템이 아닙니다.
 
-## Brand note
+## Story
 
-- Black / White / Neutral: 공개된 STARSHIP CI를 기준으로 구성
-- Moonlight Yellow `#FFD83D`: CHEESE가 제안하는 비공식 포인트 색상
-- 파란색은 브랜드색으로 사용하지 않으며 정보성 상태에만 제한적으로 사용
+달이 치즈로 이루어졌다는 상상처럼 모든 제품은 작은 아이디어에서 시작합니다. CHEESE는 그 아이디어를 일관되고 안전하게 실제 제품으로 구현하기 위한 기반입니다.
+
+## Color roles
+
+- Space Black `#111111`: 기반, 텍스트, Primary Action
+- Lunar White `#FFFFFF`: 화면과 카드
+- Moon Gray `#F4F4F0`: 장시간 사용하는 업무 화면 배경
+- Cheese Gold `#FFC928`: 로고와 작은 브랜드 서명
+- Ignition Orange `#FFA200`: 출발과 중요한 행동. STARSHIP GreetingHR 채용페이지의 `brandColor`에서 착안
+
+Gold와 Orange를 화면 전체에 사용하지 않습니다. Neutral이 대부분을 차지하고 브랜드색은 의미가 명확한 지점에만 제한합니다.
 
 ## Architecture
 
