@@ -292,8 +292,13 @@ test("gold focus, SVG tree carets, favicon and mobile visual evidence", async ({
   await input.focus();
   await expect(input).toHaveCSS("outline-color", "rgb(255, 201, 40)");
   const favicon = page.locator('link[rel="icon"]');
-  await expect(favicon).toHaveAttribute("href", "./favicon.svg");
-  expect((await page.request.get("/favicon.svg")).status()).toBe(200);
+  await expect(favicon).toHaveAttribute("href", "./favicon.svg?v=2");
+  await expect(favicon).toHaveAttribute("sizes", "any");
+  const faviconResponse = await page.request.get("/favicon.svg?v=2");
+  expect(faviconResponse.status()).toBe(200);
+  expect(await faviconResponse.text()).toContain('viewBox="5 5 22 22"');
+  const vuePage = await page.request.get("/vue.html");
+  expect(await vuePage.text()).toContain('href="./favicon.svg?v=2"');
   await page.screenshot({
     path: `artifacts/${test.info().project.name}/gold-input-focus.png`,
   });
