@@ -89,6 +89,18 @@ export function queryRows<T extends DataRow>(
     ),
   };
 }
+export function formatFileSize(bytes: number): string {
+  const size = Number.isFinite(bytes) ? Math.max(0, bytes) : 0;
+  const unit =
+    size >= 1024 ** 3 ? 3 : size >= 1024 ** 2 ? 2 : size >= 1024 ? 1 : 0;
+  return (
+    new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 1 }).format(
+      size / 1024 ** unit,
+    ) +
+    " " +
+    ["B", "KB", "MB", "GB"][unit]
+  );
+}
 export interface UploadContext {
   signal: AbortSignal;
   onProgress: (percent: number) => void;

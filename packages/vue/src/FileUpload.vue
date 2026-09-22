@@ -9,7 +9,12 @@ import {
   CircleAlert,
 } from "@lucide/vue";
 import Button from "./Button.vue";
-import { UploadQueue, type UploadHandler, type UploadItem } from "./business";
+import {
+  UploadQueue,
+  formatFileSize,
+  type UploadHandler,
+  type UploadItem,
+} from "./business";
 const props = withDefaults(
   defineProps<{
     label: string;
@@ -117,10 +122,8 @@ function leave(event: DragEvent) {
         @change="choose"
       />
       <p class="cheese-help">
-        최대 {{ maxFiles }}개 · 파일당
-        {{ Math.round(maxSize / 1024 / 1024) }} MB{{
-          accept ? " · " + accept : ""
-        }}
+        최대 {{ maxFiles }}개 · 파일당 {{ formatFileSize(maxSize)
+        }}{{ accept ? " · " + accept : "" }}
       </p>
     </div>
     <div v-if="errors.length" role="alert" class="cheese-upload-errors">
@@ -132,7 +135,7 @@ function leave(event: DragEvent) {
         <div class="cheese-upload-copy">
           <strong>{{ item.file.name }}</strong
           ><span class="cheese-help"
-            >{{ Math.ceil(item.file.size / 1024) }} KB ·
+            >{{ formatFileSize(item.file.size) }} ·
             {{ statusLabel[item.status] }}</span
           ><progress
             v-if="item.status === 'uploading'"

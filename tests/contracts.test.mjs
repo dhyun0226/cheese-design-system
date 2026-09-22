@@ -35,6 +35,14 @@ for (const [framework, api] of [
   ["Vue", V],
 ]) {
   test(
+    framework + " small upload limits are not rounded down to zero MB",
+    () => {
+      assert.equal(api.formatFileSize(10), "10 B");
+      assert.equal(api.formatFileSize(512 * 1024), "512 KB");
+      assert.equal(api.formatFileSize(2 * 1024 ** 2), "2 MB");
+    },
+  );
+  test(
     framework +
       " local table filters, sorts numbers and paginates without mutating source",
     () => {

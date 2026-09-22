@@ -11,6 +11,7 @@ import {
 import { Button } from "./index.js";
 import {
   UploadQueue,
+  formatFileSize,
   type UploadHandler,
   type UploadItem,
   type UploadRules,
@@ -135,7 +136,7 @@ export function FileUpload({
           }}
         />
         <p className="cheese-help">
-          최대 {maxFiles}개 · 파일당 {Math.round(maxSize / 1024 / 1024)} MB
+          최대 {maxFiles}개 · 파일당 {formatFileSize(maxSize)}
           {accept ? " · " + accept : ""}
         </p>
       </div>
@@ -153,8 +154,7 @@ export function FileUpload({
             <div className="cheese-upload-copy">
               <strong>{item.file.name}</strong>
               <span className="cheese-help">
-                {Math.ceil(item.file.size / 1024)} KB ·{" "}
-                {statusLabel[item.status]}
+                {formatFileSize(item.file.size)} · {statusLabel[item.status]}
               </span>
               {item.status === "uploading" && (
                 <progress
