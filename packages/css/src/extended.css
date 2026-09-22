@@ -150,13 +150,118 @@
   overflow: auto;
   box-shadow: var(--cheese-shadow-card);
 }
-.cheese-pin-input {
-  font-size: 24px;
-  letter-spacing: 0.5em;
+.cheese-pin-control {
+  --cheese-pin-gap: var(--cheese-space-2);
+  --cheese-pin-font-size: var(--cheese-font-size-heading);
+  --cheese-pin-height: 52px;
+  container-type: inline-size;
+  position: relative;
+  width: min(
+    100%,
+    calc(
+      var(--cheese-pin-length) * 44px + (var(--cheese-pin-length) - 1) *
+        var(--cheese-pin-gap)
+    )
+  );
+  min-width: 0;
+}
+.cheese-pin-control[data-compact] {
+  --cheese-pin-gap: var(--cheese-space-1);
+  --cheese-pin-font-size: 16px;
+  --cheese-pin-height: 44px;
+}
+/* One native input preserves selection, autofill and form behavior. Its text
+   advances with the decorative cells so pointer and keyboard selection agree. */
+.cheese-pin-control > .cheese-pin-input {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  border: 0;
+  padding: 0 0 0
+    calc(
+      (100% - (var(--cheese-pin-length) - 1) * var(--cheese-pin-gap)) /
+        var(--cheese-pin-length) / 2 - 0.5ch
+    );
+  opacity: 0;
+  font-size: var(--cheese-pin-font-size);
+  font-weight: var(--cheese-font-weight-semibold);
   font-variant-numeric: tabular-nums;
-  text-align: center;
-  padding: 16px;
-  width: min(100%, 320px);
+  letter-spacing: calc(
+    (100cqi + var(--cheese-pin-gap)) / var(--cheese-pin-length) - 1ch
+  );
+  cursor: text;
+}
+.cheese-pin-slots {
+  display: grid;
+  grid-template-columns: repeat(var(--cheese-pin-length), minmax(0, 1fr));
+  gap: var(--cheese-pin-gap);
+  pointer-events: none;
+}
+.cheese-pin-slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: var(--cheese-pin-height);
+  border: 1px solid var(--cheese-control-border);
+  border-radius: var(--cheese-radius-item);
+  background: var(--cheese-control-bg);
+  color: var(--cheese-text);
+  font-size: var(--cheese-pin-font-size);
+  font-weight: var(--cheese-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--cheese-line-height-control);
+}
+.cheese-pin-input:hover:not(:disabled, [readonly], [aria-invalid="true"])
+  + .cheese-pin-slots
+  .cheese-pin-slot {
+  border-color: var(--cheese-control-hover-border);
+}
+.cheese-pin-input[aria-invalid="true"] + .cheese-pin-slots .cheese-pin-slot {
+  border-color: var(--cheese-selection-indicator);
+}
+.cheese-pin-input:focus + .cheese-pin-slots .cheese-pin-slot[data-active] {
+  border-color: var(--cheese-focus-contrast);
+  outline: 2px solid var(--cheese-focus);
+  outline-offset: 0;
+}
+.cheese-pin-input:focus + .cheese-pin-slots .cheese-pin-slot[data-selected] {
+  background: var(--cheese-brand-soft);
+}
+.cheese-pin-input:focus:not([readonly])
+  + .cheese-pin-slots
+  .cheese-pin-slot[data-active][data-empty]::after {
+  content: "";
+  width: 2px;
+  height: 1em;
+  background: var(--cheese-text);
+}
+.cheese-pin-input:disabled {
+  cursor: not-allowed;
+}
+.cheese-pin-input:disabled + .cheese-pin-slots {
+  opacity: 0.45;
+}
+.cheese-pin-input[readonly] + .cheese-pin-slots .cheese-pin-slot {
+  border-color: var(--cheese-border);
+  color: var(--cheese-text-secondary);
+}
+@media (forced-colors: active) {
+  .cheese-pin-slot {
+    border-color: ButtonText;
+  }
+  .cheese-pin-input:focus + .cheese-pin-slots .cheese-pin-slot[data-active] {
+    outline-color: Highlight;
+  }
+  .cheese-pin-input:focus + .cheese-pin-slots .cheese-pin-slot[data-selected] {
+    background: Highlight;
+    color: HighlightText;
+  }
 }
 .cheese-tags {
   display: flex;

@@ -35,6 +35,12 @@ export const PinInput = React.forwardRef<HTMLInputElement, PinInputProps>(
       onComplete,
       id: provided,
       onInvalid,
+      onPaste,
+      onFocus,
+      onBlur,
+      onSelect,
+      onKeyUp,
+      className,
       "aria-describedby": describedBy,
       ...props
     },
@@ -42,7 +48,9 @@ export const PinInput = React.forwardRef<HTMLInputElement, PinInputProps>(
   ) {
     const auto = React.useId(),
       id = provided || auto,
-      size = Math.min(12, Math.max(1, Math.floor(length)));
+      size = Number.isFinite(length)
+        ? Math.min(12, Math.max(1, Math.floor(length)))
+        : 6;
     const [code, setCode, root] = useFieldValue(
       value,
       defaultValue,
@@ -52,6 +60,30 @@ export const PinInput = React.forwardRef<HTMLInputElement, PinInputProps>(
     const input = React.useRef<HTMLInputElement>(null);
     React.useImperativeHandle(ref, () => input.current!);
     const [validationError, setValidationError] = React.useState("");
+    const [selection, setSelection] = React.useState({ start: 0, end: 0 });
+    const syncSelection = () => {
+      const node = input.current;
+      if (node) {
+        node.scrollLeft = 0;
+        setSelection({
+          start: node.selectionStart ?? 0,
+          end: node.selectionEnd ?? 0,
+        });
+      }
+    };
+    React.useLayoutEffect(syncSelection, [code]);
+    const updateCode = (next: string, caret: number) => {
+      if (input.current?.matches(":disabled") || input.current?.readOnly)
+        return;
+      setValidationError("");
+      setCode(next);
+      if (input.current) {
+        input.current.value = next;
+        input.current.setSelectionRange(caret, caret);
+        syncSelection();
+      }
+      if (next.length === size && next !== code) onComplete?.(next);
+    };
     React.useEffect(
       () => setValidationError(""),
       [code, props.disabled, props.readOnly],
@@ -77,54 +109,137 @@ export const PinInput = React.forwardRef<HTMLInputElement, PinInputProps>(
         <label htmlFor={id} className="cheese-label">
           {label}
         </label>
-        <input
-          {...props}
-          ref={input}
-          id={id}
-          className="cheese-input cheese-pin-input"
-          type="text"
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          pattern={"[0-9]{" + size + "}"}
-          maxLength={size}
-          value={code}
-          placeholder={"○".repeat(size)}
-          aria-invalid={validationError ? true : props["aria-invalid"]}
-          aria-describedby={[
-            describedBy,
-            id + "-help",
-            validationError ? id + "-error" : undefined,
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          onChange={(e) => {
-            const next = e.target.value.replace(/[^0-9]/g, "").slice(0, size);
-            setValidationError("");
-            setCode(next);
-            if (next.length === size && next !== code) onComplete?.(next);
-          }}
-          onInvalid={(event) => {
-            event.preventDefault();
-            setValidationError(
-              event.currentTarget.validity.valueMissing
-                ? "인증 코드를 입력해 주세요."
-                : `숫자 ${size}자리 인증 코드를 입력해 주세요.`,
-            );
-            const node = event.currentTarget;
-            const first =
-              node.form &&
-              Array.from(node.form.elements).find((element) => {
-                const control = element as HTMLInputElement;
-                return (
-                  control.willValidate &&
-                  control.validity &&
-                  !control.validity.valid
-                );
-              });
-            if (!first || first === node) node.focus();
-            onInvalid?.(event);
-          }}
-        />
+        <div
+          className="cheese-pin-control"
+          data-compact={size > 8 || undefined}
+          style={{ "--cheese-pin-length": size } as React.CSSProperties}
+        >
+          <input
+            {...props}
+            ref={input}
+            id={id}
+            className={["cheese-input cheese-pin-input", className]
+              .filter(Boolean)
+              .join(" ")}
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern={"[0-9]{" + size + "}"}
+            maxLength={size}
+            value={code}
+            aria-invalid={validationError ? true : props["aria-invalid"]}
+            aria-describedby={[
+              describedBy,
+              id + "-help",
+              validationError ? id + "-error" : undefined,
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            onChange={(e) => {
+              const next = e.target.value.replace(/[^0-9]/g, "").slice(0, size);
+              const caret = Math.min(
+                e.target.value
+                  .slice(0, e.target.selectionStart ?? e.target.value.length)
+                  .replace(/[^0-9]/g, "").length,
+                size,
+              );
+              updateCode(next, caret);
+            }}
+            onPaste={(event) => {
+              onPaste?.(event);
+              if (event.defaultPrevented) return;
+              event.preventDefault();
+              const node = event.currentTarget;
+              if (node.matches(":disabled") || node.readOnly) return;
+              const start = node.selectionStart ?? code.length;
+              const end = node.selectionEnd ?? start;
+              const digits = (
+                event.clipboardData.getData("text/plain") ||
+                event.clipboardData.getData("text")
+              ).replace(/[^0-9]/g, "");
+              if (!digits) return;
+              const inserted = digits.slice(
+                0,
+                Math.max(0, size - (code.length - (end - start))),
+              );
+              const next = code.slice(0, start) + inserted + code.slice(end);
+              const caret = start + inserted.length;
+              if (next === code) {
+                node.setSelectionRange(caret, caret);
+                syncSelection();
+                return;
+              }
+              // Bypass React's instance value tracker so the native input event
+              // follows the same onChange path as typing, exactly once.
+              const nativeValue = Object.getOwnPropertyDescriptor(
+                HTMLInputElement.prototype,
+                "value",
+              );
+              nativeValue!.set!.call(node, next);
+              node.setSelectionRange(caret, caret);
+              node.dispatchEvent(
+                new InputEvent("input", {
+                  bubbles: true,
+                  composed: true,
+                  inputType: "insertFromPaste",
+                  data: inserted,
+                }),
+              );
+            }}
+            onFocus={(event) => {
+              syncSelection();
+              onFocus?.(event);
+            }}
+            onBlur={onBlur}
+            onSelect={(event) => {
+              syncSelection();
+              onSelect?.(event);
+            }}
+            onKeyUp={(event) => {
+              syncSelection();
+              onKeyUp?.(event);
+            }}
+            onInvalid={(event) => {
+              event.preventDefault();
+              setValidationError(
+                event.currentTarget.validity.valueMissing
+                  ? "인증 코드를 입력해 주세요."
+                  : `숫자 ${size}자리 인증 코드를 입력해 주세요.`,
+              );
+              const node = event.currentTarget;
+              const first =
+                node.form &&
+                Array.from(node.form.elements).find((element) => {
+                  const control = element as HTMLInputElement;
+                  return (
+                    control.willValidate &&
+                    control.validity &&
+                    !control.validity.valid
+                  );
+                });
+              if (!first || first === node) node.focus();
+              onInvalid?.(event);
+            }}
+          />
+          <div className="cheese-pin-slots" aria-hidden="true">
+            {Array.from({ length: size }, (_, index) => (
+              <span
+                key={index}
+                className="cheese-pin-slot"
+                data-active={
+                  Math.min(selection.start, size - 1) === index || undefined
+                }
+                data-selected={
+                  (index >= selection.start && index < selection.end) ||
+                  undefined
+                }
+                data-empty={!code[index] || undefined}
+              >
+                {code[index] && <span>{code[index]}</span>}
+              </span>
+            ))}
+          </div>
+        </div>
         <p id={id + "-help"} className="cheese-help">
           숫자 {size}자리 · 코드를 붙여넣을 수 있습니다.
         </p>

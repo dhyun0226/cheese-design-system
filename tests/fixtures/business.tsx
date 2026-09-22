@@ -2,7 +2,7 @@ import "@cheese/css";
 import * as R from "@cheese/react";
 import * as V from "@cheese/vue";
 import { createRoot } from "react-dom/client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createApp, h, ref } from "vue";
 declare global {
   interface Window {
@@ -150,12 +150,43 @@ const resetUploadHandler: R.UploadHandler = (file, { signal }) =>
     );
   });
 const query = new URLSearchParams(location.search);
+function recordOTPInput(kind: string, event: Event | React.SyntheticEvent) {
+  if (!query.has("events")) return;
+  const nativeEvent = (
+    "nativeEvent" in event ? event.nativeEvent : event
+  ) as InputEvent;
+  window.businessEvents.push({
+    kind,
+    query: JSON.stringify({
+      value: (event.target as HTMLInputElement).value,
+      inputType: nativeEvent.inputType,
+      data: nativeEvent.data,
+      bubbles: nativeEvent.bubbles,
+      composed: nativeEvent.composed,
+    }),
+  });
+}
 const otpProps = {
   label: "Contract OTP",
   name: "code",
   id: "contract-otp",
   required: true,
+  length: query.has("length") ? Number(query.get("length")) : undefined,
+  defaultValue: query.get("defaultValue") ?? undefined,
+  form: query.has("external") ? "otp-form" : undefined,
   "aria-describedby": "otp-description",
+  onInput: (event: Event | React.FormEvent<HTMLInputElement>) =>
+    recordOTPInput("otp-public-input", event),
+  onPaste: (event: ClipboardEvent | React.ClipboardEvent<HTMLInputElement>) => {
+    window.businessEvents.push({
+      kind: "otp-paste",
+      query: event.clipboardData?.getData("text/plain") ?? "",
+    });
+    if (query.has("cancelPaste")) event.preventDefault();
+  },
+  onComplete: (value: string) => {
+    window.businessEvents.push({ kind: "otp-complete", query: value });
+  },
   onInvalid: (event: Event | React.FormEvent<HTMLInputElement>) => {
     window.businessEvents.push({
       kind: "otp-invalid",
@@ -492,41 +523,190 @@ if (query.get("scenario") === "select-focus") {
 } else if (query.get("scenario") === "otp") {
   if (query.get("framework") === "vue")
     createApp({
-      render: () =>
-        h("main", { class: "cheese-root cheese-stack" }, [
-          h("h1", "OTP form contract"),
-          h("p", { id: "otp-description" }, "Test codes only"),
-          h("form", { class: "cheese-stack", onSubmit: submit }, [
-            query.has("multiple")
-              ? h(V.PinInput, {
-                  label: "First OTP",
-                  name: "first",
-                  required: true,
-                })
+      setup() {
+        const disabled = ref(query.has("disabled"));
+        const readOnly = ref(query.has("readOnly"));
+        const value = ref(query.get("value") ?? otpProps.defaultValue ?? "");
+        const publicRef = ref<{
+          input?: HTMLInputElement;
+          focus: () => void;
+        } | null>(null);
+        const otp = () =>
+          h(V.PinInput, {
+            ...otpProps,
+            ref: publicRef,
+            class: query.get("className") ?? undefined,
+            disabled: disabled.value,
+            readOnly: readOnly.value,
+            readonly: query.has("readonly"),
+            modelValue: query.has("controlled") ? value.value : undefined,
+            "onUpdate:modelValue": (next: string) => {
+              window.businessEvents.push({ kind: "otp-change", query: next });
+              if (!query.has("hold")) value.value = next;
+            },
+          });
+        return () =>
+          h("main", { class: "cheese-root cheese-stack" }, [
+            h("h1", "OTP form contract"),
+            h("p", { id: "otp-description" }, "Test codes only"),
+            h(
+              "form",
+              {
+                id: "otp-form",
+                class: "cheese-stack",
+                onSubmit: submit,
+                onReset: clearResult,
+                onInput: (event: Event) =>
+                  recordOTPInput("otp-form-input", event),
+              },
+              [
+                query.has("multiple")
+                  ? h(V.PinInput, {
+                      label: "First OTP",
+                      name: "first",
+                      required: true,
+                    })
+                  : null,
+                query.has("external") ? null : otp(),
+                h(V.Button, { type: "submit" }, () => "Submit OTP"),
+                h(V.Button, { type: "reset" }, () => "Reset OTP"),
+              ],
+            ),
+            query.has("external") ? otp() : null,
+            query.has("ref")
+              ? h(
+                  V.Button,
+                  {
+                    onClick: () => {
+                      publicRef.value?.focus();
+                      if (query.has("events"))
+                        window.businessEvents.push({
+                          kind: "otp-ref",
+                          query: String(
+                            publicRef.value?.input instanceof
+                              HTMLInputElement &&
+                              publicRef.value.input === document.activeElement,
+                          ),
+                        });
+                    },
+                  },
+                  () => "Focus OTP ref",
+                )
               : null,
-            h(V.PinInput, otpProps),
-            h(V.Button, { type: "submit" }, () => "Submit OTP"),
-            h(V.Button, { type: "reset" }, () => "Reset OTP"),
-          ]),
-          h("output", { id: "result", "aria-label": "Form result" }),
-        ]),
+            query.has("lifecycle")
+              ? [
+                  h(
+                    V.Button,
+                    { onClick: () => (disabled.value = !disabled.value) },
+                    () => "Toggle disabled OTP",
+                  ),
+                  h(
+                    V.Button,
+                    { onClick: () => (readOnly.value = !readOnly.value) },
+                    () => "Toggle readonly OTP",
+                  ),
+                ]
+              : null,
+            query.has("controlled")
+              ? [
+                  h(
+                    V.Button,
+                    { onClick: () => (value.value = "654321") },
+                    () => "Set controlled OTP",
+                  ),
+                  h(
+                    "output",
+                    { "aria-label": "Controlled OTP value" },
+                    value.value,
+                  ),
+                ]
+              : null,
+            h("output", { id: "result", "aria-label": "Form result" }),
+          ]);
+      },
     }).mount("#root");
-  else
-    createRoot(document.getElementById("root")!).render(
-      <main className="cheese-root cheese-stack">
-        <h1>OTP form contract</h1>
-        <p id="otp-description">Test codes only</p>
-        <form className="cheese-stack" onSubmit={submit}>
-          {query.has("multiple") && (
-            <R.PinInput label="First OTP" name="first" required />
+  else {
+    function ReactOTPContract() {
+      const [disabled, setDisabled] = useState(query.has("disabled"));
+      const [readOnly, setReadOnly] = useState(query.has("readOnly"));
+      const publicRef = useRef<HTMLInputElement>(null);
+      const [value, setValue] = useState(
+        query.get("value") ?? otpProps.defaultValue ?? "",
+      );
+      const otp = (
+        <R.PinInput
+          {...otpProps}
+          ref={publicRef}
+          className={query.get("className") ?? undefined}
+          disabled={disabled}
+          readOnly={readOnly}
+          value={query.has("controlled") ? value : undefined}
+          onValueChange={(next) => {
+            window.businessEvents.push({ kind: "otp-change", query: next });
+            if (!query.has("hold")) setValue(next);
+          }}
+        />
+      );
+      return (
+        <main className="cheese-root cheese-stack">
+          <h1>OTP form contract</h1>
+          <p id="otp-description">Test codes only</p>
+          <form
+            id="otp-form"
+            className="cheese-stack"
+            onSubmit={submit}
+            onReset={clearResult}
+            onInput={(event) => recordOTPInput("otp-form-input", event)}
+          >
+            {query.has("multiple") && (
+              <R.PinInput label="First OTP" name="first" required />
+            )}
+            {!query.has("external") && otp}
+            <R.Button type="submit">Submit OTP</R.Button>
+            <R.Button type="reset">Reset OTP</R.Button>
+          </form>
+          {query.has("external") && otp}
+          {query.has("ref") && (
+            <R.Button
+              onClick={() => {
+                publicRef.current?.focus();
+                if (query.has("events"))
+                  window.businessEvents.push({
+                    kind: "otp-ref",
+                    query: String(
+                      publicRef.current instanceof HTMLInputElement &&
+                        publicRef.current === document.activeElement,
+                    ),
+                  });
+              }}
+            >
+              Focus OTP ref
+            </R.Button>
           )}
-          <R.PinInput {...otpProps} />
-          <R.Button type="submit">Submit OTP</R.Button>
-          <R.Button type="reset">Reset OTP</R.Button>
-        </form>
-        <output id="result" aria-label="Form result" />
-      </main>,
-    );
+          {query.has("lifecycle") && (
+            <>
+              <R.Button onClick={() => setDisabled(!disabled)}>
+                Toggle disabled OTP
+              </R.Button>
+              <R.Button onClick={() => setReadOnly(!readOnly)}>
+                Toggle readonly OTP
+              </R.Button>
+            </>
+          )}
+          {query.has("controlled") && (
+            <>
+              <R.Button onClick={() => setValue("654321")}>
+                Set controlled OTP
+              </R.Button>
+              <output aria-label="Controlled OTP value">{value}</output>
+            </>
+          )}
+          <output id="result" aria-label="Form result" />
+        </main>
+      );
+    }
+    createRoot(document.getElementById("root")!).render(<ReactOTPContract />);
+  }
 } else if (query.get("scenario") === "upload-reset") {
   if (query.get("framework") === "vue")
     createApp({

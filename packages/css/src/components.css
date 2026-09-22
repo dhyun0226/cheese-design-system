@@ -699,8 +699,15 @@
   border: 1px solid var(--cheese-border);
   background: var(--cheese-bg);
   border-radius: 50%;
-  font-size: 13px;
+  font-size: var(--cheese-font-size-label);
+  font-weight: var(--cheese-font-weight-semibold);
   line-height: var(--cheese-line-height-control);
+}
+.cheese-step-circle > svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.8;
 }
 .cheese-step[aria-current="step"] .cheese-step-circle {
   background: var(--cheese-brand);
@@ -710,7 +717,7 @@
 .cheese-step-label {
   display: block;
   margin-top: 10px;
-  font-size: 12px;
+  font-size: var(--cheese-font-size-caption);
   color: var(--cheese-text-secondary);
 }
 .cheese-step[aria-current="step"] .cheese-step-label {
@@ -813,31 +820,94 @@
   justify-content: center;
 }
 .cheese-toast-viewport {
+  --cheese-toast-edge: var(--cheese-space-6);
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: min(380px, calc(100vw - 48px));
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cheese-space-3);
+  width: min(
+    calc(380px + var(--cheese-toast-edge) + var(--cheese-toast-edge)),
+    100vw
+  );
+  max-height: 100vh;
+  max-height: 100dvh;
   margin: 0;
-  padding: 0;
+  padding: max(var(--cheese-toast-edge), env(safe-area-inset-top, 0px))
+    max(var(--cheese-toast-edge), env(safe-area-inset-right, 0px))
+    max(var(--cheese-toast-edge), env(safe-area-inset-bottom, 0px))
+    max(var(--cheese-toast-edge), env(safe-area-inset-left, 0px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   list-style: none;
+  pointer-events: none;
   z-index: 150;
 }
 .cheese-toast {
-  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--cheese-space-3);
+  flex: none;
+  min-width: 0;
+  padding: var(--cheese-space-4);
   border: 1px solid var(--cheese-border-subtle);
   border-radius: var(--cheese-radius-card);
   box-shadow: var(--cheese-shadow);
   background: var(--cheese-bg);
   color: var(--cheese-text);
   font-size: 14px;
+  line-height: var(--cheese-line-height-body);
+  pointer-events: auto;
+}
+.cheese-toast-title,
+.cheese-toast-description {
+  grid-column: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .cheese-toast-title {
+  grid-row: 1;
   font-weight: 600;
 }
 .cheese-toast-description {
-  margin-top: 4px;
+  grid-row: 2;
+  margin-top: var(--cheese-space-1);
   color: var(--cheese-text-secondary);
   font-size: 13px;
+}
+.cheese-toast .cheese-toast-close {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: start;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cheese-radius-control);
+  background: transparent;
+  color: var(--cheese-text-secondary);
+  cursor: pointer;
+}
+.cheese-toast-close:hover {
+  background: var(--cheese-muted);
+}
+.cheese-toast-close svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  stroke-width: 1.8;
+}
+@media (max-width: 479px) {
+  .cheese-toast-viewport {
+    --cheese-toast-edge: var(--cheese-space-4);
+  }
 }
 .cheese-scroll-area {
   overflow: hidden;

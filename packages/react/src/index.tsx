@@ -29,7 +29,7 @@ export {
   type DatePickerProps,
 } from "./Calendar.js";
 import * as P from "radix-ui";
-import { Check, Minus, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, Minus, ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react";
 export {
   Search,
   Plus,
@@ -935,29 +935,36 @@ export const ToastProvider = P.Toast.Provider;
 export function Toast({
   title,
   description,
+  className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof P.Toast.Root> & {
   title: string;
   description?: string;
 }) {
   return (
-    <P.Toast.Root {...props} className="cheese-toast">
+    <P.Toast.Root {...props} className={cx("cheese-toast", className)}>
       <P.Toast.Title className="cheese-toast-title">{title}</P.Toast.Title>
       {description && (
         <P.Toast.Description className="cheese-toast-description">
           {description}
         </P.Toast.Description>
       )}
-      <P.Toast.Close asChild>
-        <Button variant="ghost" size="sm">
-          닫기
-        </Button>
+      <P.Toast.Close className="cheese-toast-close" aria-label="닫기">
+        <X aria-hidden="true" />
       </P.Toast.Close>
     </P.Toast.Root>
   );
 }
-export function ToastViewport() {
-  return <P.Toast.Viewport className="cheese-toast-viewport" />;
+export function ToastViewport({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.Toast.Viewport> = {}) {
+  return (
+    <P.Toast.Viewport
+      {...props}
+      className={cx("cheese-toast-viewport", className)}
+    />
+  );
 }
 export function List({ children }: { children: React.ReactNode }) {
   return <ul className="cheese-list">{children}</ul>;

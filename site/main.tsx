@@ -337,20 +337,37 @@ function OriginIllustration() {
     <div className="origin-illustration">
       <span className="origin-coordinate">A SMALL DISCOVERY</span>
       <div className="origin-scene">
-        <img
-          className="origin-starship-logo"
-          src={starshipLogo}
-          alt="STARSHIP Entertainment 공식 로고"
-          width="400"
-          height="107"
-        />
-        <svg viewBox="0 0 480 320" fill="none" aria-hidden="true">
-          <path className="origin-orbit" d="M88 151C46 240 174 283 244 213" />
-          <circle className="origin-moon" cx="332" cy="178" r="83" />
+        <svg
+          viewBox="0 0 480 320"
+          fill="none"
+          role="img"
+          aria-label="STARSHIP 로고의 A 모양 우주선이 치즈 달을 향해 올라가는 장면"
+        >
+          <circle className="origin-moon" cx="342" cy="157" r="83" />
           <circle className="origin-crater" cx="300" cy="147" r="15" />
           <circle className="origin-crater" cx="366" cy="173" r="22" />
           <circle className="origin-crater" cx="316" cy="214" r="11" />
           <circle className="origin-crater" cx="356" cy="123" r="7" />
+          <path
+            className="origin-trail"
+            d="M131 257C140 229 148 209 158 188M117 244l9-23"
+          />
+          <g className="origin-flight">
+            <g transform="rotate(16 181 119)">
+              <svg
+                className="origin-rocket"
+                x="146"
+                y="56"
+                width="70"
+                height="126"
+                viewBox="100 10 50 90"
+                overflow="hidden"
+                aria-hidden="true"
+              >
+                <image href={starshipLogo} width="400" height="107" />
+              </svg>
+            </g>
+          </g>
           <path className="origin-cheese" d="m252 227 25-9 16 11-41 6v-8Z" />
           <path className="origin-cheese" d="M252 235v14h41v-20l-41 6Z" />
           <circle className="origin-cheese-hole" cx="261" cy="241" r="2" />
@@ -419,7 +436,7 @@ function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            로고 출처 · STARSHIP 공식 CI
+            우주선 원본 · STARSHIP 공식 CI
             <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
             <span className="cheese-sr-only"> (새 창)</span>
           </a>

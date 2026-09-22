@@ -332,13 +332,6 @@ a {
   display: block;
   width: 100%;
 }
-.origin-starship-logo {
-  position: absolute;
-  left: 10%;
-  top: 26%;
-  width: 41%;
-  height: auto;
-}
 .origin-coordinate,
 .origin-caption {
   position: absolute;
@@ -353,10 +346,28 @@ a {
 .origin-caption {
   bottom: 24px;
 }
-.origin-orbit {
-  stroke: var(--cheese-border);
-  stroke-width: 1.5;
-  stroke-dasharray: 3 7;
+.origin-flight {
+  transform: translate(0, 0);
+  animation: cheese-origin-launch 2.2s cubic-bezier(0.2, 0.65, 0.2, 1) 0.15s
+    both;
+}
+.origin-trail {
+  stroke: var(--cheese-brand);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+@keyframes cheese-origin-launch {
+  from {
+    transform: translate(-34px, 82px);
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .origin-flight {
+    animation: none;
+  }
 }
 .origin-moon {
   fill: var(--cheese-muted);

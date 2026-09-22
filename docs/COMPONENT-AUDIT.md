@@ -38,7 +38,7 @@
 | Toggle, ToggleGroup, Slider                                                                           | 선택 상태·키보드, 선택 하단선 없음, 슬라이더 값 변경                                                |
 | Pin/OTP Input, TagsInput, Editable                                                                    | 입력 필터/길이·초기화, 중복/IME/삭제, 편집 저장/취소                                                |
 | Combobox, AsyncCombobox, MultiSelect, Listbox                                                         | 검색/빈 결과/선택, IME, 다중 선택 제한·폼 값·reset, 요청 취소·응답 순서·재시도                      |
-| ColorPicker, Rating                                                                                   | 라벨 있는 선택·키보드, 읽기 전용 상태                                                               |
+| ColorPicker, Rating                                                                                   | 라벨 있는 선택·키보드·disabled. Rating의 readOnly API는 현재 미지원                                  |
 | Calendar, RangeCalendar, DatePicker, DateRangePicker                                                  | 날짜/범위/금지 날짜, 팝업, 폼 validation/reset/readonly/ref                                         |
 | DateRangeField, TimeRangeField, MonthPicker, YearPicker                                               | 역전 범위·제출·reset, 월/연도 경계 내 이동                                                          |
 | Dialog, AlertDialog, Drawer, BottomSheet                                                              | 열기/닫기, 포커스 이동·복원, 취소 우선, 작은 화면 경계, 열린 상태 axe                               |

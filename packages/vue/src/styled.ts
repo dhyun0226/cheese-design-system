@@ -159,6 +159,10 @@ export const ToastDescription: typeof P.ToastDescription = styled(
   P.ToastDescription,
   "cheese-toast-description",
 );
+export const ToastClose: typeof P.ToastClose = styled(
+  P.ToastClose,
+  "cheese-toast-close",
+);
 export const ToastViewport: typeof P.ToastViewport = styled(
   P.ToastViewport,
   "cheese-toast-viewport",

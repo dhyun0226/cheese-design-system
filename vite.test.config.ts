@@ -17,6 +17,8 @@ export default mergeConfig(
           dateNumberFields: "tests/fixtures/date-number-fields.html",
           scrollbars: "tests/fixtures/scrollbars.html",
           navigationPagination: "tests/fixtures/navigation-pagination.html",
+          toastLayout: "tests/fixtures/toast-layout.html",
+          searchValidation: "tests/fixtures/search-validation.html",
         },
       },
     },

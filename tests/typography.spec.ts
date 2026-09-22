@@ -48,6 +48,7 @@ test("button, badge, tab and toggle text boxes stay vertically centered", async 
     ["tabs", ".cheese-tabs-trigger"],
     ["toggle-group", ".cheese-toggle"],
     ["calendar", ".rdp-day_button"],
+    ["stepper", ".cheese-step-circle"],
   ]) {
     await page.goto("/#/components/" + route);
     const elements = page.locator(".demo-stage").locator(selector);
@@ -79,6 +80,34 @@ test("button, badge, tab and toggle text boxes stay vertically centered", async 
     for (const item of offsets)
       expect(item.offset, `${route}: ${item.text}`).toBeLessThanOrEqual(1);
   }
+});
+
+test("stepper numbers and completion icons use shared typography and stay centered", async ({
+  page,
+}) => {
+  await page.goto("/#/components/stepper");
+  const circles = page.locator(".cheese-step-circle");
+  await expect(circles).toHaveCount(3);
+  await expect(circles.first()).toHaveCSS("font-family", /Pretendard/);
+  await expect(circles.first()).toHaveCSS("font-size", "13px");
+  await expect(circles.first()).toHaveCSS("font-weight", "600");
+  await page.getByRole("button", { name: "다음 단계" }).click();
+  const complete = circles.first().locator("svg");
+  await expect(complete).toHaveCSS("width", "16px");
+  await expect(complete).toHaveCSS("height", "16px");
+  await expect(complete).toHaveCSS("stroke-width", "1.8px");
+  const cell = await circles.first().boundingBox();
+  const icon = await complete.boundingBox();
+  expect(
+    Math.abs(icon!.x + icon!.width / 2 - cell!.x - cell!.width / 2),
+  ).toBeLessThanOrEqual(0.5);
+  expect(
+    Math.abs(icon!.y + icon!.height / 2 - cell!.y - cell!.height / 2),
+  ).toBeLessThanOrEqual(0.5);
+  await expect(
+    page.locator('.cheese-step[aria-current="step"] .cheese-step-label'),
+  ).toHaveText("대상자 선택");
+  await expect(circles.nth(1)).toHaveCSS("font-weight", "600");
 });
 
 test("API references use real badges and preserve the document type hierarchy", async ({

@@ -216,6 +216,19 @@ function key(event: KeyboardEvent) {
 function blur(event: FocusEvent) {
   if (!root.value?.contains(event.relatedTarget as Node)) open.value = false;
 }
+function handleInvalid(event: Event) {
+  invalid.value = true;
+  const target = event.currentTarget as HTMLInputElement;
+  const first =
+    target.form &&
+    Array.from(target.form.elements).find((element) => {
+      const control = element as HTMLInputElement;
+      return (
+        control.willValidate && control.validity && !control.validity.valid
+      );
+    });
+  if (!first || first === target) input.value?.focus();
+}
 </script>
 <template>
   <div ref="root" class="cheese-field cheese-combobox" @focusout="blur">
@@ -283,10 +296,7 @@ function blur(event: FocusEvent) {
       :value="selected.length ? 'selected' : ''"
       required
       :disabled="disabled"
-      @invalid.prevent="
-        invalid = true;
-        input?.focus();
-      "
+      @invalid.prevent="handleInvalid"
     />
     <div v-if="open && !disabled" class="cheese-combobox-popup">
       <div

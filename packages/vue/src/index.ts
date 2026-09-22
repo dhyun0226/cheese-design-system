@@ -58,7 +58,6 @@ export {
   HoverCardRoot,
   HoverCardTrigger,
   ToastProvider,
-  ToastClose,
   ToastAction,
 } from "reka-ui";
 export {

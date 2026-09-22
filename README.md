@@ -84,6 +84,9 @@ npm pack --workspace @cheese/tokens --pack-destination artifacts
 
 ## 검증 및 배포
 
+작업 재개는 [인수인계](docs/HANDOFF.md), 미완료 과제와 React/Vue 지원 차이는
+[업무 화면 도입 점검](docs/WORKPLACE-AUDIT-2026-09-22.md)부터 확인하세요.
+
 `npm run check`: 패키지·문서 빌드 → TypeScript → 카탈로그 import 계약 → SSR 계약 → 독립 tarball 소비자 → 3개 브라우저 테스트.
 
 - 코드 보기에는 실행 예제 파일 자체를 표시합니다.

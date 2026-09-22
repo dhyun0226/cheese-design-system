@@ -287,7 +287,18 @@ export function SearchSelect({
           onInvalid={(event) => {
             event.preventDefault();
             setInvalid(true);
-            input.current?.focus();
+            const target = event.currentTarget;
+            const first =
+              target.form &&
+              Array.from(target.form.elements).find((element) => {
+                const control = element as HTMLInputElement;
+                return (
+                  control.willValidate &&
+                  control.validity &&
+                  !control.validity.valid
+                );
+              });
+            if (!first || first === target) input.current?.focus();
           }}
         />
       )}

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { PinInput, Button } from "@cheese/react";
+const initialStatus = "테스트용입니다. 실제 인증 코드는 전송하지 않습니다.";
 export default function Example() {
-  const [status, setStatus] = useState(
-    "테스트용입니다. 실제 인증 코드는 전송하지 않습니다.",
-  );
+  const [status, setStatus] = useState(initialStatus);
   return (
     <form
       className="cheese-stack"
+      onReset={() => setStatus(initialStatus)}
       onSubmit={(e) => {
         e.preventDefault();
         setStatus("6자리 입력이 확인되었습니다. 서버 검증은 별도입니다.");
