@@ -36,6 +36,7 @@ import VueDemoSource from "./VueDemo.vue?raw";
 import Home, { EvaluationPreview } from "./Home";
 import Logo from "./Logo";
 import WorkflowDemo from "./WorkflowDemo";
+import { canLeaveWorkflow } from "./workflow-navigation";
 import { DateField } from "@cheese/react";
 const modules = import.meta.glob<{ default: React.ComponentType }>(
   "./examples/*.tsx",
@@ -61,7 +62,11 @@ function useRoute() {
     );
   const [route, setRoute] = useState(readRoute);
   useEffect(() => {
-    const listener = () => {
+    const listener = (event: HashChangeEvent) => {
+      if (!canLeaveWorkflow(event.newURL)) {
+        history.replaceState(history.state, "", event.oldURL);
+        return;
+      }
       setRoute(readRoute());
       window.scrollTo(0, 0);
     };

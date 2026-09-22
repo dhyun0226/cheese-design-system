@@ -34,6 +34,7 @@ import {
   type WorkflowRecord,
 } from "./workflow-demo";
 import "./workflow-demo.css";
+import { registerWorkflowRouteBlocker } from "./workflow-navigation";
 
 export default function WorkflowDemo() {
   const [initial] = useState(readWorkflowLocation);
@@ -47,6 +48,7 @@ export default function WorkflowDemo() {
   const [phase, setPhase] = useState<"editing" | "saving" | "saved">("editing");
   const [mode, setMode] = useState("retry");
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmLeave, setConfirmLeave] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [attachments, setAttachments] = useState<
     Record<string, AttachmentItem[]>
@@ -61,6 +63,9 @@ export default function WorkflowDemo() {
   const failNext = useRef(true);
   const failedDeletes = useRef(new Set<string>());
   const restoreListFocus = useRef(false);
+  const leaveTarget = useRef("");
+  const leaveTrigger = useRef<HTMLElement | null>(null);
+  const allowLeave = useRef(false);
   useEffect(() => {
     const restore = () => {
       const state = readWorkflowLocation();
@@ -97,6 +102,57 @@ export default function WorkflowDemo() {
         draft[key as keyof WorkflowDraft] !==
         editing[key as keyof WorkflowDraft],
     );
+  const protectDraft = dirty && phase !== "saved";
+  useEffect(() => {
+    if (!protectDraft) return;
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+      if (allowLeave.current) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    const blockRoute = (destination: string) => {
+      if (allowLeave.current) return true;
+      leaveTarget.current = destination;
+      setConfirmLeave(true);
+      return false;
+    };
+    const interceptLink = (event: MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      )
+        return;
+      const anchor = (event.target as Element).closest<HTMLAnchorElement>(
+        "a[href]",
+      );
+      if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
+      const destination = new URL(anchor.href);
+      if (
+        destination.origin !== location.origin ||
+        destination.pathname !== location.pathname ||
+        destination.search !== location.search ||
+        !destination.hash.startsWith("#/") ||
+        destination.hash === location.hash
+      )
+        return;
+      if (!blockRoute(destination.href)) {
+        event.preventDefault();
+        leaveTrigger.current = anchor;
+      }
+    };
+    window.addEventListener("beforeunload", beforeUnload);
+    document.addEventListener("click", interceptLink, true);
+    const unregister = registerWorkflowRouteBlocker(blockRoute);
+    return () => {
+      window.removeEventListener("beforeunload", beforeUnload);
+      document.removeEventListener("click", interceptLink, true);
+      unregister();
+    };
+  }, [protectDraft]);
   const update = (field: keyof WorkflowDraft, value: string) => {
     setDraft((previous) => previous && { ...previous, [field]: value });
     setErrors((previous) => ({ ...previous, [field]: undefined }));
@@ -408,6 +464,32 @@ export default function WorkflowDemo() {
                   계속 작성
                 </Button>
                 <Button onClick={back}>변경 사항 버리기</Button>
+              </div>
+            </DialogContent>
+          </DialogRoot>
+          <DialogRoot open={confirmLeave} onOpenChange={setConfirmLeave}>
+            <DialogContent
+              onCloseAutoFocus={(event) => {
+                event.preventDefault();
+                requestAnimationFrame(() => leaveTrigger.current?.focus());
+              }}
+            >
+              <DialogTitle>수정을 중단하고 이동할까요?</DialogTitle>
+              <DialogDescription>
+                저장하지 않은 입력이 사라집니다.
+              </DialogDescription>
+              <div className="workflow-actions">
+                <Button variant="weak" onClick={() => setConfirmLeave(false)}>
+                  계속 작성
+                </Button>
+                <Button
+                  onClick={() => {
+                    allowLeave.current = true;
+                    window.location.assign(leaveTarget.current);
+                  }}
+                >
+                  이동하기
+                </Button>
               </div>
             </DialogContent>
           </DialogRoot>

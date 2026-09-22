@@ -92,6 +92,11 @@ const dirty = computed(() => {
     )
   );
 });
+function beforeUnload(event: BeforeUnloadEvent) {
+  if (stage.value !== "edit" || !dirty.value) return;
+  event.preventDefault();
+  event.returnValue = "";
+}
 const summaryErrors = computed<ErrorSummaryItem[]>(() => [
   ...(Object.keys(fieldIds) as (keyof WorkflowDraft)[]).flatMap((key) =>
     errors.value[key]
@@ -131,12 +136,16 @@ function restoreLocation() {
   query.value = restored.query;
   statusFilter.value = restored.status;
 }
-onMounted(() => window.addEventListener("popstate", restoreLocation));
+onMounted(() => {
+  window.addEventListener("popstate", restoreLocation);
+  window.addEventListener("beforeunload", beforeUnload);
+});
 onBeforeUnmount(() => {
   mounted = false;
   revision++;
   saveController?.abort();
   window.removeEventListener("popstate", restoreLocation);
+  window.removeEventListener("beforeunload", beforeUnload);
 });
 
 function filterStatus(value: string) {
