@@ -27,8 +27,8 @@
   background: var(--cheese-text);
   color: var(--cheese-bg);
   font-size: 14px;
-  font-weight: 550;
-  line-height: 1.2;
+  font-weight: var(--cheese-font-weight-semibold);
+  line-height: var(--cheese-line-height-control);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
@@ -88,7 +88,7 @@
   border: 1px solid var(--cheese-control-border);
   border-radius: var(--cheese-radius-control);
   font-size: 14px;
-  line-height: 20px;
+  line-height: var(--cheese-line-height-control);
   transition:
     border-color var(--cheese-duration),
     box-shadow var(--cheese-duration);
@@ -113,6 +113,7 @@
 }
 .cheese-textarea {
   min-height: 112px;
+  line-height: var(--cheese-line-height-body);
   resize: vertical;
 }
 .cheese-field {
@@ -122,13 +123,13 @@
 }
 .cheese-label {
   font-size: 14px;
-  font-weight: 550;
+  font-weight: var(--cheese-font-weight-medium);
   color: var(--cheese-text);
 }
 .cheese-help {
   margin: 0;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: var(--cheese-line-height-body);
   color: var(--cheese-text-secondary);
 }
 .cheese-help[data-error="true"] {
@@ -146,15 +147,17 @@
   display: inline-flex;
   align-items: center;
   width: fit-content;
+  min-height: 24px;
+  max-width: 100%;
   gap: 5px;
   padding: 4px 9px;
   border-radius: var(--cheese-radius-item);
   font-size: 12px;
-  line-height: 16px;
-  font-weight: 550;
+  line-height: var(--cheese-line-height-control);
+  font-weight: var(--cheese-font-weight-medium);
   background: var(--cheese-muted);
   color: var(--cheese-text-secondary);
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 .cheese-badge[data-tone="brand"] {
   background: var(--cheese-brand-soft);
@@ -173,6 +176,7 @@
   align-items: center;
   gap: 10px;
   font-size: 14px;
+  line-height: var(--cheese-line-height-control);
   cursor: pointer;
 }
 .cheese-checkbox,
@@ -263,16 +267,21 @@
   border-radius: var(--cheese-radius-control);
 }
 .cheese-tabs-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
   padding: 7px 14px;
   border: 0;
   border-radius: var(--cheese-radius-item);
   background: transparent;
   color: var(--cheese-text-secondary);
   font-size: 13px;
-  line-height: 20px;
+  line-height: var(--cheese-line-height-control);
   cursor: pointer;
 }
 .cheese-tabs-trigger[data-state="active"] {
+  font-weight: var(--cheese-font-weight-semibold);
   background: var(--cheese-bg);
   color: var(--cheese-text);
   box-shadow: var(--cheese-shadow-card);
@@ -328,7 +337,7 @@
   margin: 0 0 8px;
   font-size: 22px;
   letter-spacing: -0.5px;
-  font-weight: 650;
+  font-weight: var(--cheese-font-weight-semibold);
 }
 .cheese-dialog-description {
   margin: 0 0 24px;
@@ -365,6 +374,7 @@
   padding: 9px 12px;
   border-radius: var(--cheese-radius-item);
   font-size: 13px;
+  line-height: var(--cheese-line-height-control);
   outline: none;
   cursor: default;
 }
@@ -401,7 +411,7 @@
   background: none;
   text-align: left;
   font-size: 14px;
-  font-weight: 550;
+  font-weight: var(--cheese-font-weight-medium);
   color: var(--cheese-text);
   cursor: pointer;
 }
@@ -477,6 +487,7 @@
   background: var(--cheese-muted);
   color: var(--cheese-text-secondary);
   font-size: 13px;
+  line-height: var(--cheese-line-height-control);
   font-weight: 600;
   overflow: hidden;
 }
@@ -512,7 +523,7 @@
 .cheese-table th {
   background: var(--cheese-surface);
   color: var(--cheese-text-secondary);
-  font-weight: 500;
+  font-weight: var(--cheese-font-weight-semibold);
 }
 .cheese-table :is(th, td) {
   padding: 16px 20px;
@@ -620,6 +631,7 @@
   background: var(--cheese-bg);
   border-radius: 50%;
   font-size: 13px;
+  line-height: var(--cheese-line-height-control);
 }
 .cheese-step[aria-current="step"] .cheese-step-circle {
   background: var(--cheese-brand);
@@ -632,7 +644,14 @@
   font-size: 12px;
   color: var(--cheese-text-secondary);
 }
+.cheese-step[aria-current="step"] .cheese-step-label {
+  color: var(--cheese-text);
+  font-weight: var(--cheese-font-weight-semibold);
+}
 .cheese-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 36px;
   padding: 8px 12px;
   background: var(--cheese-muted);
@@ -640,7 +659,8 @@
   border-radius: var(--cheese-radius-item);
   color: var(--cheese-text-secondary);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: var(--cheese-font-weight-medium);
+  line-height: var(--cheese-line-height-control);
 }
 .cheese-toggle[data-state="on"] {
   background: var(--cheese-brand-soft);
@@ -674,6 +694,7 @@
   padding: 8px 10px;
   border-radius: var(--cheese-radius-item);
   cursor: pointer;
+  line-height: var(--cheese-line-height-control);
 }
 .cheese-tree-row:hover {
   background: var(--cheese-muted);

@@ -63,7 +63,7 @@
   padding: 10px 12px;
   border-radius: var(--cheese-radius-item);
   font-size: 14px;
-  line-height: 1.4;
+  line-height: var(--cheese-line-height-control);
   cursor: pointer;
   user-select: none;
   outline-offset: -2px;
@@ -74,6 +74,7 @@
 }
 .cheese-option-copy small {
   font-size: 12px;
+  line-height: var(--cheese-line-height-body);
   color: var(--cheese-text-secondary);
 }
 .cheese-option svg {
@@ -195,6 +196,7 @@
   color: var(--cheese-text);
   font: inherit;
   font-size: 14px;
+  line-height: var(--cheese-line-height-control);
   padding: 5px;
 }
 .cheese-tag {
@@ -207,6 +209,8 @@
   background: var(--cheese-surface-hover);
   color: var(--cheese-text);
   font-size: 13px;
+  min-height: 28px;
+  line-height: var(--cheese-line-height-control);
 }
 .cheese-tag button {
   display: inline-flex;
@@ -349,7 +353,7 @@
   align-items: center;
   justify-content: space-between;
   font-size: 14px;
-  font-weight: 550;
+  font-weight: var(--cheese-font-weight-semibold);
 }
 .cheese-period-grid {
   display: grid;
@@ -357,6 +361,9 @@
   gap: 6px;
 }
 .cheese-period-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 40px;
   padding: 8px;
   color: var(--cheese-text);
@@ -364,6 +371,7 @@
   border: 1px solid transparent;
   border-radius: var(--cheese-radius-item);
   font-size: 14px;
+  line-height: var(--cheese-line-height-control);
   cursor: pointer;
 }
 .cheese-period-item:hover:not(:disabled) {

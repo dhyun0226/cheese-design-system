@@ -171,7 +171,7 @@ input {
   border: 0;
   background: transparent;
   color: var(--cheese-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   padding: 8px 12px;
   cursor: pointer;
@@ -197,7 +197,7 @@ input {
 }
 .nav-group a {
   padding: 7px 12px 7px 23px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 19px;
   border-radius: 6px;
   text-decoration: none;
@@ -559,13 +559,13 @@ input {
   line-height: 1.15;
   letter-spacing: -1.8px;
   margin: 20px 0 18px;
-  font-weight: 600;
+  font-weight: var(--cheese-font-weight-bold);
 }
 .page-heading > p {
   margin: 0;
   max-width: 650px;
   line-height: 1.8;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--cheese-text-secondary);
 }
 .doc-crumb {
@@ -586,7 +586,7 @@ input {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--cheese-text-secondary);
   margin: 0 0 44px;
 }
@@ -638,29 +638,21 @@ input {
 .doc-section > h2 {
   margin: 0 0 18px;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: var(--cheese-font-weight-semibold);
   letter-spacing: -0.5px;
 }
-.doc-details p {
-  font-size: 13px;
-  line-height: 1.9;
+.doc-details p:not(.cheese-help) {
+  font-size: 15px;
+  line-height: 1.7;
   margin: 0 0 20px;
   color: var(--cheese-text-secondary);
 }
 .api-list {
   display: flex;
+  align-items: flex-start;
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 20px;
-}
-.api-list code {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  background: var(--cheese-muted);
-  border: 0;
-  padding: 5px 8px;
-  border-radius: 5px;
-  font-size: 11px;
 }
 .doc-bottom {
   display: flex;

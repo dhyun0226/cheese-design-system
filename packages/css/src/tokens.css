@@ -52,7 +52,11 @@
   --cheese-font-size-heading: 20px;
   --cheese-font-size-title: 32px;
   --cheese-font-size-display: 48px;
-  --cheese-line-height-control: 1.2;
+  --cheese-line-height-control: normal;
   --cheese-line-height-body: 1.5;
-  --cheese-line-height-heading: 1.4;
+  --cheese-line-height-heading: 1.25;
+  --cheese-font-weight-regular: 400;
+  --cheese-font-weight-medium: 500;
+  --cheese-font-weight-semibold: 600;
+  --cheese-font-weight-bold: 700;
 }

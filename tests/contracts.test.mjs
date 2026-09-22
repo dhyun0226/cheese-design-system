@@ -175,6 +175,24 @@ test("brand tokens remain explicit and orange is absent", () => {
   assert.equal(tokens.semantic.success, "{color.spaceBlack}");
 });
 
+test("typography separates native control leading from reading rhythm", () => {
+  assert.equal(tokens.font.lineHeight.control, "normal");
+  assert.equal(tokens.font.lineHeight.body, 1.5);
+  assert.equal(tokens.font.lineHeight.heading, 1.25);
+  assert.deepEqual(tokens.font.weight, {
+    regular: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700,
+  });
+  const css = readFileSync(
+    new URL("../packages/css/src/tokens.css", import.meta.url),
+    "utf8",
+  );
+  assert.match(css, /--cheese-font-weight-semibold: 600;/);
+  assert.doesNotMatch(css, /--cheese-font-weight-\w+: \d+px/);
+});
+
 test("quiet white inputs preserve contrast for focus and selection cues", () => {
   const luminance = (hex) => {
     const channels = hex

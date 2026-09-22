@@ -219,9 +219,23 @@ for (const framework of ["react", "vue"]) {
   test(`${framework} upload cancel and queue limits do not report false completion`, async ({
     page,
   }) => {
+    let markStarted!: () => void;
+    let releaseResponse!: () => void;
+    let markFinished!: () => void;
+    const started = new Promise<void>((resolve) => {
+      markStarted = resolve;
+    });
+    const responseGate = new Promise<void>((resolve) => {
+      releaseResponse = resolve;
+    });
+    const finished = new Promise<void>((resolve) => {
+      markFinished = resolve;
+    });
     await page.route("**/api/upload?*", async (route) => {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      markStarted();
+      await responseGate;
       await route.fulfill({ status: 200, body: "ok" }).catch(() => {});
+      markFinished();
     });
     await page.goto(`/tests/fixtures/business.html?framework=${framework}`);
     const input = page.getByLabel("Contract upload 파일 선택"),
@@ -250,8 +264,18 @@ for (const framework of ["react", "vue"]) {
     await page
       .getByRole("button", { name: "a.txt 업로드", exact: true })
       .click();
-    await page.getByRole("button", { name: "a.txt 업로드 취소" }).click();
-    await page.waitForTimeout(950);
+    // Wait for a real pending request, then cancel before releasing the server.
+    // A fixed 800ms response can beat WebKit's click under CPU contention.
+    try {
+      await started;
+      await page.getByRole("button", { name: "a.txt 업로드 취소" }).click();
+      await expect(
+        page.getByRole("button", { name: "a.txt 재시도" }),
+      ).toBeVisible();
+    } finally {
+      releaseResponse();
+    }
+    await finished;
     await expect(
       page.getByRole("button", { name: "a.txt 재시도" }),
     ).toBeVisible();

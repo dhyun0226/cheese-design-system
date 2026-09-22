@@ -73,6 +73,9 @@
   height: 38px;
 }
 .cheese-calendar :is(.rdp-day_button, .cheese-calendar-day) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 36px;
   height: 36px;
   padding: 0;
@@ -81,6 +84,7 @@
   color: var(--cheese-text);
   font-size: 13px;
   font-family: var(--cheese-font-family);
+  line-height: var(--cheese-line-height-control);
   background: none;
   cursor: pointer;
 }

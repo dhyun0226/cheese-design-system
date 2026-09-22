@@ -8,11 +8,22 @@
 .cheese-root {
   color: var(--cheese-text);
   font-size: var(--cheese-font-size-body);
+  font-weight: var(--cheese-font-weight-regular);
   line-height: var(--cheese-line-height-body);
   -webkit-font-smoothing: antialiased;
 }
 .cheese-root :where(button, input, textarea, select) {
   font: inherit;
+}
+/* Single-line controls must not inherit a paragraph's leading. Keep the
+   native font line box; component height/padding and flex do the alignment. */
+.cheese-root :where(button, input, select),
+:where(button, input, select):is([class^="cheese-"], [class*=" cheese-"]) {
+  line-height: var(--cheese-line-height-control);
+}
+.cheese-root :where(h1, h2, h3) {
+  line-height: var(--cheese-line-height-heading);
+  font-weight: var(--cheese-font-weight-semibold);
 }
 :where([class^="cheese-"], [class*=" cheese-"]):focus-visible {
   outline: 2px solid var(--cheese-focus);

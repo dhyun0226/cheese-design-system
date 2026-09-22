@@ -20,10 +20,11 @@ for (const [group, values] of Object.entries({
   radius: t.radius,
   "font-size": t.font.size,
   "line-height": t.font.lineHeight,
+  "font-weight": t.font.weight,
 })) {
   for (const [k, v] of Object.entries(values))
     lines.push(
-      `  --cheese-${group}-${k}: ${v}${group === "line-height" ? "" : "px"};`,
+      `  --cheese-${group}-${k}: ${v}${["line-height", "font-weight"].includes(group) ? "" : "px"};`,
     );
 }
 const css =

@@ -593,9 +593,12 @@ function ComponentPage({ entry }: { entry: Entry }) {
             <section>
               <h2>주요 API</h2>
               <div className="api-list">
-                {entry.api.split(" · ").map((s) => (
-                  <code key={s}>{s}</code>
-                ))}
+                {entry.api
+                  .split(/\s*[·/]\s*/)
+                  .filter(Boolean)
+                  .map((s, index) => (
+                    <Badge key={`${s}-${index}`}>{s}</Badge>
+                  ))}
               </div>
               <p className="cheese-help">
                 전체 타입은 패키지의 TypeScript 선언을 확인하세요. React는
@@ -813,14 +816,21 @@ function Foundations() {
         </div>
         <Table
           caption="기본 타이포그래피 토큰"
-          headers={["역할", "크기", "용도"]}
+          headers={["역할", "크기 / 굵기", "용도"]}
           rows={[
-            ["Caption", "12px", "보조 설명"],
-            ["Body", "14px", "입력 · 본문"],
-            ["Heading", "20px", "섹션 제목"],
-            ["Title", "32px", "제품 제목"],
+            ["Caption", "12–13px / 400–500", "배지 · 보조 설명"],
+            ["Body", "14–16px / 400", "입력 · 읽는 본문"],
+            ["Action", "13–14px / 600", "버튼 · 선택된 탭"],
+            ["Heading", "20px / 600", "섹션 제목"],
+            ["Title", "32–48px / 700", "페이지 제목"],
           ]}
         />
+        <p>
+          버튼·배지·입력 등 단일 행 컨트롤은 줄 높이를 normal로 두고, 높이와
+          중앙 정렬로 위치를 맞춥니다. 여러 줄 본문은 1.5, 제목은 1.25를
+          기본으로 사용합니다. 줄 높이를 글자를 위아래로 옮기는 보정값으로
+          사용하지 않습니다.
+        </p>
       </section>
       <section className="doc-section">
         <h2>Space & shape</h2>

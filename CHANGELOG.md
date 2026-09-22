@@ -9,6 +9,9 @@
 - Input/Select/Tags는 흰색 + 은은한 1px 전체 경계(#CECECE), hover는 #BBBBBB. 하단선·회색 채움·겹친 그림자 없음. 포커스는 중립색 경계에 골드 외곽선을 붙이며 사이트 검색도 같은 패키지 스타일 사용.
 - NativeSelect의 포커스/비활성 상태에서 배경 화살표 보존. NavigationMenu의 hover 구분, 꺼진 Switch의 중립색 트랙, 사용자 class 순서에 독립적인 reduced-motion 적용.
 - 전체 69개 카탈로그에 컨트롤 Pretendard 검사 추가. 입력 경계/크기/Tags 포커스 및 React/Vue 네이티브 선택창 상태를 회귀 검사.
+- 업로드 취소 회귀 검사를 요청/응답 게이트로 동기화하여 실행 속도에 따른 타이머 경쟁 제거.
+- 단일 행 control leading을 normal로 통일하고 고정/최소 높이와 flex 중앙 정렬 사용. 본문 1.5/제목 1.25 분리, 굵기 토큰 400/500/600/700 추가. `lineHeight.control`을 숫자가 아닌 CSS 값으로 사용해야 함.
+- 주요 API를 실제 Badge로 표시하고 문서의 제목·섹션·본문·보조 정보 크기/굵기 계층 보강. 단일 행 정렬·React/Vue 소비자·API 배지 회귀 검사 추가.
 - 체크박스·캘린더·기간 선택의 진한 둘레선을 제거하고 체크/밑줄로 상태 보완. 골드와 Pretendard 유지.
 - 대비 강화/강제 색상 지원, 포커스 보조선, 읽기 전용·비활성·오류 상태 보강. 상세 계약: `docs/VISUAL-FOUNDATION.md`.
 

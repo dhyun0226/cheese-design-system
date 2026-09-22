@@ -54,6 +54,20 @@ radius: item 8 / control 10 / card 16 / overlay 20. 기존 token API는 보존�
 
 ## 회귀 방지
 
+### 타이포그래피와 수직 정렬
+
+- `lineHeight.control`은 CSS 값 `normal`. 이전에는 사용되지 않던 control/heading 토큰을 실제 스타일에 연결했다.
+- 버튼 16.8px, 탭/입력 20px, 토글/캘린더 19.5px처럼 섞인 단일 행 leading을 통일한다. 컨트롤 크기는 min-height/height와 대칭 패딩, flex 중앙 정렬로 유지한다.
+- Badge/Tab/Toggle/날짜 숫자/단계 숫자/트리/태그/선택 항목에도 같은 원칙을 적용한다. 개별 글자에 top/translateY 보정을 넣거나 Pretendard 원본 폰트 메트릭을 변경하지 않는다.
+- 여러 줄 Textarea/본문/보조 설명은 `body: 1.5`, 제목은 `heading: 1.25`. 읽기용 줄간격을 전체적으로 제거하지 않는다.
+- `line-height` 생략은 줄상자의 제거가 아니라 상속 또는 `normal`을 뜻한다. flex가 맞추는 것은 줄상자이며, 모든 문자 조합의 실제 잉크 영역까지 동일한 것은 아니다.
+- 굵기 토큰: regular 400 / medium 500 / semibold 600 / bold 700. 입력 값·설명은 regular, 라벨·배지는 medium, 행동·선택·섹션 제목은 semibold, 문서 페이지 제목은 bold.
+- 주요 API는 코드처럼 꾸민 별도 CSS가 아닌 실제 Badge 컴포넌트로 표시한다. 여러 API 이름은 개별 배지로 분리한다.
+- `tests/typography.spec.ts`: 공통 줄 높이, 실제 DOM 텍스트 상자 중심, React/Vue 독립 소비자, API 배지와 문서 크기/굵기 계층을 검사한다. DOM 상자 측정은 모든 언어의 광학적 중앙 정렬 인증이 아니다.
+- 토큰 소비자는 `lineHeight.control`을 숫자로 곱하지 않고 CSS 값으로 사용한다(`normal`로 변경됨).
+
+### 검사
+
 - `tests/surfaces.spec.ts`: 사이트/컴포넌트 Input 일치, 상태, 토큰 재정의,
   무테 Table, 선택 표시, overlay, forced colors, React/Vue 공유 스타일,
   NativeSelect 화살표, hover/focus 크기 고정, Tags 단일 포커스, 모션 감소.
@@ -70,3 +84,4 @@ radius: item 8 / control 10 / card 16 / overlay 20. 기존 token API는 보존�
 - [SEED Text Input](https://seed-design.io/components/text-input): 약한 기본 경계와 명확한 상호작용 상태 구분.
 - [Apple — Materials](https://developer.apple.com/design/human-interface-guidelines/materials): 깊이와 전경/배경 계층의 구분.
 - [W3C — Non-text Contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html): 모든 장식선이 아닌 식별에 필요한 정보의 대비.
+- [MDN — line-height](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/line-height): 줄상자와 normal 값의 의미.
