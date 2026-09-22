@@ -164,20 +164,19 @@
   flex-wrap: wrap;
   padding: 7px;
   min-height: 46px;
-  background: var(--cheese-control-bg);
-  border: 1px solid transparent;
+  background-color: var(--cheese-control-bg);
+  border: 1px solid var(--cheese-control-border);
   border-radius: var(--cheese-radius-control);
   box-shadow: var(--cheese-shadow-control);
+  transition: border-color var(--cheese-duration);
 }
-.cheese-tags:focus-within {
-  outline: 2px solid var(--cheese-focus);
-  outline-offset: 2px;
-  background: var(--cheese-bg);
-  box-shadow: inset 0 0 0 1px var(--cheese-focus-contrast);
+.cheese-tags:where(:hover:not([data-disabled])) {
+  border-color: var(--cheese-control-hover-border);
 }
 .cheese-tags[data-disabled] {
   opacity: 1;
-  background: var(--cheese-control-bg);
+  background-color: var(--cheese-control-bg);
+  border-color: var(--cheese-border);
   box-shadow: none;
 }
 .cheese-tags[data-disabled] .cheese-tag {
@@ -413,7 +412,7 @@
 }
 .cheese-navigation-trigger:hover,
 .cheese-navigation-trigger[data-state="open"] {
-  background: var(--cheese-muted);
+  background: var(--cheese-surface-hover);
 }
 .cheese-navigation-trigger svg {
   transition: transform var(--cheese-duration);

@@ -25,13 +25,13 @@ test("the site search and package inputs share the same resting surface", async 
       await search.evaluate(read, property),
     );
   }
-  await expect(input).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
+  await expect(input).toHaveCSS("border-color", "rgb(206, 206, 206)");
   await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
   await expect(input).toHaveCSS("box-shadow", "none");
   await input.hover();
   await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
   await expect(input).toHaveCSS("box-shadow", "none");
-  await expect(input).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
+  await expect(input).toHaveCSS("border-color", "rgb(187, 187, 187)");
   await expect(input).toHaveCSS("border-radius", "10px");
   await expect(page.getByRole("textbox", { name: "읽기 전용" })).toHaveCSS(
     "box-shadow",
@@ -49,14 +49,13 @@ test("the site search and package inputs share the same resting surface", async 
     );
   }
   await page.locator(".demo-stage").screenshot({
-    path: `artifacts/${test.info().project.name}/borderless-input.png`,
+    path: `artifacts/${test.info().project.name}/surface-input.png`,
   });
   await input.focus();
   await expect(input).toHaveCSS("outline-color", "rgb(255, 201, 40)");
-  await expect(input).toHaveCSS(
-    "box-shadow",
-    "rgb(98, 98, 105) 0px 0px 0px 1px",
-  );
+  await expect(input).toHaveCSS("border-color", "rgb(98, 98, 105)");
+  await expect(input).toHaveCSS("outline-offset", "0px");
+  await expect(input).toHaveCSS("box-shadow", "none");
   await page.screenshot({
     path: `artifacts/${test.info().project.name}/surface-input-focus.png`,
   });
@@ -142,7 +141,7 @@ for (const framework of ["react", "vue"]) {
       const input = page.locator(".cheese-input").first();
       await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
       await expect(input).toHaveCSS("box-shadow", "none");
-      await expect(input).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
+      await expect(input).toHaveCSS("border-color", "rgb(206, 206, 206)");
       await expect(input).toHaveCSS("border-radius", "10px");
       // Theme overrides flow through the token, without adding a component selector.
       await page.addStyleTag({
@@ -155,7 +154,7 @@ for (const framework of ["react", "vue"]) {
   );
 }
 
-test("entry controls share white borderless rest and hover states", async ({
+test("entry controls share white surfaces and restrained rest and hover boundaries", async ({
   page,
 }) => {
   const controls = [
@@ -173,14 +172,108 @@ test("entry controls share white borderless rest and hover states", async ({
     const inputs = page.locator(".demo-stage").locator(selector);
     await expect(inputs.first()).toBeVisible();
     for (const input of await inputs.all()) {
+      await page.mouse.move(0, 0);
       await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
       await expect(input).toHaveCSS("box-shadow", "none");
-      await expect(input).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
+      const inactive = await input.evaluate((el) =>
+        el.matches(
+          ":disabled, [readonly], [data-disabled], [aria-disabled='true']",
+        ),
+      );
+      await expect(input).toHaveCSS(
+        "border-color",
+        inactive ? "rgb(229, 229, 234)" : "rgb(206, 206, 206)",
+      );
       await input.hover();
       await expect(input).toHaveCSS("box-shadow", "none");
       await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
+      await expect(input).toHaveCSS(
+        "border-color",
+        inactive ? "rgb(229, 229, 234)" : "rgb(187, 187, 187)",
+      );
     }
   }
+});
+
+for (const framework of ["react", "vue"]) {
+  test(`${framework} native select preserves its arrow through focus and disabled states`, async ({
+    page,
+  }) => {
+    await page.goto(
+      framework === "react" ? "/#/components/native-select" : "/vue.html",
+    );
+    const select = page.getByRole("combobox", {
+      name: framework === "react" ? "담당 조직" : "조직",
+      exact: true,
+    });
+    await expect(select).toBeVisible();
+    const arrow = await select.evaluate(
+      (el) => getComputedStyle(el).backgroundImage,
+    );
+    expect(arrow).toContain("data:image/svg+xml");
+    await select.focus();
+    await select.hover();
+    await expect(select).toHaveCSS("background-image", arrow);
+    await expect(select).toHaveCSS("border-color", "rgb(98, 98, 105)");
+    await expect(select).toHaveCSS("box-shadow", "none");
+    await expect(select).toHaveCSS("outline-offset", "0px");
+    await select.selectOption("tech");
+    await expect(select).toHaveValue("tech");
+    // Exercise the native disabled state on the actual package node.
+    await select.evaluate((el: HTMLSelectElement) => {
+      el.disabled = true;
+      el.blur();
+    });
+    await expect(select).toBeDisabled();
+    await expect(select).toHaveCSS("background-image", arrow);
+    await expect(select).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  });
+}
+
+test("input focus and hover do not resize fields; tags use one outer focus edge", async ({
+  page,
+}) => {
+  await page.goto("/#/components/input");
+  const input = page.getByRole("textbox", { name: "이름", exact: true });
+  const rest = await input.boundingBox();
+  await input.hover();
+  await input.focus();
+  expect(await input.boundingBox()).toEqual(rest);
+  await expect(input).toHaveCSS("border-color", "rgb(98, 98, 105)");
+  await page.goto("/#/components/tags-input");
+  const tags = page.locator(".cheese-tags:not([data-disabled])");
+  const entry = tags.getByRole("textbox", { name: "프로젝트 태그" });
+  await entry.focus();
+  await tags.hover();
+  await expect(tags).toHaveCSS("outline-color", "rgb(255, 201, 40)");
+  await expect(tags).toHaveCSS("border-color", "rgb(98, 98, 105)");
+  await expect(tags).toHaveCSS("box-shadow", "none");
+  await expect(entry).toHaveCSS("outline-style", "none");
+  await expect(entry).toHaveCSS("box-shadow", "none");
+});
+
+test("navigation hover is distinct from its container and custom class order respects reduced motion", async ({
+  page,
+}) => {
+  await page.goto("/#/components/navigation-menu");
+  const menu = page.getByRole("button", { name: "평가 관리", exact: true });
+  await menu.hover();
+  await expect(menu).toHaveCSS("background-color", "rgb(238, 238, 241)");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#/components/input");
+  const input = page.getByRole("textbox", { name: "이름", exact: true });
+  await input.evaluate((el) => {
+    document
+      .querySelectorAll(".cheese-root")
+      .forEach((root) => root.classList.remove("cheese-root"));
+    el.className = "consumer-field " + el.className;
+  });
+  const durations = await input.evaluate(
+    (el) => getComputedStyle(el).transitionDuration,
+  );
+  expect(
+    durations.split(",").every((value) => parseFloat(value) <= 0.00001),
+  ).toBe(true);
 });
 
 test("stronger contrast and forced colors preserve entry and focus boundaries", async ({
@@ -189,10 +282,8 @@ test("stronger contrast and forced colors preserve entry and focus boundaries", 
   await page.emulateMedia({ contrast: "more" });
   await page.goto("/#/components/input");
   const input = page.getByRole("textbox", { name: "이름", exact: true });
-  await expect(input).toHaveCSS(
-    "box-shadow",
-    "rgb(98, 98, 105) 0px 0px 0px 1px inset",
-  );
+  await expect(input).toHaveCSS("border-color", "rgb(98, 98, 105)");
+  await expect(input).toHaveCSS("box-shadow", "none");
   await page.emulateMedia({ forcedColors: "active" });
   await expect(input).toHaveCSS("border-width", "1px");
   await expect(input).toHaveCSS("box-shadow", "none");
@@ -206,7 +297,7 @@ test("stronger contrast and forced colors preserve entry and focus boundaries", 
   });
 });
 
-test("error cues survive focus without adding a dark surrounding box", async ({
+test("error text and aria survive focus without stacked shadows or bottom strokes", async ({
   page,
 }) => {
   await page.goto("/#/components/field");
@@ -214,30 +305,33 @@ test("error cues survive focus without adding a dark surrounding box", async ({
   const input = page.getByRole("textbox", { name: "회사 이메일" });
   await expect(input).toHaveAttribute("aria-invalid", "true");
   await input.focus();
-  await expect(input).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
-  await expect(input).toHaveCSS("box-shadow", /0px -2px/);
+  await expect(input).toHaveCSS("border-color", "rgb(98, 98, 105)");
+  await expect(input).toHaveCSS("box-shadow", "none");
+  await expect(input).toHaveCSS("border-width", "1px");
   await expect(input).toHaveCSS("outline-color", "rgb(255, 201, 40)");
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
-test("all catalog examples keep their layout at mobile width", async ({
+test("all catalog examples keep their layout at 320px and 390px widths", async ({
   page,
 }) => {
-  test.setTimeout(120000);
-  await page.setViewportSize({ width: 390, height: 844 });
+  test.setTimeout(180000);
   await page.emulateMedia({ reducedMotion: "reduce" });
   const names = readdirSync("site/examples").filter((name) =>
     name.endsWith(".tsx"),
   );
-  for (const name of names) {
-    await page.goto("/#/components/" + name.slice(0, -4));
-    await expect(page.locator(".demo-stage")).toBeVisible();
-    await expect(page.locator("[data-example-loading]")).toHaveCount(0);
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-      name,
-    ).toBe(true);
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const name of names) {
+      await page.goto("/#/components/" + name.slice(0, -4));
+      await expect(page.locator(".demo-stage")).toBeVisible();
+      await expect(page.locator("[data-example-loading]")).toHaveCount(0);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+        `${name} at ${width}px`,
+      ).toBe(true);
+    }
   }
 });

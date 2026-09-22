@@ -18,9 +18,9 @@
   --cheese-border-subtle: #EEEEF1;
   --cheese-border-strong: #8B8B90;
   --cheese-control-bg: var(--cheese-color-lunar-white);
-  --cheese-control-border: #E5E5EA;
+  --cheese-control-border: #CECECE;
   --cheese-control-edge: #8B8B90;
-  --cheese-control-hover-border: #C7C7CC;
+  --cheese-control-hover-border: #BBBBBB;
   --cheese-selection-indicator: #626269;
   --cheese-focus-contrast: #626269;
   --cheese-brand: var(--cheese-color-gold);

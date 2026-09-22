@@ -84,13 +84,13 @@
   min-height: 42px;
   padding: 10px 12px;
   color: var(--cheese-text);
-  background: var(--cheese-control-bg);
-  border: 1px solid transparent;
+  background-color: var(--cheese-control-bg);
+  border: 1px solid var(--cheese-control-border);
   border-radius: var(--cheese-radius-control);
   font-size: 14px;
   line-height: 20px;
   transition:
-    background var(--cheese-duration),
+    border-color var(--cheese-duration),
     box-shadow var(--cheese-duration);
   box-shadow: var(--cheese-shadow-control);
 }
@@ -98,7 +98,18 @@
   color: var(--cheese-text-secondary);
 }
 .cheese-input[aria-invalid="true"] {
-  box-shadow: inset 0 -2px 0 var(--cheese-selection-indicator);
+  border-color: var(--cheese-selection-indicator);
+}
+.cheese-input:where(
+  :hover:not(
+    :disabled,
+    [readonly],
+    [data-disabled],
+    [aria-disabled="true"],
+    [aria-invalid="true"]
+  )
+) {
+  border-color: var(--cheese-control-hover-border);
 }
 .cheese-textarea {
   min-height: 112px;
@@ -225,7 +236,7 @@
   padding: 2px;
   border: 1px solid transparent;
   border-radius: var(--cheese-radius-pill);
-  background: var(--cheese-muted);
+  background: var(--cheese-border);
   cursor: pointer;
   flex: none;
 }
@@ -711,12 +722,6 @@
   align-items: center;
   justify-content: center;
 }
-.cheese-input:focus {
-  outline: 2px solid var(--cheese-focus);
-  outline-offset: 2px;
-  background: var(--cheese-bg);
-  box-shadow: inset 0 0 0 1px var(--cheese-focus-contrast);
-}
 .cheese-select {
   appearance: none;
   padding-right: 40px;
@@ -846,20 +851,19 @@
   }
 }
 
-/* White, borderless entry surfaces. Only focus and errors add a visible cue. */
+/* Read-only and disabled fields stay white; their edge recedes, not their layout. */
 .cheese-input[readonly] {
   box-shadow: none;
-  background: var(--cheese-control-bg);
+  background-color: var(--cheese-control-bg);
+  border-color: var(--cheese-border);
   color: var(--cheese-text-secondary);
 }
 .cheese-input:disabled {
   box-shadow: none;
   opacity: 1;
   color: var(--cheese-text-secondary);
-  background: var(--cheese-control-bg);
-}
-.cheese-input[readonly]:focus {
-  box-shadow: inset 0 0 0 1px var(--cheese-focus-contrast);
+  background-color: var(--cheese-control-bg);
+  border-color: var(--cheese-border);
 }
 .cheese-button[data-variant="weak"]:hover:not(:disabled),
 .cheese-button[data-variant="ghost"]:hover:not(:disabled) {

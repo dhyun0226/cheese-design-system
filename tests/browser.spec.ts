@@ -12,6 +12,25 @@ for (const name of names)
     await expect(page.locator(".demo-stage")).toBeVisible();
     await expect(page.locator("[data-example-loading]")).toHaveCount(0);
     await expect(page.locator("h1")).not.toBeEmpty();
+    await page.evaluate(() => document.fonts.ready);
+    const wrongFonts = await page
+      .locator(
+        ".demo-stage :is(button, input, select, textarea, label, [role='treeitem'], [role='tab'])",
+      )
+      .evaluateAll((elements) =>
+        elements
+          .filter(
+            (el) =>
+              el.getClientRects().length &&
+              !getComputedStyle(el).fontFamily.includes("Pretendard"),
+          )
+          .map((el) => ({
+            tag: el.tagName,
+            text: el.textContent?.slice(0, 60),
+            font: getComputedStyle(el).fontFamily,
+          })),
+      );
+    expect(wrongFonts, name + " control typography").toEqual([]);
     expect(errors).toEqual([]);
     const results = await new AxeBuilder({ page }).analyze();
     expect(

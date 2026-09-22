@@ -13,6 +13,7 @@ for (const framework of ["react", "vue"]) {
     });
     const thumb = toggle.locator(".cheese-switch-thumb");
     await expect(toggle).not.toBeChecked();
+    await expect(toggle).toHaveCSS("background-color", "rgb(229, 229, 234)");
     await expect(toggle).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
     await expect(thumb).toHaveCSS("box-shadow", "none");
     await toggle.hover();

@@ -175,7 +175,7 @@ test("brand tokens remain explicit and orange is absent", () => {
   assert.equal(tokens.semantic.success, "{color.spaceBlack}");
 });
 
-test("borderless white inputs preserve contrast for focus and selection cues", () => {
+test("quiet white inputs preserve contrast for focus and selection cues", () => {
   const luminance = (hex) => {
     const channels = hex
       .slice(1)
@@ -191,7 +191,11 @@ test("borderless white inputs preserve contrast for focus and selection cues", (
   };
   assert.equal(tokens.semantic.controlBg, "{color.lunarWhite}");
   assert.equal(tokens.semantic.shadowControl, "none");
-  assert.ok(contrast(tokens.semantic.controlEdge, tokens.color.lunarWhite) >= 3);
+  assert.equal(tokens.semantic.controlBorder, "#CECECE");
+  assert.equal(tokens.semantic.controlHoverBorder, "#BBBBBB");
+  assert.ok(
+    contrast(tokens.semantic.controlEdge, tokens.color.lunarWhite) >= 3,
+  );
   for (const bg of [tokens.color.lunarWhite, tokens.color.cheeseGold]) {
     assert.ok(contrast(tokens.semantic.focusContrast, bg) >= 3);
     assert.ok(contrast(tokens.semantic.selectionIndicator, bg) >= 3);

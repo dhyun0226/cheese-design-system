@@ -631,6 +631,9 @@ input {
   padding: 48px 0;
   border-bottom: 1px solid var(--cheese-border-subtle);
 }
+.doc-details > * {
+  min-width: 0;
+}
 .doc-details h2,
 .doc-section > h2 {
   margin: 0 0 18px;
@@ -651,6 +654,8 @@ input {
   margin-bottom: 20px;
 }
 .api-list code {
+  max-width: 100%;
+  overflow-wrap: anywhere;
   background: var(--cheese-muted);
   border: 0;
   padding: 5px 8px;
