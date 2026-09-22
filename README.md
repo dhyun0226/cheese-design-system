@@ -10,9 +10,11 @@ STARSHIP Entertainment 공식 제품이 아니며, 실제 직원·평가 데이�
 
 ## 현재 범위
 
-- React 실행 예제 47개. 모든 예제는 빌드된 `@cheese/react`를 직접 import합니다.
-- 카탈로그 64개 중 나머지 17개는 **설계 중**입니다. 기반 라이브러리의 export를 CHEESE 구현 완료로 세지 않습니다.
-- Vue는 공유 CSS + Reka 기반 구성요소와 별도 통합 예제를 제공합니다. React와 동등한 47개 고수준 API를 제공하는 것은 아닙니다.
+- React 실행 예제 **69개 / 카탈로그 69개**. 모든 예제는 빌드된 `@cheese/react`를 직접 import합니다.
+- 미구현 17개와 커스텀 Select를 추가했습니다. 검색·태그·인증코드·평점·기간·메뉴·패널·캐러셀을 각 상세 페이지에서 실행할 수 있습니다.
+- 서버 검색, 다중 선택, 서버/로컬 Data Table, 업로드 큐와 HTTP 어댑터를 React/Vue 양쪽에 제공합니다. [업무 컴포넌트 연동](docs/BUSINESS-COMPONENTS.md)을 먼저 읽으세요. 공개 예제는 가상 데이터와 전송 시뮬레이션입니다.
+- Vue도 신규 컴포넌트를 공유 CSS + Reka/v-model 기반으로 제공하며 별도 Vue 통합 페이지에서 직접 실행합니다. 기존 전체 카탈로그의 React/Vue 고수준 API가 완전히 동일하다는 의미는 아닙니다.
+- 강조색은 Cheese Gold 한 가지이며 나머지는 중립색입니다. 트리·달력·체크·메뉴 아이콘은 Lucide SVG로 통일하고 Pretendard를 적용합니다.
 - Calendar/DatePicker는 React DayPicker 9, Vue Calendar는 Reka + internationalized/date 기반입니다. 한국어·날짜 제한·키보드·기간 선택을 실제 예제로 확인합니다.
 - 입력, 에러 연결, 포커스 관리, 트리 키보드 탐색, 상태 전환, 접근성 자동검사, 모바일 레이아웃을 테스트합니다.
 - 사내 운영 인증이나 모든 브라우저의 접근성 적합성을 보증하는 릴리스는 아닙니다. [도입 체크리스트](docs/ADOPTION.md)를 먼저 확인하세요.

@@ -14,6 +14,7 @@ import {
   CalendarCellTrigger,
 } from "reka-ui";
 import type { DateValue } from "@internationalized/date";
+import { ChevronLeft, ChevronRight } from "@lucide/vue";
 defineOptions({ inheritAttrs: false });
 const model = defineModel<DateValue>();
 withDefaults(
@@ -41,13 +42,12 @@ withDefaults(
   >
     <CalendarHeader class="cheese-calendar-header"
       ><CalendarPrev class="cheese-calendar-nav" aria-label="이전 달"
-        >‹</CalendarPrev
+        ><ChevronLeft :size="16" aria-hidden="true" /></CalendarPrev
       ><CalendarHeading class="cheese-calendar-heading" /><CalendarNext
         class="cheese-calendar-nav"
         aria-label="다음 달"
-        >›</CalendarNext
-      ></CalendarHeader
-    >
+        ><ChevronRight :size="16" aria-hidden="true" /></CalendarNext
+    ></CalendarHeader>
     <CalendarGrid v-for="month in grid" :key="month.value.toString()"
       ><CalendarGridHead
         ><CalendarGridRow

@@ -5,8 +5,8 @@
   --cheese-color-moon-gray: #F4F4F0;
   --cheese-color-gold: #FFC928;
   --cheese-color-gold-weak: #FFF3CC;
-  --cheese-color-positive: #21834F;
-  --cheese-color-critical: #D83B3B;
+  --cheese-color-positive: #111111;
+  --cheese-color-critical: #111111;
   --cheese-font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --cheese-bg: var(--cheese-color-lunar-white);
   --cheese-surface: #FAFAFA;
@@ -17,11 +17,11 @@
   --cheese-border-strong: #86868D;
   --cheese-brand: var(--cheese-color-gold);
   --cheese-brand-soft: var(--cheese-color-gold-weak);
-  --cheese-danger: #B4232F;
-  --cheese-success: #196C40;
+  --cheese-danger: var(--cheese-color-space-black);
+  --cheese-success: var(--cheese-color-space-black);
   --cheese-shadow: 0 16px 56px rgb(0 0 0 / .12), 0 2px 8px rgb(0 0 0 / .04);
   --cheese-overlay: rgb(20 20 24 / .35);
-  --cheese-focus: #785500;
+  --cheese-focus: var(--cheese-color-gold);
   --cheese-duration: 150ms;
   --cheese-space-1: 4px;
   --cheese-space-2: 8px;

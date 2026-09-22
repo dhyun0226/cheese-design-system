@@ -51,7 +51,8 @@
 .cheese-calendar .rdp-chevron {
   width: 15px;
   height: 15px;
-  fill: currentColor;
+  fill: none;
+  stroke-width: 1.8;
 }
 .cheese-calendar :is(table, .rdp-month_grid) {
   border-collapse: collapse;
@@ -91,7 +92,7 @@
   background: var(--cheese-brand);
   color: #111;
   font-weight: 600;
-  border-color: #ad8000;
+  border-color: var(--cheese-text-secondary);
 }
 .cheese-calendar .rdp-range_middle {
   background: var(--cheese-brand-soft);

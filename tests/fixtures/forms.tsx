@@ -1,7 +1,14 @@
 import "@cheese/css";
 import { useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Button, DatePicker, Field, Input, Checkbox } from "@cheese/react";
+import {
+  Button,
+  DatePicker,
+  Field,
+  Input,
+  Checkbox,
+  Select,
+} from "@cheese/react";
 
 function Forms() {
   const [data, setData] = useState("");
@@ -93,6 +100,30 @@ function Forms() {
         제어값 지우기
       </Button>
       <output aria-label="제출 데이터">{data}</output>
+      <form
+        aria-label="선택 폼"
+        className="cheese-stack"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setData(
+            JSON.stringify(
+              Object.fromEntries(new FormData(event.currentTarget)),
+            ),
+          );
+        }}
+      >
+        <Select
+          label="필수 조직"
+          name="team"
+          required
+          options={[
+            { value: "people", label: "피플팀" },
+            { value: "tech", label: "개발팀" },
+          ]}
+        />
+        <Button type="submit">선택 폼 제출</Button>
+        <Button type="reset">선택 폼 초기화</Button>
+      </form>
     </main>
   );
 }

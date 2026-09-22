@@ -8,7 +8,7 @@ export default mergeConfig(
   defineConfig({
     build: {
       outDir: "artifacts/browser-site",
-      rollupOptions: { input: { forms: "tests/fixtures/forms.html" } },
+      rollupOptions: { input: { forms: "tests/fixtures/forms.html", business: "tests/fixtures/business.html" } },
     },
   }),
 );

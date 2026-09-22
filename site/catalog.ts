@@ -25,6 +25,13 @@ export const groups = [
         "필요한 입력 길이를 안내하고 오류 원인을 텍스트로 제공합니다.",
       ],
       [
+        "select",
+        "Select",
+        "브랜드 스타일의 목록에서 항목을 선택합니다.",
+        "label · options · value/defaultValue · onValueChange · name/form · required · disabled · error · ref",
+        "Radix 기반 팝업. 방향키 탐색, Enter 선택, Esc 닫기와 포커스 복귀를 지원합니다.",
+      ],
+      [
         "native-select",
         "Native Select",
         "간결한 목록에서 하나를 고릅니다.",
@@ -76,6 +83,27 @@ export const groups = [
       ["pin-otp-input", "Pin / OTP Input", "인증 코드를 입력합니다."],
       ["tags-input", "Tags Input", "여러 값을 태그로 입력합니다."],
       ["combobox", "Combobox", "검색과 선택을 하나의 컨트롤로 제공합니다."],
+      [
+        "async-combobox",
+        "Async Combobox",
+        "서버에서 검색하고 하나를 선택합니다.",
+        "label · loadOptions(query, { signal }) · value/defaultValue · onValueChange · debounceMs · minLength · name · required",
+        "입력 지연·요청 취소·응답 순서 보호·IME·오류 재시도. 선택한 객체의 value만 폼에 제출합니다. loadOptions는 안정된 함수 참조를 사용하세요.",
+      ],
+      [
+        "multi-select",
+        "Multi Select",
+        "여러 평가자와 참조자를 검색하여 선택합니다.",
+        "label · options / loadOptions · value/defaultValue · onValueChange · max · name · required · disabled",
+        "방향키와 Enter로 선택/해제, 태그 삭제 버튼과 빈 입력에서 Backspace를 지원합니다. 선택 객체 배열을 유지하며 반복 name 값으로 제출합니다.",
+      ],
+      [
+        "file-upload",
+        "File Upload",
+        "첨부 파일의 전송·취소·재시도를 관리합니다.",
+        "label · upload(file, { signal, onProgress }) · accept · maxSize · maxFiles · onChange · onComplete · createXHRUpload",
+        "파일 선택/드래그와 명시적 업로드. 크기·형식의 클라이언트 검사는 보안 검증을 대신하지 않습니다. 서버에서 권한·실제 형식·크기·악성 파일을 검증하세요. 완료 파일의 UI 삭제는 서버 삭제가 아닙니다.",
+      ],
       ["listbox", "Listbox", "목록에서 항목을 선택합니다."],
       ["editable", "Editable", "현재 화면에서 내용을 바로 수정합니다."],
       ["color-picker", "Color Picker", "색상 값을 선택합니다."],
@@ -306,6 +334,13 @@ export const groups = [
     "Data display",
     [
       [
+        "data-table",
+        "Data Table",
+        "실제 업무 목록을 검색·정렬·선택합니다.",
+        "label · columns · rows / loadRows(query, { signal }) · getRowId · selected · onSelectedChange · defaultPageSize · renderCell",
+        "실제 table 구조, 열 정렬 상태, 현재 페이지 선택, 열 표시와 페이지 이동. 서버 검색·정렬은 loadRows에 전달된 query를 서버에서 실행하세요. 행 ID는 전체 데이터에서 안정적이고 고유해야 합니다. Vue는 cell 슬롯을 사용합니다.",
+      ],
+      [
         "badge",
         "Badge",
         "상태를 짧은 텍스트로 표시합니다.",
@@ -388,13 +423,84 @@ export type Entry = {
   accessibility: string;
   group: string;
 };
+const extendedDetails: Record<string, [string, string]> = {
+  "pin-otp-input": [
+    "label · length · value/defaultValue · onValueChange · onComplete · name · disabled · required · ref",
+    "하나의 실제 입력으로 숫자 필터, 붙여넣기, one-time-code 자동완성과 네이티브 폼 검증을 지원합니다. 인증 자체는 서버에서 처리해야 합니다.",
+  ],
+  "tags-input": [
+    "label · value/defaultValue · onValueChange · max · name · disabled",
+    "Enter 또는 쉼표로 추가하고 빈 입력의 Backspace로 삭제합니다. 한글 조합 중에는 추가하지 않습니다. 중복값과 최대 개수를 안내합니다.",
+  ],
+  combobox: [
+    "label · options · value/defaultValue · onValueChange · name · required · disabled · emptyText",
+    "문자 검색, 방향키 탐색, Enter 선택, Esc 닫기를 지원합니다. 입력 포커스를 유지하고 활성 항목을 보조 기술에 전달합니다.",
+  ],
+  listbox: [
+    "label · options · value/defaultValue · onValueChange · name · disabled",
+    "단일 선택 목록입니다. 방향키와 Home/End로 이동하고 Enter/Space로 선택합니다. 비활성 항목을 건너뜁니다.",
+  ],
+  editable: [
+    "label · value/defaultValue · onValueChange · name · disabled · required",
+    "수정 시 입력으로 포커스가 이동합니다. Enter로 저장, Esc로 취소하며 결과와 관계없이 수정 버튼으로 돌아갑니다.",
+  ],
+  "color-picker": [
+    "label · swatches · value/defaultValue · onValueChange · name · disabled",
+    "브랜드 팔레트 스와치 선택기입니다. 라디오 방향키 탐색을 지원하고 이름과 HEX 값도 표시합니다. 자유 색상 스펙트럼 편집기는 아닙니다.",
+  ],
+  rating: [
+    "label · max · value/defaultValue · onValueChange · name · disabled · required",
+    "별 모양 라디오 그룹입니다. 방향키 선택과 점수 읽기를 지원합니다. 기본 최대 점수는 5점입니다.",
+  ],
+  "date-range-field": [
+    "label · value/defaultValue: { start, end } · onValueChange · name · min/max · required · disabled/readOnly",
+    "네이티브 날짜 입력 두 개를 묶습니다. 종료가 시작보다 빠르면 오류를 안내하고 폼 제출을 차단합니다.",
+  ],
+  "time-range-field": [
+    "label · value/defaultValue: { start, end } · onValueChange · name · min/max · step · required · disabled/readOnly",
+    "같은 날의 시간 범위입니다. 자정을 넘는 업무에는 날짜를 함께 사용하세요. 종료가 시작보다 빠르면 제출을 차단합니다.",
+  ],
+  "month-picker": [
+    "label · value/defaultValue: YYYY-MM · onValueChange · min/max · name · disabled",
+    "12개월 라디오 그룹과 연도 이동 버튼입니다. 방향키로 이동하고 허용 범위 밖의 월은 선택하지 못합니다.",
+  ],
+  "year-picker": [
+    "label · value/defaultValue · onValueChange · min/max · name · disabled",
+    "12년 단위로 탐색하고 라디오 항목을 선택합니다. 허용 연도와 비활성 상태를 지정할 수 있습니다.",
+  ],
+  "navigation-menu": [
+    "NavigationMenuRoot/List/Item/Trigger/Content/Link · value · onValueChange",
+    "사이트 이동용 링크 메뉴입니다. 방향키 탐색과 Esc 닫기를 지원합니다. 명령 실행에는 Menubar를 사용하세요.",
+  ],
+  menubar: [
+    "MenubarRoot/Menu/Trigger/Content/Item/Separator · onSelect · disabled",
+    "좌우 방향키로 메뉴, 상하 방향키로 명령을 탐색합니다. Esc로 닫고 트리거에 포커스를 돌려줍니다.",
+  ],
+  toolbar: [
+    "ToolbarRoot/Button/ToggleGroup/ToggleItem/Separator · orientation · value",
+    "하나의 Tab 진입점과 방향키 탐색을 제공합니다. 아이콘 버튼은 반드시 접근 가능한 이름을 지정합니다.",
+  ],
+  "hover-card": [
+    "HoverCardRoot/Trigger/Content · open · onOpenChange · openDelay · closeDelay",
+    "링크에 마우스를 올리거나 포커스하면 보조 정보를 표시합니다. 필수 정보나 입력 기능은 이 카드에만 넣지 않습니다.",
+  ],
+  splitter: [
+    "label · first · second · value/defaultValue · onValueChange · min/max · disabled",
+    "두 패널 사이를 드래그하거나 좌우 방향키로 2%, Shift와 함께 10%씩 조절합니다. Home/End는 허용 범위 양끝입니다.",
+  ],
+  carousel: [
+    "label · items · value/defaultValue · onValueChange",
+    "자동 재생하지 않습니다. 이전/다음과 페이지 버튼으로 이동하고 현재 위치를 안내합니다. 비활성 슬라이드는 DOM에 남기지 않습니다.",
+  ],
+};
 export const entries: Entry[] = groups.flatMap(([group, , items]) =>
   items.map((item) => ({
     id: item[0],
     name: item[1],
     description: item[2],
-    api: (item as readonly string[])[3] || "",
-    accessibility: (item as readonly string[])[4] || "",
+    api: (item as readonly string[])[3] || extendedDetails[item[0]]?.[0] || "",
+    accessibility:
+      (item as readonly string[])[4] || extendedDetails[item[0]]?.[1] || "",
     group,
   })),
 );

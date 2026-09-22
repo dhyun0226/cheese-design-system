@@ -16,7 +16,7 @@ import {
   DialogDescription,
   DialogClose,
   Field,
-  NativeSelect,
+  Select,
   Checkbox,
   Switch,
   Progress,
@@ -28,6 +28,7 @@ import {
   Menu,
   Check,
   ChevronRight,
+  ChevronLeft,
   ArrowUpRight,
 } from "./ui";
 import "@cheese/css";
@@ -323,7 +324,8 @@ function Home() {
               <ChevronRight aria-hidden="true" />
             </a>
             <a className="text-link" href="#/components">
-              컴포넌트 둘러보기 <span>↗</span>
+              컴포넌트 둘러보기{" "}
+              <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
             </a>
           </div>
           <span className="hero-note">
@@ -368,7 +370,8 @@ function Home() {
             <h2>필요한 것부터, 하나씩.</h2>
           </div>
           <a className="text-link" href="#/components">
-            전체 보기 ↗
+            전체 보기{" "}
+            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
           </a>
         </div>
         <div className="explore-grid">
@@ -409,7 +412,10 @@ function Home() {
               </div>
               <h3>
                 <a href={"#/components/" + id}>{title}</a>
-                <span>↗</span>
+                <ArrowUpRight
+                  className="cheese-inline-icon"
+                  aria-hidden="true"
+                />
               </h3>
               <p>{desc}</p>
             </article>
@@ -425,7 +431,8 @@ function Home() {
           구현 상태와 남은 검증 범위도 함께 공개합니다.
         </p>
         <a className="text-link" href="#/readiness">
-          도입 준비 상태 확인 ↗
+          도입 준비 상태 확인{" "}
+          <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
         </a>
       </section>
     </>
@@ -472,7 +479,10 @@ function Catalog() {
                     </Badge>
                   </div>
                   <p>{e.description}</p>
-                  <span className="catalog-arrow">↗</span>
+                  <ArrowUpRight
+                    className="catalog-arrow cheese-inline-icon"
+                    aria-hidden="true"
+                  />
                 </a>
               ))}
           </div>
@@ -542,9 +552,14 @@ function ComponentPage({ entry }: { entry: Entry }) {
                 <div
                   className={
                     "demo-content " +
-                    (["table", "stepper", "accordion", "scroll-area"].includes(
-                      entry.id,
-                    )
+                    ([
+                      "table",
+                      "data-table",
+                      "file-upload",
+                      "stepper",
+                      "accordion",
+                      "scroll-area",
+                    ].includes(entry.id)
                       ? "demo-wide"
                       : "")
                   }
@@ -592,7 +607,11 @@ function ComponentPage({ entry }: { entry: Entry }) {
                 target="_blank"
                 rel="noreferrer"
               >
-                패키지 소스 ↗
+                패키지 소스{" "}
+                <ArrowUpRight
+                  className="cheese-inline-icon"
+                  aria-hidden="true"
+                />
               </a>
             </section>
           </div>
@@ -611,13 +630,20 @@ function ComponentPage({ entry }: { entry: Entry }) {
             React·Vue 통합, 접근성 및 브라우저 테스트.
           </p>
           <a href="#/readiness" className="text-link">
-            현재 도입 범위 확인 ↗
+            현재 도입 범위 확인{" "}
+            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
           </a>
         </div>
       )}
       <div className="doc-bottom">
-        <a href="#/components">← 전체 컴포넌트</a>
-        <a href="#/patterns">업무 화면에서 사용하기 ↗</a>
+        <a href="#/components">
+          <ChevronLeft className="cheese-inline-icon" aria-hidden="true" /> 전체
+          컴포넌트
+        </a>
+        <a href="#/patterns">
+          업무 화면에서 사용하기{" "}
+          <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
+        </a>
       </div>
     </>
   );
@@ -679,7 +705,8 @@ function GettingStarted() {
         />
         <p>
           <a className="text-link" href="./vue.html">
-            실제 Vue 패키지 통합 예제 열기 ↗
+            실제 Vue 패키지 통합 예제 열기{" "}
+            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
           </a>
         </p>
       </section>
@@ -706,8 +733,8 @@ function Foundations() {
       <section className="doc-section">
         <h2>Color</h2>
         <p>
-          넓은 면은 중성색, 핵심 행동에는 치즈골드. 브랜드 색과 오류·성공 상태를
-          분리합니다.
+          넓은 면은 중성색, 강조색은 치즈골드 하나. 오류·성공은 색에만 의존하지
+          않고 문구와 아이콘으로 구분합니다. 포커스도 같은 골드를 사용합니다.
         </p>
         <div className="swatches">
           {[
@@ -834,13 +861,16 @@ function Patterns() {
               />
             </Field>
             <div className="form-columns">
-              <Field label="대상 조직">
-                <NativeSelect name="team">
-                  <option>전체 조직</option>
-                  <option>피플팀</option>
-                  <option>개발팀</option>
-                </NativeSelect>
-              </Field>
+              <Select
+                label="대상 조직"
+                name="team"
+                defaultValue="all"
+                options={[
+                  { value: "all", label: "전체 조직" },
+                  { value: "people", label: "피플팀" },
+                  { value: "tech", label: "개발팀" },
+                ]}
+              />
               <Field label="마감일">
                 <Input name="deadline" type="date" defaultValue="2026-10-30" />
               </Field>
@@ -941,18 +971,19 @@ function Readiness() {
             <Badge tone="brand">우선 1 · 도입을 막는 항목</Badge>
             <h3>프레임워크와 배포 계약 고정</h3>
             <p>
-              React 또는 Vue 중 첫 제품의 기준을 정합니다. Vue를 선택하면 고수준
-              컴포넌트·폼 API와 동작 테스트를 보강해야 합니다. 코드
-              반입·라이선스, 사설 패키지 배포, 버전 고정과 롤백도 결정합니다.
+              React 또는 Vue 중 첫 제품의 기준을 정하고, 그 제품에서 사용하는 폼
+              API와 연동 시나리오를 검증합니다. 코드 반입·라이선스, 사설 패키지
+              배포, 버전 고정과 롤백도 결정합니다.
             </p>
           </Card>
           <Card className="cheese-stack">
             <Badge>우선 2 · 실제 업무 화면</Badge>
             <h3>직원 검색부터 저장 실패까지</h3>
             <p>
-              검색형 선택, 다중 입력, 파일 첨부, 정렬·선택·페이지 이동이 가능한
-              데이터 표를 우선 검토합니다. 평가 작성·검토·반려·승인 화면을
-              만들고, 한글 입력·오류·중복 제출·네트워크 단절을 검증합니다.
+              서버 검색·다중 선택·데이터 표·파일 업로드와 API 연결 지점을
+              제공합니다. 실제 사내 API에 연결해 평가 작성·검토·반려·승인
+              화면을 구성하고, 한글
+              입력·오류·중복 제출·네트워크 단절을 검증합니다.
             </p>
           </Card>
           <Card className="cheese-stack">
@@ -971,7 +1002,8 @@ function Readiness() {
             target="_blank"
             rel="noreferrer"
           >
-            상용화 과제와 완료 기준 전체 보기 ↗
+            상용화 과제와 완료 기준 전체 보기{" "}
+            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
           </a>
         </p>
       </section>
@@ -991,11 +1023,12 @@ function Readiness() {
         </div>
       </section>
       <section className="doc-section">
-        <h2>아직 지원을 약속하지 않는 범위</h2>
+        <h2>카탈로그와 운영 범위</h2>
         <p>
-          카탈로그의 “설계 중” 항목은 패키지 기능으로 간주하지 않습니다. 기본
-          라이브러리에 기능이 있더라도 CHEESE 스타일·API·테스트가 검증되기
-          전에는 완료로 표시하지 않습니다.
+          현재 카탈로그의 모든 항목에 실행 예제가 있습니다. 색상 선택은 브랜드
+          팔레트, 시간 범위는 같은 날, 캐러셀은 수동 이동으로 범위를 명확히
+          했습니다. 실제 API·대량 데이터·권한·실기기 검증까지 완료했다는 의미는
+          아닙니다.
         </p>
         <div className="planned-chips">
           {entries
@@ -1014,7 +1047,8 @@ function Readiness() {
           Vue 지원 증거로 대신하지 않습니다.
         </p>
         <a className="cheese-button" href="./vue.html">
-          Vue 통합 예제 ↗
+          Vue 통합 예제{" "}
+          <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
         </a>
         <details className="source-details">
           <summary>Vue 예제 소스 보기</summary>
@@ -1078,7 +1112,8 @@ function App() {
             target="_blank"
             rel="noreferrer"
           >
-            GitHub ↗
+            GitHub{" "}
+            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
           </a>
           <div className="mobile-menu">
             <DialogRoot open={menu} onOpenChange={setMenu}>

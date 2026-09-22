@@ -8,6 +8,26 @@ import {
   DatePicker,
   Tree,
   Calendar,
+  Select,
+  Combobox,
+  Listbox,
+  PinInput,
+  TagsInput,
+  Editable,
+  Rating,
+  ColorPicker,
+  DateRangeField,
+  TimeRangeField,
+  MonthPicker,
+  YearPicker,
+  Splitter,
+  Carousel,
+  AsyncCombobox,
+  MultiSelect,
+  DataTable,
+  FileUpload,
+  createXHRUpload,
+  createOptionsLoader,
 } from "@cheese/react";
 import { tokens } from "@cheese/tokens";
 
@@ -24,5 +44,48 @@ createRoot(document.getElementById("root")!).render(
     </form>
     <Tree nodes={[{ id: "team", label: "팀" }]} />
     <Calendar mode="single" onSelect={(date) => date?.getDate()} />
+    <Select label="조직" options={[{ value: "people", label: "피플팀" }]} />
+    <Combobox
+      label="검색"
+      options={[]}
+      onValueChange={(value) => value.toUpperCase()}
+    />
+    <Listbox label="목록" options={[]} />
+    <PinInput label="인증 코드" onComplete={(code) => code.trim()} />
+    <TagsInput label="태그" onValueChange={(tags) => tags.join(",")} />
+    <Editable label="제목" />
+    <Rating label="평점" />
+    <ColorPicker label="색상" />
+    <DateRangeField
+      label="기간"
+      onValueChange={(range) => range.start.trim()}
+    />
+    <TimeRangeField label="회의" />
+    <MonthPicker label="월" />
+    <YearPicker label="연도" />
+    <Splitter label="분할" first="조직" second="내용" />
+    <Carousel label="안내" items={["안내"]} />
+    <AsyncCombobox
+      label="서버 직원"
+      loadOptions={createOptionsLoader("/api/employees")}
+      onValueChange={(item) => item?.value.trim()}
+    />
+    <MultiSelect
+      label="평가자"
+      options={[]}
+      onValueChange={(items) => items.map((item) => item.value)}
+    />
+    <DataTable
+      label="목록"
+      columns={[{ key: "name", label: "이름" }]}
+      rows={[{ id: "1", name: "가상 직원" }]}
+      getRowId={(row) => row.id}
+      renderCell={(row, column) => String(row[column.key as keyof typeof row])}
+    />
+    <FileUpload
+      label="자료"
+      upload={createXHRUpload("/api/files")}
+      onComplete={(item) => item.file.name}
+    />
   </main>,
 );

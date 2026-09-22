@@ -3,11 +3,29 @@ import {
   DayPicker,
   type DayPickerProps,
   type DateRange,
+  type ChevronProps,
 } from "react-day-picker";
 import { ko } from "react-day-picker/locale";
 import { Popover } from "radix-ui";
-import { Calendar as CalendarIcon } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 export type { DateRange };
+function CalendarChevron({ orientation, className }: ChevronProps) {
+  const Icon =
+    orientation === "left"
+      ? ChevronLeft
+      : orientation === "up"
+        ? ChevronUp
+        : orientation === "down"
+          ? ChevronDown
+          : ChevronRight;
+  return <Icon size={16} className={className} aria-hidden="true" />;
+}
 export function Calendar(props: DayPickerProps) {
   return (
     <DayPicker
@@ -15,6 +33,7 @@ export function Calendar(props: DayPickerProps) {
       showOutsideDays
       labels={{ labelNext: () => "다음 달", labelPrevious: () => "이전 달" }}
       {...props}
+      components={{ Chevron: CalendarChevron, ...props.components }}
       className={["cheese-calendar", props.className].filter(Boolean).join(" ")}
     />
   );

@@ -6,6 +6,7 @@ import {
   type PropType,
   type VNode,
 } from "vue";
+import { ChevronRight, File, Folder, FolderOpen } from "@lucide/vue";
 export interface TreeNode {
   id: string;
   label: string;
@@ -140,6 +141,7 @@ export const Tree = defineComponent({
                   "span",
                   {
                     class: "cheese-tree-caret",
+                    "data-open": expanded.value.includes(node.id),
                     "aria-hidden": true,
                     onClick: (e: MouseEvent) => {
                       if (node.children?.length) {
@@ -149,11 +151,15 @@ export const Tree = defineComponent({
                       }
                     },
                   },
+                  node.children?.length ? [h(ChevronRight, { size: 16 })] : [],
+                ),
+                h(
                   node.children?.length
                     ? expanded.value.includes(node.id)
-                      ? "⌄"
-                      : "›"
-                    : "·",
+                      ? FolderOpen
+                      : Folder
+                    : File,
+                  { class: "cheese-tree-icon", "aria-hidden": true },
                 ),
                 node.label,
               ],

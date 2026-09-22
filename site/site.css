@@ -964,7 +964,7 @@ input {
   background: var(--cheese-brand-soft);
   border-radius: 12px;
   font-size: 14px;
-  color: #624700;
+  color: var(--cheese-text);
 }
 .mobile-menu {
   display: none;

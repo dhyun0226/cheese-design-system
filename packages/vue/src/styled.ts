@@ -8,7 +8,10 @@ import {
   isVNode,
 } from "vue";
 import * as P from "reka-ui";
-function styled<T extends Component>(component: T, className: string): T {
+export function styled<T extends Component>(
+  component: T,
+  className: string,
+): T {
   return defineComponent({
     inheritAttrs: false,
     setup(_, { attrs, slots }) {
@@ -383,6 +386,8 @@ export const HoverCardContent = defineComponent({
           h(
             P.HoverCardContent,
             {
+              role: "region",
+              "aria-label": "추가 정보",
               sideOffset: 8,
               ...attrs,
               class: ["cheese-popover cheese-root", attrs.class],

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ChevronRight, File, Folder, FolderOpen } from "lucide-react";
 export interface TreeNode {
   id: string;
   label: string;
@@ -131,6 +132,7 @@ export function Tree({
         >
           <span
             className="cheese-tree-caret"
+            data-open={expanded.includes(node.id)}
             aria-hidden="true"
             onClick={(e) => {
               if (node.children?.length) {
@@ -140,12 +142,17 @@ export function Tree({
               }
             }}
           >
-            {node.children?.length
-              ? expanded.includes(node.id)
-                ? "⌄"
-                : "›"
-              : "·"}
+            {node.children?.length ? <ChevronRight size={16} /> : null}
           </span>
+          {node.children?.length ? (
+            expanded.includes(node.id) ? (
+              <FolderOpen className="cheese-tree-icon" aria-hidden="true" />
+            ) : (
+              <Folder className="cheese-tree-icon" aria-hidden="true" />
+            )
+          ) : (
+            <File className="cheese-tree-icon" aria-hidden="true" />
+          )}
           {node.label}
         </div>
         {node.children?.length && expanded.includes(node.id) ? (

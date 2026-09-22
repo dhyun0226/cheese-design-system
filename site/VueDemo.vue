@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import VueBusinessDemo from "./VueBusinessDemo.vue";
 import { ref, shallowRef } from "vue";
 import { CalendarDate, type DateValue } from "@internationalized/date";
 import { Calendar } from "@cheese/vue";
+import VueExtendedDemo from "./VueExtendedDemo.vue";
 const calendarDate = shallowRef<DateValue>(new CalendarDate(2026, 10, 12));
 import {
   Button,
@@ -42,6 +44,7 @@ import {
   ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
+  Check,
 } from "@cheese/vue";
 const name = ref(""),
   memo = ref(""),
@@ -158,7 +161,10 @@ function save() {
           <div class="cheese-stack">
             <label class="cheese-check-label" for="vue-agree"
               ><CheckboxRoot id="vue-agree" v-model="checked"
-                ><CheckboxIndicator>✓</CheckboxIndicator></CheckboxRoot
+                ><CheckboxIndicator
+                  ><Check
+                    :size="14"
+                    aria-hidden="true" /></CheckboxIndicator></CheckboxRoot
               >결과 알림 받기</label
             >
             <label class="cheese-check-label" for="vue-switch"
@@ -241,6 +247,8 @@ function save() {
           ></Card
         >
       </div>
+      <VueExtendedDemo />
+      <VueBusinessDemo />
       <p class="vue-footer">
         가상 데이터 · 외부 전송 없음 · 실제 사내 시스템이 아닙니다.
       </p>

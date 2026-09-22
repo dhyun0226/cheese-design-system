@@ -1,6 +1,22 @@
 "use client";
 
 import * as React from "react";
+export * from "./business.js";
+export * from "./SearchSelect.js";
+export * from "./DataTable.js";
+export * from "./FileUpload.js";
+export {
+  Select,
+  Combobox,
+  Listbox,
+  type SelectProps,
+  type ComboboxProps,
+  type ListboxProps,
+  type ChoiceOption,
+} from "./Collections.js";
+export * from "./Fields.js";
+export * from "./Navigation.js";
+export * from "./Layout.js";
 export {
   Calendar,
   DatePicker,
@@ -9,7 +25,7 @@ export {
   type DatePickerProps,
 } from "./Calendar.js";
 import * as P from "radix-ui";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, Minus, ChevronDown } from "lucide-react";
 export {
   Search,
   Plus,
@@ -37,6 +53,19 @@ export {
   Lock,
   LogOut,
   Menu,
+  Star,
+  PencilLine,
+  Bold,
+  Italic,
+  Underline,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Save,
+  File,
+  Folder,
+  FolderOpen,
+  GripVertical,
 } from "lucide-react";
 export type { LucideIcon, LucideProps } from "lucide-react";
 export { Tree, type TreeNode, type TreeProps } from "./Tree.js";
@@ -194,7 +223,8 @@ export const CheckboxRoot = React.forwardRef<
     >
       {children ?? (
         <P.Checkbox.Indicator>
-          <Check />
+          <Check className="cheese-checkbox-check" aria-hidden="true" />
+          <Minus className="cheese-checkbox-minus" aria-hidden="true" />
         </P.Checkbox.Indicator>
       )}
     </P.Checkbox.Root>
@@ -771,7 +801,7 @@ export function Stepper({
           aria-current={current === i ? "step" : undefined}
         >
           <span className="cheese-step-circle" aria-hidden="true">
-            {i < current ? "✓" : i + 1}
+            {i < current ? <Check size={16} aria-hidden="true" /> : i + 1}
           </span>
           <span className="cheese-step-label">
             {s}

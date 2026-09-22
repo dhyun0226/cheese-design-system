@@ -1,0 +1,561 @@
+/* Package-owned, framework-shared controls. Only brand gold and neutral colors. */
+.cheese-inline-icon {
+  display: inline-block;
+  vertical-align: -0.125em;
+  width: 14px;
+  height: 14px;
+  flex: none;
+  stroke-width: 1.8;
+}
+.cheese-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  text-align: start;
+  cursor: pointer;
+}
+.cheese-select-trigger > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cheese-select-trigger > :last-child {
+  display: flex;
+  flex: none;
+}
+.cheese-select-trigger[data-placeholder] {
+  color: var(--cheese-text-secondary);
+}
+.cheese-select-content {
+  z-index: 80;
+  min-width: var(
+    --radix-select-trigger-width,
+    var(--reka-select-trigger-width)
+  );
+  max-width: calc(100vw - 24px);
+  max-height: min(
+    320px,
+    var(
+      --radix-select-content-available-height,
+      var(--reka-select-content-available-height)
+    )
+  );
+  overflow: hidden;
+  padding: 6px;
+  border: 1px solid var(--cheese-border);
+  border-radius: 12px;
+  background: var(--cheese-bg);
+  box-shadow: var(--cheese-shadow);
+}
+.cheese-select-scroll {
+  display: flex;
+  justify-content: center;
+  padding: 4px;
+  color: var(--cheese-text-secondary);
+}
+.cheese-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: 7px;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+  user-select: none;
+  outline-offset: -2px;
+}
+.cheese-option-copy {
+  display: grid;
+  gap: 3px;
+}
+.cheese-option-copy small {
+  font-size: 12px;
+  color: var(--cheese-text-secondary);
+}
+.cheese-option svg {
+  flex: none;
+}
+.cheese-option[data-highlighted],
+.cheese-option[data-active="true"],
+.cheese-option:not([aria-disabled="true"]):hover {
+  background: var(--cheese-muted);
+}
+.cheese-option[data-state="checked"],
+.cheese-option[aria-selected="true"] {
+  background: var(--cheese-brand-soft);
+  color: var(--cheese-text);
+}
+.cheese-option[aria-disabled="true"],
+.cheese-option[data-disabled] {
+  cursor: not-allowed;
+  opacity: 1;
+  color: var(--cheese-text-secondary);
+  background: var(--cheese-surface);
+}
+.cheese-input-shell {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.cheese-input-shell > svg {
+  position: absolute;
+  pointer-events: none;
+  color: var(--cheese-text-secondary);
+}
+.cheese-input-shell > svg:first-child {
+  left: 13px;
+}
+.cheese-input-shell > svg:last-child {
+  right: 13px;
+}
+.cheese-input-shell > .cheese-input {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+.cheese-combobox {
+  position: relative;
+}
+.cheese-combobox-popup {
+  position: absolute;
+  z-index: 50;
+  top: 100%;
+  margin-top: 6px;
+  inset-inline: 0;
+  padding: 6px;
+  background: var(--cheese-bg);
+  border: 1px solid var(--cheese-border);
+  border-radius: 12px;
+  box-shadow: var(--cheese-shadow);
+}
+.cheese-option-list {
+  max-height: 260px;
+  overflow-y: auto;
+}
+.cheese-collection-empty {
+  padding: 16px;
+  font-size: 13px;
+  color: var(--cheese-text-secondary);
+}
+.cheese-listbox {
+  padding: 6px;
+  border: 1px solid var(--cheese-border);
+  border-radius: 12px;
+  background: var(--cheese-bg);
+  max-height: 300px;
+  overflow: auto;
+}
+.cheese-pin-input {
+  font-size: 24px;
+  letter-spacing: 0.5em;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  padding: 16px;
+  width: min(100%, 320px);
+}
+.cheese-tags {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 7px;
+  min-height: 46px;
+  background: var(--cheese-bg);
+  border: 1px solid var(--cheese-border-strong);
+  border-radius: var(--cheese-radius-control);
+}
+.cheese-tags:focus-within {
+  outline: 2px solid var(--cheese-focus);
+  outline-offset: 2px;
+}
+.cheese-tags[data-disabled] {
+  opacity: 1;
+  background: var(--cheese-surface);
+}
+.cheese-tags[data-disabled] .cheese-tag {
+  color: var(--cheese-text-secondary);
+}
+.cheese-tags input:disabled {
+  cursor: not-allowed;
+}
+.cheese-tags > input {
+  flex: 1;
+  min-width: 100px;
+  width: 100px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--cheese-text);
+  font: inherit;
+  font-size: 14px;
+  padding: 5px;
+}
+.cheese-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 10px;
+  border: 1px solid var(--cheese-border);
+  border-radius: 6px;
+  background: var(--cheese-surface);
+  color: var(--cheese-text);
+  font-size: 13px;
+}
+.cheese-tag button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 3px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.cheese-tag button:focus-visible {
+  outline: 2px solid var(--cheese-focus);
+}
+.cheese-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  background: transparent;
+  color: var(--cheese-text);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.cheese-icon-button:hover:not(:disabled) {
+  background: var(--cheese-muted);
+}
+.cheese-icon-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cheese-editable-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cheese-editable-preview {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--cheese-surface);
+  text-align: start;
+  color: var(--cheese-text);
+  font-size: 14px;
+  cursor: text;
+}
+.cheese-editable-preview:hover:not(:disabled) {
+  border-color: var(--cheese-border);
+}
+.cheese-rating,
+.cheese-swatches {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cheese-rating-item {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--cheese-text-secondary);
+  cursor: pointer;
+}
+.cheese-rating-item svg {
+  stroke-width: 1.5;
+}
+.cheese-rating-item[data-filled="true"] svg {
+  fill: var(--cheese-brand);
+  color: var(--cheese-text-secondary);
+}
+.cheese-rating-item[data-state="checked"] {
+  background: var(--cheese-brand-soft);
+}
+.cheese-swatch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--cheese-border-strong);
+  border-radius: 50%;
+  background: var(--swatch);
+  cursor: pointer;
+}
+.cheese-swatch-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: var(--cheese-text);
+  background: var(--cheese-bg);
+  border: 1px solid var(--cheese-border);
+}
+.cheese-range-field {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+  padding: 0;
+  border: none;
+  margin: 0;
+}
+.cheese-range-field legend {
+  padding: 0;
+  margin-bottom: 10px;
+}
+.cheese-range-inputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.cheese-period-picker {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 320px);
+  padding: 16px;
+  border: 1px solid var(--cheese-border);
+  border-radius: 14px;
+  background: var(--cheese-bg);
+}
+.cheese-period-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 550;
+}
+.cheese-period-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.cheese-period-item {
+  min-height: 40px;
+  padding: 8px;
+  color: var(--cheese-text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.cheese-period-item:hover:not(:disabled) {
+  background: var(--cheese-muted);
+}
+.cheese-period-item[data-state="checked"] {
+  background: var(--cheese-brand);
+  border-color: var(--cheese-text-secondary);
+}
+.cheese-period-item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cheese-navigation {
+  position: relative;
+  z-index: 10;
+}
+.cheese-navigation-list,
+.cheese-menubar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 5px;
+  margin: 0;
+  list-style: none;
+  border: 1px solid var(--cheese-border);
+  border-radius: 10px;
+  background: var(--cheese-bg);
+}
+.cheese-navigation-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--cheese-text);
+  font-size: 14px;
+  cursor: pointer;
+}
+.cheese-navigation-trigger:hover,
+.cheese-navigation-trigger[data-state="open"] {
+  background: var(--cheese-muted);
+}
+.cheese-navigation-trigger svg {
+  transition: transform var(--cheese-duration);
+}
+.cheese-navigation-trigger[data-state="open"] svg {
+  transform: rotate(180deg);
+}
+.cheese-navigation-content {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 240px;
+  max-width: 100%;
+  padding: 8px;
+  border: 1px solid var(--cheese-border);
+  border-radius: 12px;
+  background: var(--cheese-bg);
+  box-shadow: var(--cheese-shadow);
+}
+.cheese-navigation-content[data-state="closed"] {
+  display: none;
+}
+.cheese-navigation-link {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 7px;
+  font-size: 14px;
+  color: var(--cheese-text);
+  text-decoration: none;
+}
+.cheese-navigation-link:hover,
+.cheese-navigation-link[data-active] {
+  background: var(--cheese-brand-soft);
+}
+.cheese-menu-separator {
+  height: 1px;
+  background: var(--cheese-border);
+  margin: 5px;
+}
+.cheese-toolbar {
+  align-items: center;
+  width: fit-content;
+  padding: 6px;
+  border: 1px solid var(--cheese-border);
+  border-radius: 10px;
+  background: var(--cheese-bg);
+}
+.cheese-toolbar [role="group"] {
+  display: flex;
+  gap: 4px;
+}
+.cheese-toolbar .cheese-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  border-color: transparent;
+}
+.cheese-toolbar .cheese-toggle svg {
+  width: 17px;
+  height: 17px;
+}
+.cheese-toolbar-separator {
+  width: 1px;
+  height: 22px;
+  margin: 0 6px;
+  background: var(--cheese-border);
+}
+.cheese-splitter {
+  display: grid;
+  grid-template-columns: minmax(0, var(--split)) 16px minmax(0, 1fr);
+  border: 1px solid var(--cheese-border);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 220px;
+}
+.cheese-splitter-panel {
+  min-width: 0;
+  padding: 20px;
+  overflow: auto;
+}
+.cheese-splitter-panel > :first-child {
+  margin-top: 0;
+}
+.cheese-splitter-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cheese-surface);
+  color: var(--cheese-text-secondary);
+  border-inline: 1px solid var(--cheese-border);
+  cursor: col-resize;
+  touch-action: none;
+  outline-offset: -2px;
+}
+.cheese-splitter-handle:hover {
+  background: var(--cheese-brand-soft);
+}
+.cheese-carousel {
+  display: grid;
+  gap: 16px;
+}
+.cheese-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.cheese-carousel-viewport {
+  min-width: 0;
+}
+.cheese-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+.cheese-carousel-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.cheese-carousel-dot span {
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: var(--cheese-border-strong);
+  border-radius: 4px;
+}
+.cheese-carousel-dot[aria-current="true"] span {
+  width: 20px;
+  background: var(--cheese-brand);
+  box-shadow: 0 0 0 1px var(--cheese-text-secondary);
+}
+@media (max-width: 480px) {
+  .cheese-range-inputs {
+    grid-template-columns: 1fr;
+  }
+  .cheese-splitter-panel {
+    padding: 12px;
+  }
+}
+@media (forced-colors: active) {
+  .cheese-rating-item[data-filled="true"] svg {
+    fill: Highlight;
+  }
+  .cheese-swatch {
+    forced-color-adjust: none;
+  }
+}

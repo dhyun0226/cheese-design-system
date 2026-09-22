@@ -4,6 +4,7 @@ const dependencies = [
   "react-dom",
   "vue",
   "radix-ui",
+  "aria-hidden",
   "reka-ui",
   "lucide-react",
   "@lucide/vue",

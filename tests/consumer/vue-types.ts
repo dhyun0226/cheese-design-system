@@ -9,9 +9,54 @@ import {
   DialogTitle,
   TabsTrigger,
   ContextMenuTrigger,
+  Select,
+  Combobox,
+  Listbox,
+  PinInput,
+  TagsInput,
+  Editable,
+  Rating,
+  ColorPicker,
+  DateRangeField,
+  TimeRangeField,
+  MonthPicker,
+  YearPicker,
+  Splitter,
+  Carousel,
+  NavigationMenuRoot,
+  MenubarRoot,
+  ToolbarRoot,
+  AsyncCombobox,
+  MultiSelect,
+  DataTable,
+  FileUpload,
+  createOptionsLoader,
+  createXHRUpload,
 } from "@cheese/vue";
 import { CalendarDate } from "@internationalized/date";
 const name = ref("");
+h(AsyncCombobox, {
+  label: "검색",
+  loadOptions: createOptionsLoader("/api/employees"),
+  "onUpdate:modelValue": (item) => item?.value.trim(),
+});
+h(MultiSelect, {
+  label: "선택",
+  options: [],
+  "onUpdate:modelValue": (items) => items.map((item) => item.value),
+});
+h(DataTable, {
+  label: "목록",
+  columns: [{ key: "name", label: "이름" }],
+  rows: [{ id: "1", name: "직원" }],
+  getRowId: (row) => String(row.id),
+  "onUpdate:selected": (ids) => ids.join(","),
+});
+h(FileUpload, {
+  label: "첨부",
+  upload: createXHRUpload("/api/files"),
+  onComplete: (item) => item.file.name,
+});
 h(Button, { type: "submit", variant: "accent" }, () => "저장");
 h(Input, {
   modelValue: name.value,
@@ -26,3 +71,38 @@ h(DialogRoot, {}, () =>
 );
 h(TabsTrigger, { value: "profile" }, () => "프로필");
 h(ContextMenuTrigger, { asChild: true, disabled: false }, () => h(Button));
+h(Select, {
+  label: "조직",
+  options: [{ value: "people", label: "피플팀" }],
+  "onUpdate:modelValue": (value) => value.toUpperCase(),
+});
+h(Combobox, { label: "검색", options: [], modelValue: "" });
+h(Listbox, { label: "목록", options: [] });
+h(PinInput, { label: "인증", length: 6 });
+h(TagsInput, {
+  label: "태그",
+  "onUpdate:modelValue": (value) => value.join(","),
+});
+h(Editable, { label: "제목" });
+h(Rating, { label: "평점" });
+h(ColorPicker, { label: "색상" });
+h(DateRangeField, {
+  label: "기간",
+  required: true,
+  "onUpdate:modelValue": (value) => value.start.trim(),
+});
+h(TimeRangeField, {
+  label: "시간",
+  defaultValue: { start: "09:00", end: "10:00" },
+});
+h(MonthPicker, { label: "월" });
+h(YearPicker, { label: "연도" });
+h(Splitter, { label: "분할" }, { first: () => "조직", second: () => "내용" });
+h(
+  Carousel,
+  { label: "안내", count: 2 },
+  { default: ({ index }: { index: number }) => String(index) },
+);
+h(NavigationMenuRoot, {});
+h(MenubarRoot, {});
+h(ToolbarRoot, {});
