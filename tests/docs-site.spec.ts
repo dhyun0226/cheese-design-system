@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 function visibleSvgViewportBounds(svg: SVGSVGElement) {
   // Project the clipping viewport from parent coordinates, independent of the
@@ -34,9 +36,15 @@ function visibleSvgViewportBounds(svg: SVGSVGElement) {
   };
 }
 
-test("home shows only the A rocket from the original source without covering the moon", async ({
+test("home shows the original A rocket as a vector with a readable responsive illustration", async ({
   page,
 }) => {
+  const original = await readFile(
+    join(__dirname, "../site/assets/starship-logo.png"),
+  );
+  expect(createHash("sha256").update(original).digest("hex")).toBe(
+    "e0d5e68aa4988f5f067db931e71d11e35b700cd3bb942efbe1e9048f7daded8a",
+  );
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const width of [1440, 900, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
@@ -54,35 +62,64 @@ test("home shows only the A rocket from the original source without covering the
       "animation-name",
       "none",
     );
+    const drawing = rocket.locator("use");
+    await expect
+      .poll(() =>
+        drawing.evaluate((element: SVGUseElement) => {
+          const box = element.getBBox();
+          return box.width * box.height;
+        }),
+      )
+      .toBeGreaterThan(0);
     if (width === 1440) {
-      const source = (await rocket.locator("image").getAttribute("href"))!;
-      const bytes = source.startsWith("data:")
-        ? Buffer.from(source.split(",")[1], "base64")
-        : await (
-            await page.request.get(new URL(source, page.url()).href)
-          ).body();
-      expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-        "e0d5e68aa4988f5f067db931e71d11e35b700cd3bb942efbe1e9048f7daded8a",
-      );
+      const source = (await drawing.getAttribute("href"))!;
+      const asset = await page.evaluate(async (reference) => {
+        const url = new URL(reference, window.location.href);
+        const fragment = decodeURIComponent(url.hash.slice(1));
+        url.hash = "";
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("The rocket asset failed to load");
+        const document = new DOMParser().parseFromString(
+          await response.text(),
+          "image/svg+xml",
+        );
+        const target = document.getElementById(fragment);
+        const vectorShapes =
+          "path, polygon, polyline, circle, ellipse, rect, line";
+        return {
+          root: document.documentElement.localName,
+          fragment,
+          targetHasGeometry:
+            !!target &&
+            (target.matches(vectorShapes) ||
+              !!target.querySelector(vectorShapes)),
+          embeddedImages: document.querySelectorAll(
+            "image, feImage, foreignObject",
+          ).length,
+        };
+      }, source);
+      expect(asset.root).toBe("svg");
+      expect(asset.fragment).toBe("rocket");
+      expect(asset.targetHasGeometry).toBe(true);
+      expect(asset.embeddedImages).toBe(0);
     }
     const box = await rocket.evaluate(visibleSvgViewportBounds);
     const scene = await page.locator(".origin-scene").boundingBox();
     const moon = await page.locator(".origin-moon").boundingBox();
-    const coordinate = await page.locator(".origin-coordinate").boundingBox();
+    const kicker = await page.locator(".origin-kicker").boundingBox();
+    const caption = await page.locator(".origin-caption").boundingBox();
     expect(box.x).toBeGreaterThanOrEqual(scene!.x);
     expect(box.right).toBeLessThanOrEqual(scene!.x + scene!.width);
-    expect(box.right).toBeLessThan(moon!.x);
-    expect(box.y).toBeGreaterThan(coordinate!.y + coordinate!.height);
-    const cheese = await page.locator(".origin-cheese").last().boundingBox();
-    const caption = await page.locator(".origin-caption").boundingBox();
+    expect(box.y).toBeGreaterThanOrEqual(scene!.y);
+    expect(box.bottom).toBeLessThanOrEqual(scene!.y + scene!.height);
+    expect(kicker!.y + kicker!.height).toBeLessThanOrEqual(scene!.y);
+    expect(scene!.y + scene!.height).toBeLessThanOrEqual(caption!.y);
     expect(box.bottom).toBeLessThan(caption!.y);
-    expect(cheese!.y + cheese!.height).toBeLessThan(caption!.y);
+    expect(moon!.y + moon!.height).toBeLessThan(caption!.y);
     await expect(
       page.getByRole("link", { name: /우주선 원본/ }),
     ).toHaveAttribute("href", "https://www.starship-ent.com/about");
-    await expect(page.locator(".origin-note")).toContainText(
-      "승인된 제품은 아닙니다",
-    );
+    await expect(page.locator(".origin-note")).toContainText("개인 프로젝트");
     await expect
       .poll(() =>
         page.evaluate(
@@ -93,11 +130,11 @@ test("home shows only the A rocket from the original source without covering the
   }
 });
 
-test("rocket launch runs once upward and remains visible at both ends", async ({
+test("rocket launches once toward the moon and reduced motion keeps its final position", async ({
   page,
 }) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
   for (const width of [1440, 900, 390, 320]) {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     const flight = page.locator(".origin-flight");
@@ -127,15 +164,21 @@ test("rocket launch runs once upward and remains visible at both ends", async ({
     expect(motion.duration).toBe(2200);
     expect(motion.fill).toBe("both");
     expect(end.y).toBeLessThan(start.y);
+    expect(end.x).toBeGreaterThan(start.x);
     const scene = await page.locator(".origin-scene").boundingBox();
     const caption = await page.locator(".origin-caption").boundingBox();
-    const coordinate = await page.locator(".origin-coordinate").boundingBox();
     const moon = await page.locator(".origin-moon").boundingBox();
+    const distanceToMoon = (box: typeof start) =>
+      Math.hypot(
+        box.x + box.width / 2 - (moon!.x + moon!.width / 2),
+        box.y + box.height / 2 - (moon!.y + moon!.height / 2),
+      );
+    expect(distanceToMoon(end)).toBeLessThan(distanceToMoon(start));
     for (const box of [start, end]) {
       expect(box.x).toBeGreaterThanOrEqual(scene!.x);
       expect(box.right).toBeLessThanOrEqual(scene!.x + scene!.width);
-      expect(box.right).toBeLessThan(moon!.x);
-      expect(box.y).toBeGreaterThan(coordinate!.y + coordinate!.height);
+      expect(box.y).toBeGreaterThanOrEqual(scene!.y);
+      expect(box.bottom).toBeLessThanOrEqual(scene!.y + scene!.height);
       expect(box.bottom).toBeLessThan(caption!.y);
     }
     if (width === 1440) {
@@ -145,9 +188,63 @@ test("rocket launch runs once upward and remains visible at both ends", async ({
         animation.play();
         await animation.finished;
       });
-      await expect(flight).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
+      const settled = await rocket.evaluate(visibleSvgViewportBounds);
+      expect(settled.x).toBeCloseTo(end.x, 1);
+      expect(settled.y).toBeCloseTo(end.y, 1);
     }
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await expect(flight).toHaveCSS("animation-name", "none");
+    const reduced = await rocket.evaluate(visibleSvgViewportBounds);
+    expect(reduced.x).toBeCloseTo(end.x, 1);
+    expect(reduced.y).toBeCloseTo(end.y, 1);
   }
+});
+
+test("home guides visitors into the docs and its evaluation example updates after submission", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .locator(".home-hero")
+    .getByRole("link", { name: "시작하기", exact: true })
+    .click();
+  await expect(page).toHaveURL(/#\/getting-started$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "작게 시작하세요.",
+  );
+  await page.getByRole("link", { name: "CHEESE 홈", exact: true }).click();
+  await expect(page).toHaveURL(/#\/$/);
+  await expect(page.locator(".home-hero")).toBeVisible();
+
+  const showcase = page.locator(".home-showcase");
+  const showcaseBox = await showcase.boundingBox();
+  const componentsBox = await page.locator(".explore-grid").boundingBox();
+  expect(showcaseBox!.y).toBeLessThan(componentsBox!.y);
+  const progress = showcase.getByRole("progressbar", {
+    name: "팀 평가 진행률",
+  });
+  const submitted = showcase
+    .locator(".product-stats > div")
+    .filter({ hasText: "제출 완료" })
+    .locator("strong");
+  await expect(progress).toHaveAttribute("aria-valuenow", "75");
+  await expect(submitted).toHaveText(/^18\s*명$/);
+  await showcase.getByRole("button", { name: "검토하기", exact: true }).click();
+  const dialog = page.getByRole("dialog", {
+    name: "평가 제출 전 확인",
+    exact: true,
+  });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "예제 제출", exact: true }).click();
+  await expect(dialog).not.toBeVisible();
+  await expect(progress).toHaveAttribute("aria-valuenow", "79");
+  await expect(submitted).toHaveText(/^19\s*명$/);
+  await expect(showcase.locator(".product-task")).toContainText(
+    "검토가 완료되었습니다.",
+  );
+  await expect(
+    showcase.getByRole("button", { name: "다시 보기", exact: true }),
+  ).toBeVisible();
 });
 
 test("component navigation keeps the title, selection and section links in sync", async ({
@@ -193,7 +290,7 @@ test("mobile documentation search navigates and closes the drawer", async ({
   await expect(page.locator(".origin-story")).toContainText(
     "문을 열고 나와 보니",
   );
-  await expect(page.locator(".origin-story")).toContainText("제작자가 상상한");
+  await expect(page.locator(".origin-story")).toContainText("개인 프로젝트");
   await page.getByRole("button", { name: "메뉴 열기" }).click();
   const drawer = page.getByRole("dialog", { name: "문서 탐색" });
   await drawer

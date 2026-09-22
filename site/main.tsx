@@ -19,8 +19,6 @@ import {
   Select,
   Checkbox,
   Switch,
-  Progress,
-  Avatar,
   Table,
   Alert,
   Search,
@@ -35,8 +33,9 @@ import "@cheese/css";
 import "./site.css";
 import { entries, groups, type Entry } from "./catalog";
 import VueDemoSource from "./VueDemo.vue?raw";
-import starshipLogo from "./assets/starship-logo.png";
-import { Tree, DateField } from "@cheese/react";
+import Home, { EvaluationPreview } from "./Home";
+import Logo from "./Logo";
+import { DateField } from "@cheese/react";
 const modules = import.meta.glob<{ default: React.ComponentType }>(
   "./examples/*.tsx",
 );
@@ -53,21 +52,6 @@ const sources = import.meta.glob<string>("./examples/*.tsx", {
 const implemented = (id: string) => !!modules["./examples/" + id + ".tsx"];
 const count = entries.filter((e) => implemented(e.id)).length;
 const github = "https://github.com/dhyun0226/cheese-design-system";
-function Logo() {
-  return (
-    <span className="logo-mark" aria-hidden="true">
-      <svg viewBox="0 0 32 32">
-        <path
-          d="M6 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3Z"
-          fill="currentColor"
-        />
-        <circle cx="11" cy="12" r="2" fill="#fff" />
-        <circle cx="22" cy="19" r="3" fill="#fff" />
-        <circle cx="12" cy="23" r="1.5" fill="#fff" />
-      </svg>
-    </span>
-  );
-}
 function useRoute() {
   const readRoute = () =>
     (location.hash.slice(2) || "").replace(
@@ -241,322 +225,6 @@ function Sidebar({
         개인 제작 · 도입 검증 단계
       </div>
     </nav>
-  );
-}
-function EvaluationPreview() {
-  const [submitted, setSubmitted] = useState(false);
-  return (
-    <div className="product-preview">
-      <div className="product-top">
-        <span className="product-name">
-          <Logo />
-          cheese workspace
-        </span>
-        <Avatar alt="가상 사용자 김치즈" fallback="치즈" />
-      </div>
-      <div className="product-content">
-        <div className="product-heading">
-          <div>
-            <span className="eyebrow">PEOPLE & GROWTH</span>
-            <h2>함께 돌아보는 한 해.</h2>
-            <p>2026 하반기 성과 평가</p>
-          </div>
-          <Badge tone="brand">진행 중</Badge>
-        </div>
-        <div className="product-stats">
-          <div>
-            <span>평가 대상</span>
-            <strong>
-              24<span>명</span>
-            </strong>
-          </div>
-          <div>
-            <span>제출 완료</span>
-            <strong>
-              {submitted ? 19 : 18}
-              <span>명</span>
-            </strong>
-          </div>
-          <div>
-            <span>마감까지</span>
-            <strong>
-              7<span>일</span>
-            </strong>
-          </div>
-        </div>
-        <div className="product-progress">
-          <span>팀 평가 진행률</span>
-          <strong>{submitted ? 79 : 75}%</strong>
-        </div>
-        <Progress label="팀 평가 진행률" value={submitted ? 79 : 75} />
-        <div className="product-task">
-          <Avatar alt="본인 평가" fallback="나" />
-          <div>
-            <strong>나의 성과 돌아보기</strong>
-            <p>
-              {submitted
-                ? "검토가 완료되었습니다."
-                : "작성한 평가를 검토하고 제출해 주세요."}
-            </p>
-          </div>
-          <DialogRoot>
-            <DialogTrigger asChild>
-              <Button variant="weak" size="sm">
-                {submitted ? "다시 보기" : "검토하기"}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogTitle>평가 제출 전 확인</DialogTitle>
-              <DialogDescription>
-                실제 사내 데이터가 아닌 디자인 시스템 데모입니다. 제출하면 이
-                화면의 예제 상태만 변경됩니다.
-              </DialogDescription>
-              <div className="cheese-dialog-actions">
-                <DialogClose asChild>
-                  <Button variant="weak">취소</Button>
-                </DialogClose>
-                <DialogClose asChild>
-                  <Button variant="accent" onClick={() => setSubmitted(true)}>
-                    예제 제출
-                  </Button>
-                </DialogClose>
-              </div>
-            </DialogContent>
-          </DialogRoot>
-        </div>
-      </div>
-      <div className="product-bottom">
-        <span className="status-dot" />
-        실제 CHEESE 컴포넌트로 만든 화면
-      </div>
-    </div>
-  );
-}
-function OriginIllustration() {
-  return (
-    <div className="origin-illustration">
-      <span className="origin-coordinate">A SMALL DISCOVERY</span>
-      <div className="origin-scene">
-        <svg
-          viewBox="0 0 480 320"
-          fill="none"
-          role="img"
-          aria-label="STARSHIP 로고의 A 모양 우주선이 치즈 달을 향해 올라가는 장면"
-        >
-          <circle className="origin-moon" cx="342" cy="157" r="83" />
-          <circle className="origin-crater" cx="300" cy="147" r="15" />
-          <circle className="origin-crater" cx="366" cy="173" r="22" />
-          <circle className="origin-crater" cx="316" cy="214" r="11" />
-          <circle className="origin-crater" cx="356" cy="123" r="7" />
-          <path
-            className="origin-trail"
-            d="M131 257C140 229 148 209 158 188M117 244l9-23"
-          />
-          <g className="origin-flight">
-            <g transform="rotate(16 181 119)">
-              <svg
-                className="origin-rocket"
-                x="146"
-                y="56"
-                width="70"
-                height="126"
-                viewBox="100 10 50 90"
-                overflow="hidden"
-                aria-hidden="true"
-              >
-                <image href={starshipLogo} width="400" height="107" />
-              </svg>
-            </g>
-          </g>
-          <path className="origin-cheese" d="m252 227 25-9 16 11-41 6v-8Z" />
-          <path className="origin-cheese" d="M252 235v14h41v-20l-41 6Z" />
-          <circle className="origin-cheese-hole" cx="261" cy="241" r="2" />
-          <circle className="origin-cheese-hole" cx="283" cy="237" r="3" />
-        </svg>
-      </div>
-      <span className="origin-caption">STARSHIP → MOON → CHEESE</span>
-    </div>
-  );
-}
-function Home() {
-  return (
-    <>
-      <section className="home-hero" aria-labelledby="home-title">
-        <div className="hero-copy">
-          <div className="eyebrow">
-            <span className="gold-dash" />
-            CHEESE DESIGN SYSTEM
-          </div>
-          <h1 id="home-title">
-            작은 발견에서,
-            <br />
-            같은 기준으로.
-          </h1>
-          <p>
-            차분한 화면과 명확한 동작을 만드는 공통 언어.
-            <br />
-            토큰, 컴포넌트, 사용 가이드를 한곳에서 만납니다.
-          </p>
-          <div className="hero-actions">
-            <a className="cheese-button" href="#/getting-started">
-              시작하기
-              <ChevronRight aria-hidden="true" />
-            </a>
-            <a className="text-link" href="#/components">
-              컴포넌트 둘러보기
-              <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
-            </a>
-          </div>
-          <span className="hero-note">React · Vue · Shared tokens</span>
-        </div>
-        <OriginIllustration />
-      </section>
-      <section className="origin-story" aria-labelledby="origin-title">
-        <div>
-          <span className="eyebrow">WHY CHEESE?</span>
-          <h2 id="origin-title">
-            달에 도착했더니,
-            <br />
-            치즈였습니다.
-          </h2>
-        </div>
-        <div>
-          <p>
-            STARSHIP 로고의 우주선이 달로 날아가 착륙합니다. 문을 열고 나와
-            보니, 달은 치즈로 이루어져 있었습니다. 그 첫 발견을 첫 디자인
-            시스템의 이름으로 삼았습니다. <strong>CHEESE.</strong>
-          </p>
-          <span className="origin-note">
-            제작자가 상상한 이름의 이야기입니다. STARSHIP의 공식 브랜드 설명이나
-            승인된 제품은 아닙니다.
-          </span>
-          <a
-            className="origin-source text-link"
-            href="https://www.starship-ent.com/about"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            우주선 원본 · STARSHIP 공식 CI
-            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
-            <span className="cheese-sr-only"> (새 창)</span>
-          </a>
-        </div>
-      </section>
-      <nav className="home-paths" aria-label="문서 시작점">
-        {[
-          ["foundations", "01", "디자인 원칙", "색상, 서체, 간격의 공통 기준"],
-          [
-            "components",
-            "02",
-            "컴포넌트",
-            `${count}개의 실행 예제와 사용 가이드`,
-          ],
-          [
-            "patterns",
-            "03",
-            "업무 화면 예제",
-            "작은 부품이 하나의 화면이 되는 과정",
-          ],
-        ].map(([path, number, title, description]) => (
-          <a key={path} href={"#/" + path}>
-            <span className="path-number">{number}</span>
-            <h2>
-              {title}
-              <ArrowUpRight aria-hidden="true" />
-            </h2>
-            <p>{description}</p>
-          </a>
-        ))}
-      </nav>
-      <section className="home-section">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">COMPONENTS</span>
-            <h2>필요한 것부터, 하나씩.</h2>
-          </div>
-          <a className="text-link" href="#/components">
-            전체 보기
-            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
-          </a>
-        </div>
-        <div className="explore-grid">
-          {[
-            ["button", "Button", "다음 행동을 명확하게 안내합니다."],
-            ["field", "Field", "레이블부터 오류까지 연결합니다."],
-            ["dialog", "Dialog", "필요한 일에 집중하게 합니다."],
-            ["tree", "Tree", "정보의 구조를 보여줍니다."],
-          ].map(([id, title, desc]) => (
-            <article className="explore-card" key={id}>
-              <div className="explore-number" inert aria-hidden="true">
-                {id === "button" ? (
-                  <Button>저장하기</Button>
-                ) : id === "field" ? (
-                  <div className="preview-inset">
-                    <Field label="회사 이메일">
-                      <Input placeholder="name@company.com" readOnly />
-                    </Field>
-                  </div>
-                ) : id === "dialog" ? (
-                  <Card>
-                    <Badge>집중이 필요한 순간</Badge>
-                  </Card>
-                ) : (
-                  <Tree
-                    nodes={[
-                      {
-                        id: "root",
-                        label: "조직",
-                        children: [{ id: "team", label: "피플팀" }],
-                      },
-                    ]}
-                    defaultExpanded={["root"]}
-                  />
-                )}
-              </div>
-              <h3>
-                <a href={"#/components/" + id}>{title}</a>
-                <ArrowUpRight
-                  className="cheese-inline-icon"
-                  aria-hidden="true"
-                />
-              </h3>
-              <p>{desc}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-      <section className="home-showcase" aria-labelledby="showcase-title">
-        <div className="showcase-copy">
-          <span className="eyebrow">PUT IT TOGETHER</span>
-          <h2 id="showcase-title">
-            부품을 연결하면,
-            <br />
-            업무가 보입니다.
-          </h2>
-          <p>
-            입력, 진행 상태, 확인 대화창을 조합한 평가 화면입니다. 직접 눌러
-            보고, 화면을 이루는 컴포넌트를 살펴보세요.
-          </p>
-          <a className="text-link" href="#/patterns">
-            업무 화면 예제 보기
-            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
-          </a>
-        </div>
-        <EvaluationPreview />
-      </section>
-      <section className="home-note">
-        <div>
-          <h2>도입 전, 현재 범위를 확인하세요.</h2>
-          <p>
-            실행 예제와 구현 상태, 서비스에서 연결할 일을 함께 정리했습니다.
-          </p>
-        </div>
-        <a className="text-link" href="#/readiness">
-          도입 체크리스트
-          <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
-        </a>
-      </section>
-    </>
   );
 }
 function Catalog() {
@@ -1418,7 +1086,7 @@ function App() {
           {entry ? (
             <ComponentPage entry={entry} key={entry.id} />
           ) : route === "" ? (
-            <Home />
+            <Home exampleCount={count} />
           ) : route === "components" ? (
             <Catalog />
           ) : route === "getting-started" ? (
@@ -1446,7 +1114,11 @@ function App() {
               <Logo />
               CHEESE · Small details. Shared standards.
             </span>
-            <span>Independent project. Not an official STARSHIP product.</span>
+            <span>
+              {route
+                ? "Independent project. Not an official STARSHIP product."
+                : "React · Vue · Shared tokens"}
+            </span>
           </footer>
         </div>
       </main>
