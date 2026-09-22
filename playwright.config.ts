@@ -8,16 +8,22 @@ export default defineConfig({
   expect: { timeout: 5000 },
   retries: process.env.CI ? 1 : 0,
   reporter: [["list"], ["html", { open: "never" }]],
+  projects: [
+    { name: "chromium", use: { browserName: "chromium" } },
+    { name: "firefox", use: { browserName: "firefox" } },
+    { name: "webkit", use: { browserName: "webkit" } },
+  ],
   use: {
     baseURL: "http://127.0.0.1:48176",
-    browserName: "chromium",
     viewport: { width: 1440, height: 1000 },
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "npm run dev -- --port 48176",
+    command:
+      "npm run build:test && vite preview --outDir artifacts/browser-site --host 127.0.0.1 --port 48176 --strictPort",
     url: "http://127.0.0.1:48176",
     reuseExistingServer: false,
+    timeout: 120000,
   },
 });

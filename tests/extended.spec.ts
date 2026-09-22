@@ -81,6 +81,7 @@ test("other interactions: accordion, slider, tooltip, toast and pagination", asy
 test("all documentation routes and small screen dialog are usable", async ({
   page,
 }) => {
+  test.setTimeout(90000); // Five full-page axe scans, including slower browser engines.
   for (const route of [
     "components",
     "getting-started",
@@ -106,7 +107,7 @@ test("all documentation routes and small screen dialog are usable", async ({
   expect(bounds!.x).toBeGreaterThanOrEqual(0);
   expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(360);
   await page.screenshot({
-    path: "artifacts/dialog-mobile.png",
+    path: `artifacts/${test.info().project.name}/dialog-mobile.png`,
     fullPage: false,
   });
 });

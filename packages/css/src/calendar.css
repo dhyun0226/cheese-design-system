@@ -138,3 +138,13 @@
   outline: 2px solid var(--cheese-focus);
   outline-offset: 1px;
 }
+.cheese-form-proxy {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  padding: 0;
+  border: 0;
+}

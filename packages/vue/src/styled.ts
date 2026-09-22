@@ -12,87 +12,170 @@ function styled<T extends Component>(component: T, className: string): T {
   return defineComponent({
     inheritAttrs: false,
     setup(_, { attrs, slots }) {
+      const { forwardRef } = P.useForwardExpose();
       return () =>
-        h(component, { ...attrs, class: [className, attrs.class] }, slots);
+        h(
+          component,
+          { ...attrs, ref: forwardRef, class: [className, attrs.class] },
+          slots,
+        );
     },
   }) as unknown as T;
 }
-export const CheckboxRoot = styled(P.CheckboxRoot, "cheese-checkbox");
-export const CheckboxIndicator = styled(P.CheckboxIndicator, "");
-export const SwitchRoot = styled(P.SwitchRoot, "cheese-switch");
-export const SwitchThumb = styled(P.SwitchThumb, "cheese-switch-thumb");
-export const RadioGroupRoot = styled(P.RadioGroupRoot, "cheese-radio-group");
-export const RadioGroupItem = styled(P.RadioGroupItem, "cheese-radio");
-export const RadioGroupIndicator = styled(
+export const CheckboxRoot: typeof P.CheckboxRoot = styled(
+  P.CheckboxRoot,
+  "cheese-checkbox",
+);
+export const CheckboxIndicator: typeof P.CheckboxIndicator = styled(
+  P.CheckboxIndicator,
+  "",
+);
+export const SwitchRoot: typeof P.SwitchRoot = styled(
+  P.SwitchRoot,
+  "cheese-switch",
+);
+export const SwitchThumb: typeof P.SwitchThumb = styled(
+  P.SwitchThumb,
+  "cheese-switch-thumb",
+);
+export const RadioGroupRoot: typeof P.RadioGroupRoot = styled(
+  P.RadioGroupRoot,
+  "cheese-radio-group",
+);
+export const RadioGroupItem: typeof P.RadioGroupItem = styled(
+  P.RadioGroupItem,
+  "cheese-radio",
+);
+export const RadioGroupIndicator: typeof P.RadioGroupIndicator = styled(
   P.RadioGroupIndicator,
   "cheese-radio-indicator",
 );
-export const TabsRoot = styled(P.TabsRoot, "");
-export const TabsList = styled(P.TabsList, "cheese-tabs-list");
-export const TabsTrigger = styled(P.TabsTrigger, "cheese-tabs-trigger");
-export const TabsContent = styled(P.TabsContent, "cheese-tabs-content");
-export const DialogTitle = styled(P.DialogTitle, "cheese-dialog-title");
-export const DialogDescription = styled(
+export const TabsRoot: typeof P.TabsRoot = styled(P.TabsRoot, "");
+export const TabsList: typeof P.TabsList = styled(
+  P.TabsList,
+  "cheese-tabs-list",
+);
+export const TabsTrigger: typeof P.TabsTrigger = styled(
+  P.TabsTrigger,
+  "cheese-tabs-trigger",
+);
+export const TabsContent: typeof P.TabsContent = styled(
+  P.TabsContent,
+  "cheese-tabs-content",
+);
+export const DialogTitle: typeof P.DialogTitle = styled(
+  P.DialogTitle,
+  "cheese-dialog-title",
+);
+export const DialogDescription: typeof P.DialogDescription = styled(
   P.DialogDescription,
   "cheese-dialog-description",
 );
-export const AlertDialogTitle = styled(
+export const AlertDialogTitle: typeof P.AlertDialogTitle = styled(
   P.AlertDialogTitle,
   "cheese-dialog-title",
 );
-export const AlertDialogDescription = styled(
+export const AlertDialogDescription: typeof P.AlertDialogDescription = styled(
   P.AlertDialogDescription,
   "cheese-dialog-description",
 );
-export const AccordionItem = styled(P.AccordionItem, "cheese-accordion-item");
-export const AccordionHeader = styled(
+export const AccordionItem: typeof P.AccordionItem = styled(
+  P.AccordionItem,
+  "cheese-accordion-item",
+);
+export const AccordionHeader: typeof P.AccordionHeader = styled(
   P.AccordionHeader,
   "cheese-accordion-header",
 );
-export const AccordionTrigger = styled(
+export const AccordionTrigger: typeof P.AccordionTrigger = styled(
   P.AccordionTrigger,
   "cheese-accordion-trigger",
 );
-export const AccordionContent = styled(
+export const AccordionContent: typeof P.AccordionContent = styled(
   P.AccordionContent,
   "cheese-accordion-content",
 );
-export const DropdownMenuItem = styled(P.DropdownMenuItem, "cheese-menu-item");
+export const DropdownMenuItem: typeof P.DropdownMenuItem = styled(
+  P.DropdownMenuItem,
+  "cheese-menu-item",
+);
 export const ContextMenuItem: typeof P.ContextMenuItem = styled(
   P.ContextMenuItem,
   "cheese-menu-item",
 );
-export const SliderRoot = styled(P.SliderRoot, "cheese-slider");
-export const SliderTrack = styled(P.SliderTrack, "cheese-slider-track");
-export const SliderRange = styled(P.SliderRange, "cheese-slider-range");
-export const SliderThumb = styled(P.SliderThumb, "cheese-slider-thumb");
-export const ProgressRoot = styled(P.ProgressRoot, "cheese-progress");
-export const ProgressIndicator = styled(
+export const SliderRoot: typeof P.SliderRoot = styled(
+  P.SliderRoot,
+  "cheese-slider",
+);
+export const SliderTrack: typeof P.SliderTrack = styled(
+  P.SliderTrack,
+  "cheese-slider-track",
+);
+export const SliderRange: typeof P.SliderRange = styled(
+  P.SliderRange,
+  "cheese-slider-range",
+);
+export const SliderThumb: typeof P.SliderThumb = styled(
+  P.SliderThumb,
+  "cheese-slider-thumb",
+);
+export const ProgressRoot: typeof P.ProgressRoot = styled(
+  P.ProgressRoot,
+  "cheese-progress",
+);
+export const ProgressIndicator: typeof P.ProgressIndicator = styled(
   P.ProgressIndicator,
   "cheese-progress-indicator",
 );
-export const AvatarRoot = styled(P.AvatarRoot, "cheese-avatar");
-export const Separator = styled(P.Separator, "cheese-separator");
-export const Toggle = styled(P.Toggle, "cheese-toggle");
-export const ToggleGroupRoot = styled(P.ToggleGroupRoot, "cheese-toggle-group");
-export const ToggleGroupItem = styled(P.ToggleGroupItem, "cheese-toggle");
-export const ToastRoot = styled(P.ToastRoot, "cheese-toast");
-export const ToastTitle = styled(P.ToastTitle, "cheese-toast-title");
-export const ToastDescription = styled(
+export const AvatarRoot: typeof P.AvatarRoot = styled(
+  P.AvatarRoot,
+  "cheese-avatar",
+);
+export const Separator: typeof P.Separator = styled(
+  P.Separator,
+  "cheese-separator",
+);
+export const Toggle: typeof P.Toggle = styled(P.Toggle, "cheese-toggle");
+export const ToggleGroupRoot: typeof P.ToggleGroupRoot = styled(
+  P.ToggleGroupRoot,
+  "cheese-toggle-group",
+);
+export const ToggleGroupItem: typeof P.ToggleGroupItem = styled(
+  P.ToggleGroupItem,
+  "cheese-toggle",
+);
+export const ToastRoot: typeof P.ToastRoot = styled(
+  P.ToastRoot,
+  "cheese-toast",
+);
+export const ToastTitle: typeof P.ToastTitle = styled(
+  P.ToastTitle,
+  "cheese-toast-title",
+);
+export const ToastDescription: typeof P.ToastDescription = styled(
   P.ToastDescription,
   "cheese-toast-description",
 );
-export const ToastViewport = styled(P.ToastViewport, "cheese-toast-viewport");
-export const ScrollAreaRoot = styled(P.ScrollAreaRoot, "cheese-scroll-area");
-export const ScrollAreaViewport = styled(
+export const ToastViewport: typeof P.ToastViewport = styled(
+  P.ToastViewport,
+  "cheese-toast-viewport",
+);
+export const ScrollAreaRoot: typeof P.ScrollAreaRoot = styled(
+  P.ScrollAreaRoot,
+  "cheese-scroll-area",
+);
+export const ScrollAreaViewport: typeof P.ScrollAreaViewport = styled(
   P.ScrollAreaViewport,
   "cheese-scroll-viewport",
 );
-export const ScrollAreaScrollbar = styled(
+export const ScrollAreaScrollbar: typeof P.ScrollAreaScrollbar = styled(
   P.ScrollAreaScrollbar,
   "cheese-scrollbar",
 );
-export const ScrollAreaThumb = styled(P.ScrollAreaThumb, "cheese-scroll-thumb");
+export const ScrollAreaThumb: typeof P.ScrollAreaThumb = styled(
+  P.ScrollAreaThumb,
+  "cheese-scroll-thumb",
+);
 
 export const Card = defineComponent({
   inheritAttrs: false,

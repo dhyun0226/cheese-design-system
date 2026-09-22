@@ -19,7 +19,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium firefox webkit
       - run: node scripts/generate-tokens.mjs --check
       - run: npm run check
       - uses: actions/upload-artifact@v4

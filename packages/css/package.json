@@ -10,7 +10,8 @@
     "./components.css": "./src/components.css"
   },
   "files": [
-    "src"
+    "src",
+    "licenses"
   ],
   "scripts": {
     "build": "node -e \"console.log('@cheese/css ready')\""

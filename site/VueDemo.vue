@@ -38,6 +38,10 @@ import {
   AccordionHeader,
   AccordionTrigger,
   AccordionContent,
+  ContextMenuRoot,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
 } from "@cheese/vue";
 const name = ref(""),
   memo = ref(""),
@@ -49,6 +53,7 @@ const name = ref(""),
   selected = ref("없음"),
   value = ref([40]),
   scope = ref("team");
+const menuAction = ref("없음");
 const nodes = [
   {
     id: "company",
@@ -83,6 +88,25 @@ function save() {
         </p>
       </div>
       <div class="vue-grid">
+        <Card>
+          <h2>Context Menu · 키보드와 포인터</h2>
+          <ContextMenuRoot>
+            <ContextMenuTrigger as-child>
+              <Card tabindex="0" aria-label="Vue 작업 영역"
+                >오른쪽 클릭 또는 Shift + F10으로 작업 메뉴를 여세요.</Card
+              >
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem @select="menuAction = '복사'"
+                >복사</ContextMenuItem
+              >
+              <ContextMenuItem @select="menuAction = '이름 바꾸기'"
+                >이름 바꾸기</ContextMenuItem
+              >
+            </ContextMenuContent>
+          </ContextMenuRoot>
+          <p role="status" class="cheese-help">작업: {{ menuAction }}</p>
+        </Card>
         <Card
           ><h2>Calendar · 한국어 날짜 선택</h2>
           <Calendar

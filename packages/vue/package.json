@@ -21,7 +21,8 @@
     "@cheese/css": "0.2.0",
     "@internationalized/date": "^3.12.4",
     "@lucide/vue": "^1.47.0",
-    "reka-ui": "^2.6.0"
+    "reka-ui": "^2.6.0",
+    "vue-component-type-helpers": "^3.3.11"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",

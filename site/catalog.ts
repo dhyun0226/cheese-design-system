@@ -104,8 +104,8 @@ export const groups = [
         "date-picker",
         "Date Picker",
         "팝업 달력에서 날짜를 선택합니다.",
-        "label · value · onValueChange · min · max · name",
-        "달력의 키보드 이동과 Esc 닫기를 지원합니다. 날짜는 YYYY-MM-DD 형식으로 전달합니다.",
+        "label · value/defaultValue · onValueChange · min/max · name/form · required · disabled/readOnly · error/description · ref",
+        "YYYY-MM-DD FormData와 필수값 검증을 지원합니다. 오류 시 버튼에 포커스합니다. 제어 모드의 초기화는 form의 onReset에서 value를 변경하세요. disabled는 제출에서 제외, readOnly는 제출에 포함됩니다.",
       ],
       ["date-range-field", "Date Range Field", "시작일과 종료일을 입력합니다."],
       [

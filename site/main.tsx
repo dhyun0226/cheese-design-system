@@ -920,9 +920,60 @@ function Readiness() {
             ["Vue 통합", "입력·v-model·폼·모달·트리 실사용 예제"],
             ["스타일", "단일 토큰 소스, 공통 CSS, 로컬 Pretendard"],
             ["동작 검증", "Playwright 상호작용·접근성·반응형 테스트"],
+            ["브라우저", "Chromium · Firefox · WebKit 회귀 검사"],
+            [
+              "패키지 설치",
+              "외부 폴더에서 tarball 설치 → 엄격한 타입 검사 → SSR → 제품 빌드",
+            ],
+            ["폼 계약", "날짜 필수값·초기화·읽기 전용·비활성·제출 데이터 검사"],
             ["배포", "검증 통과 후 빌드 결과물만 GitHub Pages 배포"],
           ]}
         />
+      </section>
+      <section className="doc-section">
+        <h2>상용화까지 남은 일</h2>
+        <p>
+          예제 개수보다 실제 업무에서 필요한 계약을 먼저 완성합니다. 아래 항목은
+          완료 선언이 아니라 출시 전 통과해야 할 기준입니다.
+        </p>
+        <div className="cheese-stack">
+          <Card className="cheese-stack">
+            <Badge tone="brand">우선 1 · 도입을 막는 항목</Badge>
+            <h3>프레임워크와 배포 계약 고정</h3>
+            <p>
+              React 또는 Vue 중 첫 제품의 기준을 정합니다. Vue를 선택하면 고수준
+              컴포넌트·폼 API와 동작 테스트를 보강해야 합니다. 코드
+              반입·라이선스, 사설 패키지 배포, 버전 고정과 롤백도 결정합니다.
+            </p>
+          </Card>
+          <Card className="cheese-stack">
+            <Badge>우선 2 · 실제 업무 화면</Badge>
+            <h3>직원 검색부터 저장 실패까지</h3>
+            <p>
+              검색형 선택, 다중 입력, 파일 첨부, 정렬·선택·페이지 이동이 가능한
+              데이터 표를 우선 검토합니다. 평가 작성·검토·반려·승인 화면을
+              만들고, 한글 입력·오류·중복 제출·네트워크 단절을 검증합니다.
+            </p>
+          </Card>
+          <Card className="cheese-stack">
+            <Badge>우선 3 · 회사에서 승인</Badge>
+            <h3>접근성·성능·실제 연동 검증</h3>
+            <p>
+              스크린리더, 확대 화면, iOS·Android 실기기와 실제 데이터 규모로
+              점검합니다. 인증·서버 권한·감사 로그·저장·복구는 회사 시스템에서
+              연결합니다. 이 UI 저장소만으로 완료할 수 있는 항목은 아닙니다.
+            </p>
+          </Card>
+        </div>
+        <p>
+          <a
+            href={github + "/blob/main/docs/PRODUCTION-READINESS.md"}
+            target="_blank"
+            rel="noreferrer"
+          >
+            상용화 과제와 완료 기준 전체 보기 ↗
+          </a>
+        </p>
       </section>
       <section className="doc-section">
         <h2>실제 서비스 도입 전</h2>

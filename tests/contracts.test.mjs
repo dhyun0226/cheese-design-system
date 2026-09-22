@@ -76,6 +76,31 @@ test("font loading has no runtime external CDN dependency", () => {
   );
   assert.match(css, /pretendard\/dist/);
   assert.doesNotMatch(css, /https?:\/\//);
+  const source = readFileSync(
+    new URL("../public/licenses/Pretendard-OFL.txt", import.meta.url),
+    "utf8",
+  )
+    .trim()
+    .replace(/\r\n/g, "\n");
+  const shipped = readFileSync(
+    new URL("../packages/css/licenses/Pretendard-OFL.txt", import.meta.url),
+    "utf8",
+  )
+    .trim()
+    .replace(/\r\n/g, "\n");
+  assert.equal(
+    shipped,
+    source,
+    "Tarball and website must ship the same OFL notice",
+  );
+});
+
+test("React public entry preserves the client boundary after compilation", () => {
+  const entry = readFileSync(
+    new URL("../packages/react/dist/index.js", import.meta.url),
+    "utf8",
+  );
+  assert.match(entry, /^"use client";/);
 });
 test("Vue declarations are portable and do not reference workspace node_modules", () => {
   const dts = readFileSync(

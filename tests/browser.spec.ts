@@ -222,20 +222,26 @@ test("responsive visual checks and local fonts", async ({ page }) => {
     .evaluateAll((els) => els.map((el) => getComputedStyle(el).fontFamily));
   expect(fonts.every((f) => f.includes("Pretendard"))).toBeTruthy();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await page.screenshot({ path: "artifacts/home-desktop.png", fullPage: true });
+  await page.screenshot({
+    path: `artifacts/${test.info().project.name}/home-desktop.png`,
+    fullPage: true,
+  });
   await page.goto("/#/components/dialog");
   await expect(
     page.getByRole("button", { name: "평가 만들기", exact: true }),
   ).toBeVisible();
   await page.screenshot({
-    path: "artifacts/component-desktop.png",
+    path: `artifacts/${test.info().project.name}/component-desktop.png`,
     fullPage: true,
   });
   await page.getByRole("button", { name: "평가 만들기", exact: true }).click();
   await expect(
     page.getByRole("dialog", { name: "새 평가", exact: true }),
   ).toBeVisible();
-  await page.screenshot({ path: "artifacts/dialog-open.png", fullPage: false });
+  await page.screenshot({
+    path: `artifacts/${test.info().project.name}/dialog-open.png`,
+    fullPage: false,
+  });
   await page.keyboard.press("Escape");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -256,7 +262,7 @@ test("responsive visual checks and local fonts", async ({ page }) => {
     ),
   ).toBeTruthy();
   await page.screenshot({
-    path: "artifacts/pattern-mobile.png",
+    path: `artifacts/${test.info().project.name}/pattern-mobile.png`,
     fullPage: true,
   });
 });

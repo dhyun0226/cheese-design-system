@@ -22,7 +22,8 @@
 React와 Vue는 CSS를 공유하지만 API가 완전히 같지 않습니다.
 Vue 통합 페이지에서 검증된 폼·상태·다이얼로그·트리부터 사용하세요.
 카탈로그의 설계 중 항목은 아직 지원 기능이 아닙니다.
-Chromium 자동검사 통과는 Safari·Firefox·보조 기술까지 인증한 결과가 아닙니다.
+Chromium·Firefox·WebKit 자동검사를 구성했습니다. 실제 Safari/iPhone·Android·보조 기술까지 인증한 결과는 아닙니다.
+현재 수정 사항과 우선순위별 완료 기준은 [상용화 과제](PRODUCTION-READINESS.md)를 확인하세요.
 
 ## 회사 업무는 데모와 분리
 

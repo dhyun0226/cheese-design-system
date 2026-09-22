@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 export {
   Calendar,
@@ -157,12 +159,14 @@ export function Field({
     </div>
   );
 }
-export function Card({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLElement>) {
-  return <article {...props} className={cx("cheese-card", className)} />;
-}
+export const Card = React.forwardRef<
+  HTMLElement,
+  React.HTMLAttributes<HTMLElement>
+>(function Card({ className, ...props }, ref) {
+  return (
+    <article {...props} ref={ref} className={cx("cheese-card", className)} />
+  );
+});
 export function Badge({
   tone = "neutral",
   className,
@@ -462,8 +466,46 @@ export function DropdownMenuItem(
 ) {
   return <P.DropdownMenu.Item {...props} className="cheese-menu-item" />;
 }
-export const ContextMenuRoot = P.ContextMenu.Root,
-  ContextMenuTrigger = P.ContextMenu.Trigger;
+export const ContextMenuRoot = P.ContextMenu.Root;
+export const ContextMenuTrigger = React.forwardRef<
+  React.ComponentRef<typeof P.ContextMenu.Trigger>,
+  React.ComponentPropsWithoutRef<typeof P.ContextMenu.Trigger>
+>(function ContextMenuTrigger(
+  { onKeyDown, disabled, tabIndex, ...props },
+  ref,
+) {
+  return (
+    <P.ContextMenu.Trigger
+      {...props}
+      ref={ref}
+      disabled={disabled}
+      tabIndex={tabIndex ?? (disabled ? -1 : 0)}
+      aria-haspopup="menu"
+      onKeyDown={(event) => {
+        onKeyDown?.(event);
+        if (event.defaultPrevented || disabled) return;
+        if (
+          event.key !== "ContextMenu" &&
+          !(event.shiftKey && event.key === "F10")
+        )
+          return;
+        event.preventDefault();
+        // Firefox/WebKit do not consistently synthesize contextmenu from the
+        // keyboard. Use the same primitive event path as a pointer invocation.
+        const rect = event.currentTarget.getBoundingClientRect();
+        event.currentTarget.dispatchEvent(
+          new MouseEvent("contextmenu", {
+            bubbles: true,
+            cancelable: true,
+            button: 2,
+            clientX: rect.left + 8,
+            clientY: rect.top + Math.min(rect.height, 32),
+          }),
+        );
+      }}
+    />
+  );
+});
 export function ContextMenuContent(
   props: React.ComponentPropsWithoutRef<typeof P.ContextMenu.Content>,
 ) {

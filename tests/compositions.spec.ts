@@ -21,3 +21,18 @@ test("composed card popup, empty state and context menu work without DOM patches
   await page.getByRole("menuitem", { name: "복사", exact: true }).click();
   await expect(page.getByRole("status")).toHaveText("선택: 복사");
 });
+
+test("Vue context menu supports keyboard, dismissal and pointer reopening", async ({
+  page,
+}) => {
+  await page.goto("/vue.html");
+  const target = page.getByRole("article", { name: "Vue 작업 영역" });
+  await target.focus();
+  await page.keyboard.press("Shift+F10");
+  await expect(page.getByRole("menu")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("menu")).toHaveCount(0);
+  await target.click({ button: "right" });
+  await page.getByRole("menuitem", { name: "복사", exact: true }).click();
+  await expect(page.getByText("작업: 복사", { exact: true })).toBeVisible();
+});

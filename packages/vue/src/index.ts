@@ -4,6 +4,7 @@ export { default as Input } from "./Input.vue";
 export * from "./styled";
 export { default as Textarea } from "./Textarea.vue";
 export { default as NativeSelect } from "./NativeSelect.vue";
+export { default as ContextMenuTrigger } from "./ContextMenuTrigger.vue";
 export { Tree, type TreeNode } from "./Tree";
 export * as Primitives from "reka-ui";
 export {
@@ -20,7 +21,6 @@ export {
   DropdownMenuRoot,
   DropdownMenuTrigger,
   ContextMenuRoot,
-  ContextMenuTrigger,
   AccordionRoot,
   CollapsibleRoot,
   CollapsibleTrigger,

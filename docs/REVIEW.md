@@ -24,6 +24,7 @@
 - `npm run check`: 빌드 + React/Vue 패키지/문서 타입 + 카탈로그 export + SSR 계약 + 브라우저
 - `node scripts/generate-tokens.mjs --check`: JSON 토큰과 CSS 동기화
 - `npm pack --workspace @cheese/react --dry-run`, Vue 동일: 배포 파일/선언 포함 확인
+- 후속 보강: `npm run test:consumer`로 실제 tarball을 저장소 밖에서 설치하고 React 18/19·Vue의 엄격한 타입, SSR, 제품 번들 검사. 이 검사에서 Vue 타입 선언과 누락 의존성 문제를 발견해 수정했습니다.
 - `tests/contracts.test.mjs`: SSR, 버튼 기본 type/loading, 폼 연결, 트리 구조, progress 범위, 토큰·폰트·타입
 - `tests/browser.spec.ts`: 전 예제 접근성 자동검사, 기본 업무 시나리오, 모바일
 - `tests/extended.spec.ts`: 달력, Vue 모델 변경, 추가 인터랙션, 모든 문서 경로
@@ -40,6 +41,7 @@
 
 - 고급 입력 7개, 추가 날짜/시간 4개, 메뉴/툴바 3개, Hover Card, Splitter, Carousel은 설계 중입니다.
 - Vue의 고수준 API는 React와 동등한 전체 세트가 아닙니다. 검증된 통합 예제와 명시적 primitive 조합부터 사용합니다.
-- Chromium 자동검사만으로 보조 기술/모바일 실기기/모든 브라우저의 적합성을 보증하지 않습니다.
+- 후속 보강으로 Chromium·Firefox·WebKit 자동검사를 추가했습니다. 보조 기술/모바일 실기기/모든 브라우저의 적합성을 보증하지 않습니다.
 - 실제 데이터 규모, 권한, SSO, 저장·복구, 감사 로그와 현업 승인 흐름은 회사 환경에서 검증해야 합니다.
 - 따라서 이번 버전은 **검증 가능한 UI 도입 기반**이며, 즉시 운영 가능한 완성형 인사평가시스템이 아닙니다.
+- 상세 우선순위: [상용화 점검과 남은 과제](PRODUCTION-READINESS.md).

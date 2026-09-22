@@ -6,6 +6,7 @@ STARSHIP Entertainment 공식 제품이 아니며, 실제 직원·평가 데이�
 [문서 사이트](https://dhyun0226.github.io/cheese-design-system/)
 
 변경 근거와 남은 범위: [0.2 기술 점검](docs/REVIEW.md).
+운영 투입까지의 우선순위와 완료 기준: [상용화 과제](docs/PRODUCTION-READINESS.md).
 
 ## 현재 범위
 
@@ -23,12 +24,13 @@ Node.js 22.12 이상 / npm 10 이상을 사용합니다.
 ```sh
 npm ci
 npm run build
-npx playwright install chromium
+npx playwright install chromium firefox webkit
 npm run check
 npm run dev
 ```
 
 기본 개발 주소는 터미널에 출력됩니다. 테스트는 다른 개발 서버를 재사용하지 않고 전용 포트 48176에서 실행합니다.
+브라우저 검사는 개발 서버 대신 `artifacts/browser-site/`에 만든 제품 빌드를 사용합니다. 폼 계약용 테스트 화면은 이 경로에만 포함되며 공개 `dist/`에는 들어가지 않습니다.
 
 ## 패키지
 
@@ -78,15 +80,19 @@ npm pack --workspace @cheese/tokens --pack-destination artifacts
 
 ## 검증 및 배포
 
-`npm run check`: 패키지·문서 빌드 → TypeScript → 카탈로그 import 계약 → SSR 계약 → 브라우저 테스트.
+`npm run check`: 패키지·문서 빌드 → TypeScript → 카탈로그 import 계약 → SSR 계약 → 독립 tarball 소비자 → 3개 브라우저 테스트.
 
 - 코드 보기에는 실행 예제 파일 자체를 표시합니다.
 - `tests/contracts.test.mjs`: SSR, 폼 연결, 공개 export, 토큰·폰트·타입 계약
 - `tests/browser.spec.ts`: 각 실행 예제의 접근성 자동검사 + 중요한 사용자 흐름
+- `tests/forms.spec.ts`: 날짜 필수값·초기화·취소된 reset·disabled/readOnly·FormData·ref
+- `tests/consumer/`: workspace 밖에서 React 18/19 + Vue 소비자의 타입·SSR·제품 번들 검증 (`npm run test:consumer`)
+- `npx playwright test --project=chromium`: 빠른 단일 브라우저 확인. CI는 Chromium/Firefox/WebKit 전체 실행
 - `artifacts/`: 데스크톱·모바일 스크린샷
 - PR은 검증만, main은 검증 통과 후 `dist/`만 Pages에 배포합니다.
 
 자동 접근성 검사는 필요조건이지 충분조건이 아닙니다. 실제 보조 기술과 현업 시나리오를 추가로 검증하세요.
+독립 설치 테스트는 npm 네트워크 연결이 필요합니다. 성공 시 임시 소비자 폴더는 제거하고, 패키지와 요약은 `artifacts/packages/`에 보존합니다. 실패 시 디버깅용 임시 경로를 출력합니다.
 
 ## 변경 및 제약
 

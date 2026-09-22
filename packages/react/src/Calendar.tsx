@@ -6,6 +6,7 @@ import {
 } from "react-day-picker";
 import { ko } from "react-day-picker/locale";
 import { Popover } from "radix-ui";
+import { Calendar as CalendarIcon } from "lucide-react";
 export type { DateRange };
 export function Calendar(props: DayPickerProps) {
   return (
@@ -33,71 +34,166 @@ export interface DatePickerProps {
   min?: Date;
   max?: Date;
   disabled?: boolean;
+  readOnly?: boolean;
+  required?: boolean;
+  description?: string;
+  error?: string;
   name?: string;
+  form?: string;
+  id?: string;
+  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
 }
-export function DatePicker({
-  label,
-  value,
-  defaultValue,
-  onValueChange,
-  min,
-  max,
-  disabled,
-  name,
-}: DatePickerProps) {
-  const [local, setLocal] = React.useState<Date | undefined>(defaultValue),
-    [open, setOpen] = React.useState(false);
-  const selected = value === undefined ? local : (value ?? undefined),
-    id = React.useId();
-  return (
-    <div className="cheese-field">
-      <span id={id} className="cheese-label">
-        {label}
-      </span>
-      {name && (
+export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
+  function DatePicker(
+    {
+      label,
+      value,
+      defaultValue,
+      onValueChange,
+      min,
+      max,
+      disabled,
+      readOnly,
+      required,
+      description,
+      error,
+      name,
+      form,
+      id: providedId,
+      onBlur,
+    },
+    forwardedRef,
+  ) {
+    const [local, setLocal] = React.useState<Date | undefined>(defaultValue),
+      [open, setOpen] = React.useState(false),
+      [validationError, setValidationError] = React.useState("");
+    const trigger = React.useRef<HTMLButtonElement>(null);
+    const input = React.useRef<HTMLInputElement>(null);
+    React.useImperativeHandle(forwardedRef, () => trigger.current!);
+    const autoId = React.useId(),
+      id = providedId ?? autoId;
+    const selected = value === undefined ? local : (value ?? undefined);
+    const hint = error || validationError || description;
+
+    React.useEffect(() => {
+      const owner = input.current?.form;
+      if (!owner) return;
+      const reset = (event: Event) => {
+        // Respect an application's preventDefault() and controlled-state ownership.
+        // A browser may flush microtasks between native listeners. Wait until
+        // React's delegated onReset has also had a chance to cancel the event.
+        setTimeout(() => {
+          if (event.defaultPrevented) return;
+          if (value === undefined) {
+            setLocal(defaultValue);
+            onValueChange?.(defaultValue);
+          }
+          setValidationError("");
+          setOpen(false);
+        }, 0);
+      };
+      owner.addEventListener("reset", reset);
+      return () => owner.removeEventListener("reset", reset);
+    }, [value, defaultValue, onValueChange, form]);
+    React.useEffect(() => {
+      setValidationError("");
+      if (disabled || readOnly) setOpen(false);
+    }, [selected, disabled, readOnly]);
+
+    return (
+      <div className="cheese-field">
+        <label htmlFor={id} id={id + "-label"} className="cheese-label">
+          {label}
+          {required && <span aria-hidden="true"> *</span>}
+        </label>
+        {/* A native form control supplies constraint validation and FormData.
+          Focus and error announcements belong to the visible trigger. */}
         <input
-          type="hidden"
+          ref={input}
+          type="date"
+          className="cheese-form-proxy"
+          tabIndex={-1}
+          aria-hidden="true"
           name={name}
-          value={selected ? formatDate(selected) : ""}
-        />
-      )}
-      <Popover.Root open={open} onOpenChange={setOpen}>
-        <Popover.Trigger
+          form={form}
           disabled={disabled}
-          className="cheese-input cheese-date-trigger"
-          aria-labelledby={id + " " + id + "-value"}
+          readOnly={readOnly}
+          required={required}
+          min={min ? formatDate(min) : undefined}
+          max={max ? formatDate(max) : undefined}
+          value={selected ? formatDate(selected) : ""}
+          onChange={() => {}}
+          onInvalid={(event) => {
+            event.preventDefault();
+            setValidationError(
+              event.currentTarget.validity.valueMissing
+                ? "날짜를 선택해 주세요."
+                : "선택 가능한 날짜 범위를 확인해 주세요.",
+            );
+            trigger.current?.focus();
+          }}
+        />
+        <Popover.Root
+          open={open && !disabled && !readOnly}
+          onOpenChange={(next) => {
+            if (!disabled && !readOnly) setOpen(next);
+          }}
         >
-          <span id={id + "-value"}>
-            {selected ? formatDate(selected) : "날짜 선택"}
-          </span>
-          <span aria-hidden="true">▦</span>
-        </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Content
-            className="cheese-popover cheese-root"
-            sideOffset={8}
-            aria-label={label + " 달력"}
+          <Popover.Trigger
+            ref={trigger}
+            id={id}
+            type="button"
+            disabled={disabled}
+            data-readonly={readOnly || undefined}
+            onBlur={onBlur}
+            className="cheese-input cheese-date-trigger"
+            aria-labelledby={id + "-label " + id + "-value"}
+            aria-describedby={hint ? id + "-hint" : undefined}
+            aria-invalid={!!(error || validationError) || undefined}
           >
-            <Calendar
-              mode="single"
-              autoFocus
-              selected={selected}
-              defaultMonth={selected ?? min}
-              startMonth={min}
-              endMonth={max}
-              disabled={[
-                ...(min ? [{ before: min }] : []),
-                ...(max ? [{ after: max }] : []),
-              ]}
-              onSelect={(date) => {
-                if (value === undefined) setLocal(date);
-                onValueChange?.(date);
-                setOpen(false);
-              }}
-            />
-          </Popover.Content>
-        </Popover.Portal>
-      </Popover.Root>
-    </div>
-  );
-}
+            <span id={id + "-value"}>
+              {selected ? formatDate(selected) : "날짜 선택"}
+            </span>
+            <CalendarIcon size={18} aria-hidden="true" />
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content
+              className="cheese-popover cheese-root"
+              sideOffset={8}
+              aria-label={label + " 달력"}
+            >
+              <Calendar
+                mode="single"
+                autoFocus
+                selected={selected}
+                defaultMonth={selected ?? min}
+                startMonth={min}
+                endMonth={max}
+                disabled={[
+                  ...(min ? [{ before: min }] : []),
+                  ...(max ? [{ after: max }] : []),
+                ]}
+                onSelect={(date) => {
+                  if (value === undefined) setLocal(date);
+                  onValueChange?.(date);
+                  setValidationError("");
+                  setOpen(false);
+                }}
+              />
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
+        {hint && (
+          <p
+            id={id + "-hint"}
+            className="cheese-help"
+            data-error={!!(error || validationError)}
+            role={error || validationError ? "alert" : undefined}
+          >
+            {hint}
+          </p>
+        )}
+      </div>
+    );
+  },
+);
