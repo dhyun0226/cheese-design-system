@@ -118,7 +118,7 @@ function Sidebar({
   const active = entries.find((e) => route === "components/" + e.id);
   const [open, setOpen] = useState<Record<string, boolean>>({ 입력: true });
   useEffect(() => {
-    if (active) setOpen((v) => ({ ...v, [active.group]: true }));
+    if (active) setOpen({ [active.group]: true });
   }, [active]);
   return (
     <nav className="sidebar-content" aria-label="문서 탐색">
