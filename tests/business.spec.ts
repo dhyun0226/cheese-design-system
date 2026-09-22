@@ -170,22 +170,16 @@ for (const framework of ["react", "vue"]) {
   test(`${framework} real XHR adapter supports validation, failure and retry`, async ({
     page,
   }) => {
-    let calls = 0;
-    const requests: { type: string; body: string }[] = [];
-    await page.route("**/api/upload", async (route) => {
-      calls++;
-      requests.push({
-        type: route.request().headers()["content-type"],
-        body: route.request().postDataBuffer()?.toString() ?? "",
-      });
-      await route.fulfill({
-        status: calls === 1 ? 500 : 200,
-        contentType: "application/json",
-        body: '{"id":"file-1"}',
-      });
-    });
     await page.goto(`/tests/fixtures/business.html?framework=${framework}`);
     const input = page.getByLabel("Contract upload 파일 선택");
+    await expect(input).toBeAttached();
+    const endpoint = await page
+      .locator("html")
+      .getAttribute("data-upload-endpoint");
+    const received = async (): Promise<{
+      calls: number;
+      requests: { type: string; body: string }[];
+    }> => (await page.request.get(endpoint!)).json();
     await input.setInputFiles({
       name: "bad.exe",
       mimeType: "application/octet-stream",
@@ -205,26 +199,27 @@ for (const framework of ["react", "vue"]) {
       mimeType: "text/plain",
       buffer: Buffer.from("hello"),
     });
-    expect(calls).toBe(0);
+    expect((await received()).calls).toBe(0);
     await page
       .getByRole("button", { name: "ok.txt 업로드", exact: true })
       .click();
     await expect(page.getByRole("alert")).toContainText("업로드에 실패");
     await page.getByRole("button", { name: "ok.txt 재시도" }).click();
     await expect(page.getByText("1개 파일 · 1개 완료")).toBeVisible();
+    const { calls, requests } = await received();
     expect(calls).toBe(2);
     expect(requests[1].type).toContain("multipart/form-data; boundary=");
     expect(requests[1].body).toContain('filename="ok.txt"');
     expect(requests[1].body).toContain("hello");
     await page.getByRole("button", { name: "ok.txt 삭제" }).click();
     await expect(page.getByText("0개 파일 · 0개 완료")).toBeVisible();
-    expect(calls).toBe(2);
+    expect((await received()).calls).toBe(2);
     await audit(page);
   });
   test(`${framework} upload cancel and queue limits do not report false completion`, async ({
     page,
   }) => {
-    await page.route("**/api/upload", async (route) => {
+    await page.route("**/api/upload?*", async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 800));
       await route.fulfill({ status: 200, body: "ok" }).catch(() => {});
     });

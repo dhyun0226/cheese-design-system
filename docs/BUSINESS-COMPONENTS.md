@@ -85,4 +85,4 @@ const upload = createXHRUpload("/api/files", { fieldName: "file" });
 
 ## 검증
 
-`tests/business.spec.ts`는 React/Vue 각각의 늦은 응답 차단·폼 제출/초기화·표 동작·실제 XHR/FormData 계약·실패/취소/재시도를 검증합니다. 네트워크는 테스트 라우트로 격리됩니다. `tests/contracts.test.mjs`는 두 패키지의 큐/로컬 쿼리 로직을 검증합니다. 이는 회사 API의 가용성·보안·데이터 정확성 검증을 대신하지 않습니다.
+`tests/business.spec.ts`는 React/Vue 각각의 늦은 응답 차단·폼 제출/초기화·표 동작·XHR/FormData 계약·실패/취소/재시도를 검증합니다. 파일 바이트는 loopback 전용 `tests/upload-server.mjs`가 실제로 수신해 확인합니다. 취소 시나리오는 테스트 라우트로 격리합니다. 테스트 서버/화면은 공개 dist에 포함되지 않습니다. `tests/contracts.test.mjs`는 두 패키지의 큐/로컬 쿼리 로직을 검증합니다. 이는 회사 API의 가용성·보안·데이터 정확성 검증을 대신하지 않습니다.

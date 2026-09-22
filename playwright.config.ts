@@ -19,11 +19,18 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
-  webServer: {
-    command:
-      "npm run build:test && vite preview --outDir artifacts/browser-site --host 127.0.0.1 --port 48176 --strictPort",
-    url: "http://127.0.0.1:48176",
-    reuseExistingServer: false,
-    timeout: 120000,
-  },
+  webServer: [
+    {
+      command: "node tests/upload-server.mjs",
+      url: "http://127.0.0.1:48179/health",
+      reuseExistingServer: false,
+    },
+    {
+      command:
+        "npm run build:test && vite preview --config vite.test.config.ts --outDir artifacts/browser-site --host 127.0.0.1 --port 48176 --strictPort",
+      url: "http://127.0.0.1:48176",
+      reuseExistingServer: false,
+      timeout: 120000,
+    },
+  ],
 });

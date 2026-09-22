@@ -6,9 +6,15 @@ import site from "./vite.config";
 export default mergeConfig(
   site,
   defineConfig({
+    preview: { proxy: { "/api/upload": "http://127.0.0.1:48179" } },
     build: {
       outDir: "artifacts/browser-site",
-      rollupOptions: { input: { forms: "tests/fixtures/forms.html", business: "tests/fixtures/business.html" } },
+      rollupOptions: {
+        input: {
+          forms: "tests/fixtures/forms.html",
+          business: "tests/fixtures/business.html",
+        },
+      },
     },
   }),
 );

@@ -324,6 +324,7 @@ function blur(event: FocusEvent) {
           type="button"
           class="cheese-button"
           data-variant="weak"
+          @mousedown.prevent
           @click="
             input?.focus();
             retry++;

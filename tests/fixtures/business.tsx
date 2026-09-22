@@ -68,7 +68,9 @@ const loadRows: R.RowsLoader = async (query, { signal }) => {
     ? { rows: [{ id: "old", name: "stale row", score: 0 }], total: 1 }
     : R.queryRows(rows, columns, query);
 };
-const upload = R.createXHRUpload("/api/upload", { timeout: 3000 });
+const uploadEndpoint = "/api/upload?key=" + crypto.randomUUID();
+document.documentElement.dataset.uploadEndpoint = uploadEndpoint;
+const upload = R.createXHRUpload(uploadEndpoint, { timeout: 3000 });
 const getRowId = (row: R.DataRow) => String(row.id);
 const choices = [
   { value: "one", label: "하나" },

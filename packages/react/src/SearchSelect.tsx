@@ -331,6 +331,7 @@ export function SearchSelect({
                 type="button"
                 className="cheese-button"
                 data-variant="weak"
+                onMouseDown={(event) => event.preventDefault()}
                 onClick={() => {
                   input.current?.focus();
                   setRetry((value) => value + 1);
