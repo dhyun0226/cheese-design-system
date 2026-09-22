@@ -1,0 +1,77 @@
+/* One quiet input boundary; actions remain readable without nested boxes. */
+.cheese-date-field-control,
+.cheese-number-field-control {
+  position: relative;
+  min-width: 0;
+}
+.cheese-date-field-input {
+  padding-inline-end: 46px;
+  font-variant-numeric: tabular-nums;
+}
+.cheese-number-field-input {
+  padding-inline-end: 80px;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.cheese-number-field-input::-webkit-inner-spin-button,
+.cheese-number-field-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+.cheese-field-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cheese-radius-item);
+  color: var(--cheese-text-secondary);
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.cheese-field-action:hover:not(:disabled) {
+  color: var(--cheese-text);
+  background: var(--cheese-muted);
+}
+.cheese-field-action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cheese-field-action svg {
+  flex: none;
+  stroke-width: 1.8;
+}
+.cheese-date-field-action {
+  position: absolute;
+  inset-inline-end: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.cheese-number-field-actions {
+  position: absolute;
+  inset-inline-end: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.cheese-date-field-popover {
+  width: max-content;
+  padding: 0;
+  max-width: calc(100vw - 24px);
+  max-height: var(
+    --radix-popover-content-available-height,
+    var(--reka-popover-content-available-height, 80vh)
+  );
+  overflow: auto;
+}
+.cheese-date-field-popover > .cheese-calendar {
+  box-shadow: none;
+}

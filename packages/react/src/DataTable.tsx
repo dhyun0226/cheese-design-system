@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { Popover } from "radix-ui";
 import {
   ArrowUpDown,
   ChevronUp,
@@ -171,32 +172,42 @@ export function DataTable<T extends DataRow>({
             onCompositionEnd={() => setComposing(false)}
           />
         </div>
-        <details className="cheese-column-menu">
-          <summary className="cheese-button" data-variant="weak">
-            <SlidersHorizontal size={16} aria-hidden="true" />
-            표시 열
-          </summary>
-          <div className="cheese-column-options">
-            {columns.map((column) => (
-              <label key={column.key} className="cheese-check-label">
-                <CheckboxRoot
-                  checked={!hidden.includes(column.key)}
-                  disabled={
-                    visible.length === 1 && !hidden.includes(column.key)
-                  }
-                  onCheckedChange={() =>
-                    setHidden((previous) =>
-                      previous.includes(column.key)
-                        ? previous.filter((key) => key !== column.key)
-                        : [...previous, column.key],
-                    )
-                  }
-                />
-                {column.label}
-              </label>
-            ))}
-          </div>
-        </details>
+        <Popover.Root>
+          <Popover.Trigger asChild>
+            <Button variant="weak" className="cheese-column-menu">
+              <SlidersHorizontal size={16} aria-hidden="true" />
+              표시 열
+            </Button>
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content
+              className="cheese-column-options cheese-root"
+              aria-label={label + " 표시 열"}
+              align="end"
+              sideOffset={8}
+              collisionPadding={12}
+            >
+              {columns.map((column) => (
+                <label key={column.key} className="cheese-check-label">
+                  <CheckboxRoot
+                    checked={!hidden.includes(column.key)}
+                    disabled={
+                      visible.length === 1 && !hidden.includes(column.key)
+                    }
+                    onCheckedChange={() =>
+                      setHidden((previous) =>
+                        previous.includes(column.key)
+                          ? previous.filter((key) => key !== column.key)
+                          : [...previous, column.key],
+                      )
+                    }
+                  />
+                  {column.label}
+                </label>
+              ))}
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
       </div>
       <div className="cheese-table-selection">
         <span role="status">{selected.length}개 행 선택</span>

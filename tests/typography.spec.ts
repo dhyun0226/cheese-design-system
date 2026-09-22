@@ -7,7 +7,7 @@ test("single-line controls use font-native leading instead of paragraph leading"
   for (const [route, selector] of [
     ["button", ".cheese-button"],
     ["input", ".cheese-input"],
-    ["native-select", ".cheese-select"],
+    ["select-form", ".cheese-select-trigger"],
     ["select", ".cheese-select-trigger"],
     ["badge", ".cheese-badge"],
     ["radio-group", ".cheese-check-label"],
@@ -101,11 +101,9 @@ test("API references use real badges and preserve the document type hierarchy", 
     "font-weight",
     "600",
   );
-  await page
-    .locator(".doc-details")
-    .screenshot({
-      path: `artifacts/${test.info().project.name}/api-badges.png`,
-    });
+  await page.locator(".doc-details").screenshot({
+    path: `artifacts/${test.info().project.name}/api-badges.png`,
+  });
 });
 
 for (const framework of ["react", "vue"]) {

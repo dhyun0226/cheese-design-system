@@ -32,11 +32,11 @@ export const groups = [
         "Radix 기반 팝업. 방향키 탐색, Enter 선택, Esc 닫기와 포커스 복귀를 지원합니다.",
       ],
       [
-        "native-select",
-        "Native Select",
-        "간결한 목록에서 하나를 고릅니다.",
-        "value · onChange · children",
-        "브라우저 기본 키보드 탐색을 유지합니다.",
+        "select-form",
+        "Select Form",
+        "디자인된 선택창을 실제 폼 제출과 연결합니다.",
+        "Select: name · required · defaultValue · options · error",
+        "OS 기본 선택창 대신 Select를 사용합니다. 필수값 오류, FormData 제출과 초기화를 직접 확인하세요.",
       ],
       [
         "field",
@@ -77,8 +77,8 @@ export const groups = [
         "number-field",
         "Number Field",
         "최솟값과 최댓값이 있는 숫자를 입력합니다.",
-        "Input: type=number · min · max · step",
-        "네이티브 숫자 입력을 활용하는 조합 패턴입니다. 서버 검증도 필요합니다.",
+        "NumberField: label · value/defaultValue · onValueChange · min/max/step · name/form · required · disabled/readOnly",
+        "직접 입력, 키보드와 증감 버튼을 지원합니다. 범위·간격 오류는 입력 아래에 안내하며 서버 검증도 필요합니다.",
       ],
       ["pin-otp-input", "Pin / OTP Input", "인증 코드를 입력합니다."],
       ["tags-input", "Tags Input", "여러 값을 태그로 입력합니다."],
@@ -124,9 +124,9 @@ export const groups = [
       [
         "date-field",
         "Date Field",
-        "날짜를 입력하고 기본 선택기로 고릅니다.",
-        "Input: type=date · min · max",
-        "네이티브 날짜 입력입니다. 표시 형식은 브라우저와 언어에 따라 달라집니다.",
+        "날짜를 직접 입력하거나 공통 달력에서 선택합니다.",
+        "DateField: label · value/defaultValue · onValueChange · min/max/step · name/form · required · disabled/readOnly",
+        "YYYY-MM-DD 형식과 실제 날짜·윤년·허용 범위를 검증합니다. 잘못된 입력을 지우지 않고 오류를 안내합니다.",
       ],
       [
         "date-picker",
@@ -154,8 +154,8 @@ export const groups = [
         "time-field",
         "Time Field",
         "시간을 명확하게 입력합니다.",
-        "Input: type=time · step",
-        "브라우저 기본 시간 입력을 사용합니다. 시간대 변환은 서비스 책임입니다.",
+        "TimeField: label · value/defaultValue · onValueChange · min/max/step · name/form · required · disabled/readOnly",
+        "24시간 직접 입력과 키보드로 조작하는 시·분 선택기를 제공합니다. 범위·간격 오류를 안내하며 시간대 변환은 서비스 책임입니다.",
       ],
       [
         "time-range-field",
@@ -197,8 +197,8 @@ export const groups = [
         "pagination",
         "Pagination",
         "결과를 페이지 단위로 탐색합니다.",
-        "page · count · onPageChange",
-        "양 끝에서 이전·다음을 비활성화합니다.",
+        "page · count · onPageChange · disabled · label · getPageLabel",
+        "현재 페이지와 가까운 페이지를 번호로 선택합니다. 생략 표시는 클릭 대상이 아니며 양 끝의 화살표 공간을 유지합니다. 0·1페이지일 때는 표시하지 않습니다.",
       ],
       [
         "stepper",
@@ -303,8 +303,8 @@ export const groups = [
         "scroll-area",
         "Scroll Area",
         "제한된 공간에서 콘텐츠를 탐색합니다.",
-        "height · children",
-        "키보드로 스크롤할 수 있도록 뷰포트에 포커스를 허용합니다.",
+        "height · orientation · label · viewportProps · children",
+        "이름 있는 스크롤 영역입니다. 방향키·PageDown·Home/End와 세로·가로 손잡이 드래그를 지원하며, 강제 색상 모드에서는 시스템 스크롤을 존중합니다.",
       ],
       [
         "drawer",
@@ -454,7 +454,7 @@ const extendedDetails: Record<string, [string, string]> = {
   ],
   "date-range-field": [
     "label · value/defaultValue: { start, end } · onValueChange · name · min/max · required · disabled/readOnly",
-    "네이티브 날짜 입력 두 개를 묶습니다. 종료가 시작보다 빠르면 오류를 안내하고 폼 제출을 차단합니다.",
+    "공통 DateField 두 개를 묶습니다. 종료가 시작보다 빠르면 오류를 안내하고 폼 제출을 차단합니다.",
   ],
   "time-range-field": [
     "label · value/defaultValue: { start, end } · onValueChange · name · min/max · step · required · disabled/readOnly",

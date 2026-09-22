@@ -69,14 +69,26 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         onInvalidCapture={(event) => {
           event.preventDefault();
           setValidation("항목을 선택해 주세요.");
-          root.current
-            ?.querySelector<HTMLButtonElement>('button[role="combobox"]')
-            ?.focus();
+          const target = event.target as HTMLInputElement;
+          const first =
+            target.form &&
+            Array.from(target.form.elements).find((element) => {
+              const control = element as HTMLInputElement;
+              return (
+                control.willValidate &&
+                control.validity &&
+                !control.validity.valid
+              );
+            });
+          if (!first || first === target)
+            root.current
+              ?.querySelector<HTMLButtonElement>('button[role="combobox"]')
+              ?.focus();
         }}
       >
         <label className="cheese-label" htmlFor={id}>
           {label}
-          {props.required ? " *" : ""}
+          {props.required && <span aria-hidden="true"> *</span>}
         </label>
         <Primitive.Root
           {...props}
@@ -167,28 +179,37 @@ export function useFieldValue<T>(
 ) {
   const [local, setLocal] = React.useState(defaultValue);
   const root = React.useRef<HTMLDivElement>(null);
+  const resetting = React.useRef<Event | null>(null);
   const latest = React.useRef({ value, defaultValue, onChange });
   latest.current = { value, defaultValue, onChange };
   React.useEffect(() => {
     const form = formId
       ? document.getElementById(formId)
       : root.current?.closest("form");
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timers = new Set<ReturnType<typeof setTimeout>>();
     const reset = (event: Event) => {
-      timer = setTimeout(() => {
+      resetting.current = event;
+      const timer = setTimeout(() => {
+        timers.delete(timer);
         if (event.defaultPrevented) return;
         const state = latest.current;
         if (state.value === undefined) setLocal(state.defaultValue);
         state.onChange?.(state.defaultValue);
       }, 0);
+      timers.add(timer);
     };
-    form?.addEventListener("reset", reset);
+    // Radix can synchronously emit its initial value in a reset listener before
+    // the owning React form cancels the event. Capture reset first; this helper
+    // alone applies the final, cancel-aware reset after dispatch has completed.
+    form?.addEventListener("reset", reset, true);
     return () => {
-      form?.removeEventListener("reset", reset);
-      clearTimeout(timer);
+      form?.removeEventListener("reset", reset, true);
+      timers.forEach(clearTimeout);
+      resetting.current = null;
     };
   }, [formId]);
   const set = (next: T) => {
+    if (resetting.current?.eventPhase) return;
     if (value === undefined) setLocal(next);
     onChange?.(next);
   };

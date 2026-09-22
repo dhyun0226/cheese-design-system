@@ -2,6 +2,14 @@
 
 ## Unreleased — 운영 도입 전 보강
 
+### 업무 입력·스크롤·문서
+
+- **Breaking:** NativeSelect 패키지 API 제거. Select와 Select Form 예제로 전환.
+- React/Vue DateField·TimeField·NumberField와 양방향 ScrollArea 제공. 직접 입력, 디자인된 선택창, min/max/step, 인라인 오류, disabled/readOnly, form/reset 계약 추가.
+- 기간 입력에서 공통 필드 재사용, DataTable 표시 열 Popover, OTP 인라인 오류, 취소된 파일 업로드 reset 보존.
+- 공통 overflow 스크롤 스킨과 강제 색상·동작 감소 지원. OS 파일 선택창·키보드는 유지.
+- SEED를 참고한 문서 구조·페이지네이션, 내비게이션 공통 높이, CHEESE의 치즈 달 콘셉트 소개.
+
 ### 시각 체계 — 면과 상태 중심
 
 - Switch의 기본 둘레선·손잡이 그림자, Toggle/ToggleGroup/Toolbar의 선택 하단선 제거. 골드·손잡이 위치·텍스트 굵기로 상태 구분, 키보드 포커스와 고대비 모드는 유지.

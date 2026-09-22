@@ -112,7 +112,6 @@ test("public package exports include production-critical controls", () => {
     "Button",
     "Input",
     "Field",
-    "NativeSelect",
     "Textarea",
     "Checkbox",
     "Switch",
@@ -122,6 +121,10 @@ test("public package exports include production-critical controls", () => {
     "Progress",
   ])
     assert.ok(R[key], key);
+});
+test("NativeSelect is not part of either public framework API", () => {
+  assert.equal("NativeSelect" in R, false);
+  assert.equal("NativeSelect" in V, false);
 });
 test("button cannot accidentally submit; loading blocks duplicate actions", () => {
   const html = renderToStaticMarkup(h(R.Button, { loading: true }, "Save"));
@@ -222,13 +225,18 @@ test("quiet white inputs preserve contrast for focus and selection cues", () => 
     new URL("../site/site.css", import.meta.url),
     "utf8",
   );
-  const searchRule = siteCss.match(
-    /\.nav-search \.cheese-input\s*\{([^}]+)\}/,
-  )[1];
-  assert.doesNotMatch(
-    searchRule,
-    /border|background|box-shadow|font-size|min-height/,
-  );
+  // Search uses the package Input without a local appearance override. The
+  // layout-only wrapper is valid even when no descendant selector exists.
+  const searchRules = [
+    ...siteCss.matchAll(/([^{}]*\.nav-search[^{}]*)\{([^}]+)\}/g),
+  ];
+  assert.ok(searchRules.length > 0, "search layout remains discoverable");
+  for (const [, , rule] of searchRules) {
+    assert.doesNotMatch(
+      rule,
+      /border|background|box-shadow|font-size|min-height/,
+    );
+  }
   const cssEntry = readFileSync(
     new URL("../packages/css/src/index.css", import.meta.url),
     "utf8",

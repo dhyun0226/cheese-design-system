@@ -70,7 +70,9 @@ WebKit 자동화는 실제 iPhone/Safari, Chromium은 모든 Edge 환경의 검�
 - Combobox/Listbox: 단일 선택. 추가된 AsyncCombobox는 서버 검색, MultiSelect는 로컬/서버 다중 선택을 제공합니다. 무한 목록·가상화는 제공하지 않으며 서버에서 결과 수를 제한하세요.
 - Pin Input: 숫자 코드 입력·자동완성. 코드 발송/보안 검증 서버는 없음.
 - Time Range Field: 같은 날의 시간 범위. 자정을 넘는 업무는 날짜 모델 필요.
-- Native Date/Time Field: 브라우저 기본 입력을 그대로 전달합니다. 일부 WebKit 빌드는 text로 대체하여 min/max/step 검증이 작동하지 않을 수 있습니다. 엄격한 날짜 제한은 DatePicker/RangeField와 서버 검증을 사용하고 실제 Safari/iPhone에서 확인하세요.
+- DateField/TimeField: 직접 입력과 공통 달력·시간 선택 팝업을 제공합니다. 브라우저의 날짜/시간 위젯 지원 여부와 무관하게 형식·min/max/step을 검증합니다. NumberField는 기본 스피너 대신 디자인된 증감 버튼을 제공합니다. 서버 검증과 실제 Safari/iPhone 검증은 별도 필요합니다.
+- NativeSelect는 제거했습니다. Select와 Select Form 예제를 사용하세요. DateRangeField/TimeRangeField도 공통 필드를 조합합니다.
+- ScrollArea: 가로·세로·양방향, 손잡이 드래그, 키보드·휠을 지원합니다. 일반 overflow도 공통 스킨을 사용하되 OS의 강제 색상·터치 접근성을 유지합니다.
 - Splitter: 수평 2패널. 복잡한 중첩 패널/크기 영속화는 제품에서 구성.
 - Carousel: 수동 이동. 자동 재생·터치 스와이프는 제공하지 않음.
 - Vue와 React의 프레임워크 관용 API가 다름(`v-model`, 슬롯 vs props/callback). 사용하려는 폼의 모든 계약을 서비스 통합 테스트에서 추가 확인.

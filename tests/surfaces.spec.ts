@@ -160,7 +160,7 @@ test("entry controls share white surfaces and restrained rest and hover boundari
   const controls = [
     ["textarea", ".cheese-textarea"],
     ["select", ".cheese-select-trigger"],
-    ["native-select", ".cheese-select"],
+    ["select-form", ".cheese-select-trigger"],
     ["combobox", ".cheese-input"],
     ["async-combobox", ".cheese-input"],
     ["multi-select", ".cheese-input"],
@@ -196,36 +196,30 @@ test("entry controls share white surfaces and restrained rest and hover boundari
 });
 
 for (const framework of ["react", "vue"]) {
-  test(`${framework} native select preserves its arrow through focus and disabled states`, async ({
+  test(`${framework} styled select keeps its icon and uses an in-page option popup`, async ({
     page,
   }) => {
     await page.goto(
-      framework === "react" ? "/#/components/native-select" : "/vue.html",
+      framework === "react" ? "/#/components/select-form" : "/vue.html",
     );
     const select = page.getByRole("combobox", {
       name: framework === "react" ? "담당 조직" : "조직",
       exact: true,
     });
     await expect(select).toBeVisible();
-    const arrow = await select.evaluate(
-      (el) => getComputedStyle(el).backgroundImage,
-    );
-    expect(arrow).toContain("data:image/svg+xml");
+    await expect(select).toHaveJSProperty("tagName", "BUTTON");
+    await expect(select.locator("svg")).toBeVisible();
     await select.focus();
     await select.hover();
-    await expect(select).toHaveCSS("background-image", arrow);
+    await expect(select.locator("svg")).toBeVisible();
     await expect(select).toHaveCSS("border-color", "rgb(98, 98, 105)");
     await expect(select).toHaveCSS("box-shadow", "none");
     await expect(select).toHaveCSS("outline-offset", "0px");
-    await select.selectOption("tech");
-    await expect(select).toHaveValue("tech");
-    // Exercise the native disabled state on the actual package node.
-    await select.evaluate((el: HTMLSelectElement) => {
-      el.disabled = true;
-      el.blur();
-    });
-    await expect(select).toBeDisabled();
-    await expect(select).toHaveCSS("background-image", arrow);
+    await select.click();
+    await expect(page.getByRole("listbox")).toBeVisible();
+    await page.getByRole("option", { name: "개발팀", exact: true }).click();
+    await expect(select).toContainText("개발팀");
+    await expect(select.locator("svg")).toBeVisible();
     await expect(select).toHaveCSS("background-color", "rgb(255, 255, 255)");
   });
 }

@@ -4,6 +4,11 @@ import {
   Input,
   Field,
   Calendar,
+  DateField,
+  TimeField,
+  NumberField,
+  ScrollArea,
+  Pagination,
   DialogRoot,
   DialogContent,
   DialogTitle,
@@ -66,6 +71,55 @@ h(Input, {
 });
 h(Field, { label: "이름", required: true }, () => h(Input));
 h(Calendar, { label: "마감일", modelValue: new CalendarDate(2026, 10, 1) });
+h(DateField, {
+  label: "시작일",
+  modelValue: "2026-10-01",
+  name: "startDate",
+  form: "employee-form",
+  min: "2026-01-01",
+  max: "2026-12-31",
+  step: "any",
+  "onUpdate:modelValue": (value) => value.trim(),
+});
+h(TimeField, {
+  label: "알림 시간",
+  defaultValue: "09:00",
+  name: "reminder",
+  min: "09:00",
+  max: "18:00",
+  step: 900,
+  "onUpdate:modelValue": (value) => value.trim(),
+});
+h(NumberField, {
+  label: "수량",
+  modelValue: 1.5,
+  name: "quantity",
+  min: 0,
+  max: 10,
+  step: 0.5,
+  "onUpdate:modelValue": (value) => value.trim(),
+});
+h(
+  ScrollArea,
+  {
+    label: "업무 내역",
+    orientation: "both",
+    height: "12rem",
+    dir: "rtl",
+    viewportProps: { tabindex: 0, onScroll: (event) => event.type },
+  },
+  () => h("p", "스크롤 가능한 업무 내역"),
+);
+h(Pagination, {
+  page: 5,
+  count: 1000,
+  label: "업무 페이지",
+  previousLabel: "이전 업무 페이지",
+  nextLabel: "다음 업무 페이지",
+  getPageLabel: (page) => `${page}번째 업무 페이지`,
+  "onUpdate:page": (page) => page.toFixed(0),
+  onPageChange: (page) => page.toFixed(0),
+});
 h(DialogRoot, {}, () =>
   h(DialogContent, {}, () => h(DialogTitle, {}, () => "평가")),
 );

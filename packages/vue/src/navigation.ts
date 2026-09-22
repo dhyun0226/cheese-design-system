@@ -2,10 +2,25 @@ import { defineComponent, h } from "vue";
 import * as P from "reka-ui";
 import { ChevronDown } from "@lucide/vue";
 import { styled } from "./styled";
-export const NavigationMenuRoot: typeof P.NavigationMenuRoot = styled(
-  P.NavigationMenuRoot,
-  "cheese-navigation",
-);
+export const NavigationMenuRoot: typeof P.NavigationMenuRoot = defineComponent({
+  inheritAttrs: false,
+  // CHEESE opens on hover immediately. Custom delays use primitive behavior.
+  props: { delayDuration: { type: Number, default: 0 } },
+  setup(props, { attrs, slots }) {
+    const { forwardRef } = P.useForwardExpose();
+    return () =>
+      h(
+        P.NavigationMenuRoot,
+        {
+          ...attrs,
+          delayDuration: props.delayDuration,
+          ref: forwardRef,
+          class: ["cheese-navigation", attrs.class],
+        },
+        slots,
+      );
+  },
+}) as unknown as typeof P.NavigationMenuRoot;
 export const NavigationMenuList: typeof P.NavigationMenuList = styled(
   P.NavigationMenuList,
   "cheese-navigation-list",

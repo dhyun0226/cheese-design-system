@@ -1,0 +1,114 @@
+/* Branded time selection shared by both framework packages. */
+.cheese-time-control {
+  position: relative;
+  min-width: 0;
+}
+.cheese-time-input {
+  padding-inline-end: 46px;
+  font-variant-numeric: tabular-nums;
+}
+.cheese-time-trigger {
+  position: absolute;
+  inset-inline-end: 5px;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  border: 0;
+  background: transparent;
+  color: var(--cheese-text-secondary);
+}
+.cheese-time-trigger:hover:not(:disabled) {
+  background: var(--cheese-muted);
+}
+.cheese-time-trigger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.cheese-time-popover {
+  z-index: 60;
+  width: 280px;
+  max-width: calc(100vw - 24px);
+  max-height: min(
+    440px,
+    var(
+      --radix-popover-content-available-height,
+      var(--reka-popover-content-available-height, 440px)
+    )
+  );
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid var(--cheese-border-subtle);
+  border-radius: var(--cheese-radius-card);
+  background: var(--cheese-bg);
+  box-shadow: var(--cheese-shadow);
+}
+.cheese-time-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: var(--cheese-font-weight-semibold);
+}
+.cheese-time-heading output {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.cheese-time-heading > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.cheese-time-columns {
+  display: flex;
+  gap: 12px;
+}
+.cheese-time-column {
+  flex: 1;
+  min-width: 0;
+}
+.cheese-time-column-label {
+  display: block;
+  margin-bottom: 8px;
+  text-align: center;
+  color: var(--cheese-text-secondary);
+  font-size: 12px;
+  font-weight: var(--cheese-font-weight-medium);
+}
+.cheese-time-list {
+  max-height: 200px;
+  overflow: auto;
+  padding: 4px;
+  border-radius: var(--cheese-radius-control);
+  scroll-padding-block: 4px;
+  overscroll-behavior: contain;
+}
+.cheese-time-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 6px 8px;
+  border-radius: var(--cheese-radius-item);
+  color: var(--cheese-text);
+  font-size: 14px;
+  font-weight: var(--cheese-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--cheese-line-height-control);
+  cursor: pointer;
+}
+.cheese-time-option:hover {
+  background: var(--cheese-muted);
+}
+.cheese-time-option[aria-selected="true"] {
+  background: var(--cheese-brand-soft);
+  font-weight: var(--cheese-font-weight-semibold);
+}
+.cheese-time-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

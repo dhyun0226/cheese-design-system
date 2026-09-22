@@ -17,6 +17,8 @@ STARSHIP Entertainment 공식 제품이 아니며, 실제 직원·평가 데이�
 - 강조색은 Cheese Gold 한 가지이며 나머지는 중립색입니다. 트리·달력·체크·메뉴 아이콘은 Lucide SVG로 통일하고 Pretendard를 적용합니다.
 - Calendar/DatePicker는 React DayPicker 9, Vue Calendar는 Reka + internationalized/date 기반입니다. 한국어·날짜 제한·키보드·기간 선택을 실제 예제로 확인합니다.
 - 입력, 에러 연결, 포커스 관리, 트리 키보드 탐색, 상태 전환, 접근성 자동검사, 모바일 레이아웃을 테스트합니다.
+- DateField/TimeField/NumberField는 React/Vue 공통 업무 입력입니다. 직접 입력과 디자인된 달력·시간 선택·증감 버튼, 인라인 검증, 폼 제출·초기화를 지원합니다. NativeSelect는 제거했으며 Select를 사용합니다.
+- ScrollArea와 일반 overflow는 공통 중립색 스크롤 스타일을 사용합니다. 앱 전체 페이지에도 적용하려면 `html`에 `cheese-scroll-root`를 추가합니다. 강제 색상 모드와 터치의 기본 스크롤 동작은 유지합니다.
 - 사내 운영 인증이나 모든 브라우저의 접근성 적합성을 보증하는 릴리스는 아닙니다. [도입 체크리스트](docs/ADOPTION.md)를 먼저 확인하세요.
 
 ## 실행
@@ -106,8 +108,11 @@ Tree는 클릭 선택과 caret 펼침을 구분합니다. 제어 상태는 React
 ## 디자인과 출처
 
 Space Black #111111 · Lunar White #FFFFFF · Moon Gray #F4F4F0 · Cheese Gold #FFC928.
-공식 STARSHIP CI 색상이라는 의미는 아닙니다. 오류·성공은 의미색으로 분리합니다.
-SEED의 토큰 중심 구조를 참고하되 소스나 브랜드를 복제하지 않습니다.
+공식 STARSHIP CI 색상이라는 의미는 아닙니다. 오류·성공은 문구·아이콘·ARIA로 구별하며 색상은 중립색을 사용합니다.
+
+CHEESE의 이름은 창작한 이야기에서 출발합니다. STARSHIP 로고의 우주선이 달에 착륙하고 문을 열었더니, 그곳은 치즈 달이었습니다. 그 첫 발견처럼 다음 제품의 출발점이 되는 첫 디자인 시스템을 CHEESE라고 이름 지었습니다. 회사의 공식 브랜드 서사나 승인된 제품이라는 뜻은 아닙니다.
+
+[SEED](https://seed-design.io/)의 문서 정보 구조와 [페이지네이션](https://seed-design.io/react/components/pagination)의 탐색 원칙을 참고합니다. CHEESE 토큰·컴포넌트로 구현하며 당근의 소스·이미지·브랜드를 복제하지 않습니다.
 
 [Radix accessibility](https://www.radix-ui.com/primitives/docs/overview/accessibility),
 [Reka UI](https://reka-ui.com/),

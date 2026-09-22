@@ -15,6 +15,10 @@ export {
   type ChoiceOption,
 } from "./Collections.js";
 export * from "./Fields.js";
+export * from "./TimeField.js";
+export * from "./DateField.js";
+export * from "./NumberField.js";
+export { ScrollArea, type ScrollAreaProps } from "./ScrollArea.js";
 export * from "./Navigation.js";
 export * from "./Layout.js";
 export {
@@ -25,7 +29,7 @@ export {
   type DatePickerProps,
 } from "./Calendar.js";
 import * as P from "radix-ui";
-import { Check, Minus, ChevronDown } from "lucide-react";
+import { Check, Minus, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 export {
   Search,
   Plus,
@@ -126,18 +130,6 @@ export const Textarea = React.forwardRef<
       {...props}
       ref={ref}
       className={cx("cheese-input cheese-textarea", className)}
-    />
-  );
-});
-export const NativeSelect = React.forwardRef<
-  HTMLSelectElement,
-  React.SelectHTMLAttributes<HTMLSelectElement>
->(function NativeSelect({ className, ...props }, ref) {
-  return (
-    <select
-      {...props}
-      ref={ref}
-      className={cx("cheese-input cheese-select", className)}
     />
   );
 });
@@ -752,36 +744,148 @@ export function Breadcrumb({
     </nav>
   );
 }
+export interface PaginationProps
+  extends Omit<React.HTMLAttributes<HTMLElement>, "children"> {
+  page: number;
+  count: number;
+  onPageChange: (page: number) => void;
+  disabled?: boolean;
+  label?: string;
+  previousLabel?: string;
+  nextLabel?: string;
+  getPageLabel?: (page: number) => string;
+}
+const paginationQuery = "(max-width: 479px)";
+const subscribePaginationWidth = (notify: () => void) => {
+  const query = window.matchMedia(paginationQuery);
+  query.addEventListener("change", notify);
+  return () => query.removeEventListener("change", notify);
+};
+const getPaginationWidth = () => window.matchMedia(paginationQuery).matches;
+const getServerPaginationWidth = () => false;
+
+// Calculate a bounded range even when the result set contains millions of pages.
+function paginationItems(page: number, count: number, slots: number) {
+  const range = (start: number, length: number) =>
+    Array.from({ length }, (_, index) => start + index);
+  if (count <= slots) return range(1, count);
+  if (slots === 5) {
+    if (page <= 3) return [...range(1, 4), "end-gap"];
+    if (page >= count - 2) return ["start-gap", ...range(count - 3, 4)];
+    return ["start-gap", page - 1, page, page + 1, "end-gap"];
+  }
+  if (page <= Math.ceil(slots / 2))
+    return [...range(1, slots - 2), "end-gap", count];
+  if (page >= count - Math.floor(slots / 2))
+    return [1, "start-gap", ...range(count - slots + 3, slots - 2)];
+  return [
+    1,
+    "start-gap",
+    ...range(page - Math.floor((slots - 4) / 2), slots - 4),
+    "end-gap",
+    count,
+  ];
+}
 export function Pagination({
   page,
   count,
   onPageChange,
-}: {
-  page: number;
-  count: number;
-  onPageChange: (page: number) => void;
-}) {
+  disabled = false,
+  label = "페이지 탐색",
+  previousLabel = "이전 페이지",
+  nextLabel = "다음 페이지",
+  getPageLabel = (value) => `${value}페이지`,
+  className,
+  ...props
+}: PaginationProps) {
+  const compact = React.useSyncExternalStore(
+    subscribePaginationWidth,
+    getPaginationWidth,
+    getServerPaginationWidth,
+  );
+  const total = Number.isFinite(count)
+    ? Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, Math.floor(count)))
+    : 0;
+  const current = Math.min(
+    total,
+    Math.max(1, Number.isFinite(page) ? Math.floor(page) : 1),
+  );
+  const root = React.useRef<HTMLElement>(null);
+  const pendingFocus = React.useRef<number | undefined>(undefined);
+  React.useEffect(() => {
+    if (pendingFocus.current === current) {
+      root.current
+        ?.querySelector<HTMLButtonElement>('[aria-current="page"]')
+        ?.focus();
+      pendingFocus.current = undefined;
+    }
+  }, [current]);
+  if (total <= 1) return null;
+  const changePage = (value: number, fromArrow = false) => {
+    if (!disabled && value !== current && value >= 1 && value <= total) {
+      // An arrow disappears at the boundary; keep its keyboard user in the nav.
+      pendingFocus.current =
+        fromArrow && (value === 1 || value === total) ? value : undefined;
+      onPageChange(value);
+    }
+  };
   return (
-    <nav className="cheese-pagination" aria-label="페이지 탐색">
-      <Button
-        variant="weak"
-        size="sm"
-        disabled={page <= 1}
-        onClick={() => onPageChange(page - 1)}
-      >
-        이전
-      </Button>
-      <span aria-live="polite">
-        {page} / {count}
+    <nav
+      aria-label={label}
+      {...props}
+      ref={root}
+      className={cx("cheese-pagination", className)}
+      aria-disabled={disabled || undefined}
+    >
+      <ol className="cheese-pagination-list">
+        <li>
+          <button
+            type="button"
+            className="cheese-pagination-item cheese-pagination-arrow"
+            aria-label={previousLabel}
+            data-unavailable={current === 1 || undefined}
+            disabled={disabled || current === 1}
+            onClick={() => changePage(current - 1, true)}
+          >
+            <ChevronLeft size={16} aria-hidden="true" />
+          </button>
+        </li>
+        {paginationItems(current, total, compact ? 5 : 7).map((item) => (
+          <li key={item}>
+            {typeof item === "number" ? (
+              <button
+                type="button"
+                className="cheese-pagination-item"
+                aria-label={getPageLabel(item)}
+                aria-current={item === current ? "page" : undefined}
+                disabled={disabled}
+                onClick={() => changePage(item)}
+              >
+                {item}
+              </button>
+            ) : (
+              <span className="cheese-pagination-ellipsis" aria-hidden="true">
+                …
+              </span>
+            )}
+          </li>
+        ))}
+        <li>
+          <button
+            type="button"
+            className="cheese-pagination-item cheese-pagination-arrow"
+            aria-label={nextLabel}
+            data-unavailable={current === total || undefined}
+            disabled={disabled || current === total}
+            onClick={() => changePage(current + 1, true)}
+          >
+            <ChevronRight size={16} aria-hidden="true" />
+          </button>
+        </li>
+      </ol>
+      <span className="cheese-sr-only" aria-live="polite" aria-atomic="true">
+        {current} / {total}
       </span>
-      <Button
-        variant="weak"
-        size="sm"
-        disabled={page >= count}
-        onClick={() => onPageChange(page + 1)}
-      >
-        다음
-      </Button>
     </nav>
   );
 }
@@ -854,27 +958,6 @@ export function Toast({
 }
 export function ToastViewport() {
   return <P.Toast.Viewport className="cheese-toast-viewport" />;
-}
-export function ScrollArea({
-  children,
-  height = 180,
-}: {
-  children: React.ReactNode;
-  height?: number;
-}) {
-  return (
-    <P.ScrollArea.Root className="cheese-scroll-area" style={{ height }}>
-      <P.ScrollArea.Viewport className="cheese-scroll-viewport" tabIndex={0}>
-        {children}
-      </P.ScrollArea.Viewport>
-      <P.ScrollArea.Scrollbar
-        orientation="vertical"
-        className="cheese-scrollbar"
-      >
-        <P.ScrollArea.Thumb className="cheese-scroll-thumb" />
-      </P.ScrollArea.Scrollbar>
-    </P.ScrollArea.Root>
-  );
 }
 export function List({ children }: { children: React.ReactNode }) {
   return <ul className="cheese-list">{children}</ul>;

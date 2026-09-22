@@ -124,7 +124,12 @@ test("OTP filters input, validates length and resets", async ({ page }) => {
   await expect(input).toHaveValue("123");
   await page.getByRole("button", { name: "코드 확인" }).click();
   await expect(input).toBeFocused();
+  await expect(page.getByRole("alert")).toHaveText(
+    "숫자 6자리 인증 코드를 입력해 주세요.",
+  );
+  await expect(input).toHaveAttribute("aria-invalid", "true");
   await input.fill("123456");
+  await expect(page.getByRole("alert")).toHaveCount(0);
   await page.getByRole("button", { name: "코드 확인" }).click();
   await expect(page.getByRole("status")).toContainText("6자리 입력이 확인");
   await page
@@ -133,6 +138,55 @@ test("OTP filters input, validates length and resets", async ({ page }) => {
     .click();
   await expect(input).toHaveValue("");
 });
+
+for (const framework of ["react", "vue"]) {
+  test(`${framework} OTP validation is inline, preserves caller contracts and clears on reset`, async ({
+    page,
+  }) => {
+    await page.goto(
+      `/tests/fixtures/business.html?scenario=otp&framework=${framework}`,
+    );
+    const input = page.getByRole("textbox", { name: "Contract OTP" });
+    const submit = page.getByRole("button", { name: "Submit OTP" });
+    await submit.click();
+    await expect(input).toBeFocused();
+    await expect(page.getByRole("alert")).toHaveText(
+      "인증 코드를 입력해 주세요.",
+    );
+    await expect(input).toHaveAttribute(
+      "aria-describedby",
+      "otp-description contract-otp-help contract-otp-error",
+    );
+    await expect(page.getByLabel("Form result")).toBeEmpty();
+    expect(
+      await page.evaluate(() =>
+        window.businessEvents.filter((event) => event.kind === "otp-invalid"),
+      ),
+    ).toEqual([{ kind: "otp-invalid", query: "true" }]);
+    await page.getByRole("button", { name: "Reset OTP" }).click();
+    await expect(page.getByRole("alert")).toHaveCount(0);
+    await expect(input).toHaveAttribute(
+      "aria-describedby",
+      "otp-description contract-otp-help",
+    );
+    await input.fill("123");
+    await submit.click();
+    await expect(page.getByRole("alert")).toHaveText(
+      "숫자 6자리 인증 코드를 입력해 주세요.",
+    );
+    await expect(page.getByLabel("Form result")).toBeEmpty();
+    await audit(page);
+    await input.fill("123456");
+    await expect(page.getByRole("alert")).toHaveCount(0);
+    await submit.click();
+    await expect(page.getByLabel("Form result")).toHaveText(
+      '[["code","123456"]]',
+    );
+    await page.getByRole("button", { name: "Reset OTP" }).click();
+    await expect(input).toHaveValue("");
+    await expect(page.getByRole("alert")).toHaveCount(0);
+  });
+}
 
 test("listbox, color swatches and rating use labelled keyboard controls", async ({
   page,
@@ -163,8 +217,8 @@ test("range fields reject reversed intervals, submit both values and reset", asy
 }) => {
   for (const type of ["date", "time"] as const) {
     await page.goto(`/#/components/${type}-range-field`);
-    const start = page.getByLabel("시작", { exact: true }),
-      end = page.getByLabel("종료", { exact: true });
+    const start = page.getByRole("textbox", { name: "시작", exact: true }),
+      end = page.getByRole("textbox", { name: "종료", exact: true });
     const a = type === "date" ? "2026-10-10" : "14:00",
       b = type === "date" ? "2026-10-09" : "13:00",
       c = type === "date" ? "2026-10-11" : "15:00";
@@ -212,13 +266,15 @@ test("navigation, menubar, toolbar and hover card interactions", async ({
   page,
 }) => {
   await page.goto("/#/components/navigation-menu");
-  await page.getByRole("button", { name: "평가 관리" }).click();
-  await expect(
-    page.getByRole("link", { name: "평가 일정", exact: true }),
-  ).toBeVisible();
+  const navigationTrigger = page.getByRole("button", { name: "평가 관리" });
+  const scheduleLink = page.getByRole("link", { name: "평가 일정", exact: true });
+  // Hover reveals the menu; verify its real keyboard entry and dismissal path.
+  await navigationTrigger.hover();
+  await expect(scheduleLink).toBeVisible();
+  await expect(navigationTrigger).toHaveAttribute("aria-expanded", "true");
   // Radix uses an aria-hidden, tabbable focus proxy with a delegated onFocus.
   // axe cannot observe React's delegated redirect; test the actual Tab path first.
-  await page.getByRole("button", { name: "평가 관리" }).focus();
+  await navigationTrigger.focus();
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("link", { name: "평가 목록", exact: true }),
@@ -231,6 +287,9 @@ test("navigation, menubar, toolbar and hover card interactions", async ({
     ).violations,
   ).toEqual([]);
   await page.keyboard.press("Escape");
+  await expect(scheduleLink).not.toBeVisible();
+  await expect(navigationTrigger).toHaveAttribute("aria-expanded", "false");
+  await expect(navigationTrigger).toBeFocused();
   await page.goto("/#/components/menubar");
   await page.getByRole("menuitem", { name: "파일", exact: true }).focus();
   await page.keyboard.press("ArrowDown");
@@ -315,11 +374,9 @@ test("gold focus, SVG tree carets, favicon and mobile visual evidence", async ({
   await page.screenshot({
     path: `artifacts/${test.info().project.name}/tree-lucide.png`,
   });
-  await page
-    .locator(".demo-stage")
-    .screenshot({
-      path: `artifacts/${test.info().project.name}/tree-detail.png`,
-    });
+  await page.locator(".demo-stage").screenshot({
+    path: `artifacts/${test.info().project.name}/tree-detail.png`,
+  });
   await page.goto("/#/components/calendar");
   await expect(page.locator(".cheese-calendar")).toBeVisible();
   await page.screenshot({
@@ -401,15 +458,23 @@ test("Vue added dates, form reset, splitter and carousel", async ({ page }) => {
   const code = page.getByRole("textbox", { name: "Vue 인증 코드" });
   await code.fill("123456");
   const group = page.getByRole("group", { name: "Vue 평가 기간", exact: true });
-  await group.getByLabel("시작", { exact: true }).fill("2026-10-10");
-  await group.getByLabel("종료", { exact: true }).fill("2026-10-09");
+  await group
+    .getByRole("textbox", { name: "시작", exact: true })
+    .fill("2026-10-10");
+  await group
+    .getByRole("textbox", { name: "종료", exact: true })
+    .fill("2026-10-09");
   await expect(group.getByRole("alert")).toBeVisible();
-  await group.getByLabel("종료", { exact: true }).fill("2026-10-11");
+  await group
+    .getByRole("textbox", { name: "종료", exact: true })
+    .fill("2026-10-11");
   await page.getByRole("button", { name: "Vue 확장 폼 제출" }).click();
   await expect(page.getByText(/"period.start":"2026-10-10"/)).toBeVisible();
   await page.getByRole("button", { name: "Vue 확장 폼 초기화" }).click();
   await expect(code).toHaveValue("");
-  await expect(group.getByLabel("시작", { exact: true })).toHaveValue("");
+  await expect(
+    group.getByRole("textbox", { name: "시작", exact: true }),
+  ).toHaveValue("");
   await page.getByRole("radio", { name: "2026년 11월" }).click();
   await expect(page.getByRole("radio", { name: "2026년 11월" })).toBeChecked();
   await page.getByRole("radio", { name: "2027", exact: true }).click();

@@ -117,7 +117,7 @@ test("radio keyboard skips disabled choices and progress has synchronized values
   await expect(page.getByRole("status")).toHaveText("완료율 60%");
 });
 
-test("native fields forward constraints and expose browser text fallback", async ({
+test("branded fields validate numbers, dates and time steps on every browser", async ({
   page,
 }) => {
   for (const [route, name, valid, invalid] of [
@@ -127,45 +127,21 @@ test("native fields forward constraints and expose browser text fallback", async
   ]) {
     await page.goto("/#/components/" + route);
     const input = page.getByLabel(name, { exact: true });
-    const expectedType =
-      route === "number-field"
-        ? "number"
-        : route === "date-field"
-          ? "date"
-          : "time";
+    const expectedType = route === "number-field" ? "number" : "text";
     await expect(input).toHaveAttribute("type", expectedType);
-    if (expectedType === "date") {
-      await expect(input).toHaveAttribute("min", "2026-01-01");
-      await expect(input).toHaveAttribute("max", "2026-12-31");
-    }
     if (expectedType === "number") {
       await expect(input).toHaveAttribute("max", "100");
       await expect(input).toHaveAttribute("step", "5");
     }
-    if (expectedType === "time")
-      await expect(input).toHaveAttribute("step", "900");
-    const actualType = await input.evaluate((el: HTMLInputElement) => el.type);
     await input.fill(valid);
-    expect(
-      await input.evaluate((el: HTMLInputElement) => el.validity.valid),
-    ).toBe(true);
+    await expect
+      .poll(() => input.evaluate((el: HTMLInputElement) => el.validity.valid))
+      .toBe(true);
     await input.fill(invalid);
-    if (actualType === expectedType) {
-      expect(
-        await input.evaluate((el: HTMLInputElement) => el.validity.valid),
-      ).toBe(false);
-    } else {
-      // Some WebKit builds expose native date/time controls as plain text.
-      // The wrapper preserves attributes/values; it does not polyfill validation.
-      expect(actualType).toBe("text");
-      await expect(input).toHaveValue(invalid);
-      test
-        .info()
-        .annotations.push({
-          type: "browser-fallback",
-          description: `${expectedType} uses text fallback; validate in the product or use DatePicker/RangeField.`,
-        });
-    }
+    await expect
+      .poll(() => input.evaluate((el: HTMLInputElement) => el.validity.valid))
+      .toBe(false);
+    await expect(input).toHaveValue(invalid);
     await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
   }
 });

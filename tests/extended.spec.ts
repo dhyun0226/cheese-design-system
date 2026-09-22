@@ -73,10 +73,10 @@ test("other interactions: accordion, slider, tooltip, toast and pagination", asy
     .click();
   await expect(page.locator(".cheese-toast")).not.toBeVisible();
   await page.goto("/#/components/pagination");
-  await page.getByRole("button", { name: "다음", exact: true }).click();
+  await page.getByRole("button", { name: "다음 페이지", exact: true }).click();
   await expect(
     page.getByRole("navigation", { name: "페이지 탐색" }),
-  ).toContainText("2 / 5");
+  ).toContainText("2 / 20");
 });
 test("all documentation routes and small screen dialog are usable", async ({
   page,

@@ -37,6 +37,7 @@ withDefaults(
     :min-value="minValue"
     :max-value="maxValue"
     :disabled="disabled"
+    :calendar-label="label"
     :aria-label="label"
     class="cheese-calendar"
   >

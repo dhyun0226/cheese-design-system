@@ -389,6 +389,9 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+:where(.cheese-navigation, .cheese-menubar, .cheese-toolbar) {
+  --cheese-navigation-control-height: 36px;
+}
 .cheese-navigation {
   position: relative;
   z-index: 10;
@@ -396,6 +399,7 @@
 .cheese-navigation-list,
 .cheese-menubar {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 4px;
   padding: 5px;
@@ -405,18 +409,28 @@
   border-radius: var(--cheese-radius-control);
   background: var(--cheese-muted);
 }
-.cheese-navigation-trigger {
-  display: flex;
+.cheese-navigation-trigger,
+.cheese-navigation-list > :where(li) > .cheese-navigation-link {
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  min-height: 36px;
-  padding: 8px 12px;
+  height: var(--cheese-navigation-control-height);
+  min-height: var(--cheese-navigation-control-height);
+  padding: 0 12px;
   border: 0;
   border-radius: var(--cheese-radius-item);
   background: transparent;
   color: var(--cheese-text);
   font-size: 14px;
+  font-weight: var(--cheese-font-weight-medium);
+  line-height: var(--cheese-line-height-control);
+  white-space: nowrap;
   cursor: pointer;
+}
+.cheese-navigation-list > li {
+  display: flex;
+  align-items: center;
 }
 .cheese-navigation-trigger:hover,
 .cheese-navigation-trigger[data-state="open"] {
@@ -448,6 +462,7 @@
   padding: 10px 12px;
   border-radius: var(--cheese-radius-item);
   font-size: 14px;
+  line-height: var(--cheese-line-height-body);
   color: var(--cheese-text);
   text-decoration: none;
 }
@@ -463,21 +478,31 @@
 .cheese-toolbar {
   align-items: center;
   width: fit-content;
-  padding: 6px;
+  padding: 5px;
   border: 1px solid transparent;
   border-radius: var(--cheese-radius-control);
   background: var(--cheese-muted);
 }
 .cheese-toolbar [role="group"] {
   display: flex;
+  align-items: center;
   gap: 4px;
 }
+.cheese-toolbar .cheese-icon-button,
 .cheese-toolbar .cheese-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 36px;
+  height: var(--cheese-navigation-control-height);
+  min-height: var(--cheese-navigation-control-height);
+  min-width: var(--cheese-navigation-control-height);
+  padding: 0 10px;
+  line-height: var(--cheese-line-height-control);
   border-color: transparent;
+}
+.cheese-toolbar .cheese-icon-button {
+  width: var(--cheese-navigation-control-height);
+  padding: 0;
 }
 .cheese-toolbar .cheese-toggle svg {
   width: 17px;

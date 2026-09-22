@@ -51,19 +51,25 @@ const statusLabel = {
   canceled: "취소됨",
 };
 let form: HTMLFormElement | null | undefined;
-const reset = (event: Event) =>
-  queueMicrotask(() => {
+const resetTimers = new Set<ReturnType<typeof setTimeout>>();
+const reset = (event: Event) => {
+  const timer = setTimeout(() => {
+    resetTimers.delete(timer);
     if (!event.defaultPrevented) {
       queue.clear();
       errors.value = [];
+      drag.value = false;
     }
-  });
+  }, 0);
+  resetTimers.add(timer);
+};
 onMounted(() => {
   form = root.value?.closest("form");
   form?.addEventListener("reset", reset);
 });
 onBeforeUnmount(() => {
   form?.removeEventListener("reset", reset);
+  resetTimers.forEach(clearTimeout);
   queue.dispose();
 });
 watch(

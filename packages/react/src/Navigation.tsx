@@ -6,10 +6,12 @@ import { ChevronDown } from "lucide-react";
 export const NavigationMenuRoot = React.forwardRef<
   React.ComponentRef<typeof P.NavigationMenu.Root>,
   React.ComponentPropsWithoutRef<typeof P.NavigationMenu.Root>
->(function Root({ className = "", ...props }, ref) {
+>(function Root({ className = "", delayDuration = 0, ...props }, ref) {
+  // CHEESE opens on hover immediately. Custom delays use primitive behavior.
   return (
     <P.NavigationMenu.Root
       {...props}
+      delayDuration={delayDuration}
       ref={ref}
       className={"cheese-navigation " + className}
     />
@@ -158,7 +160,18 @@ export const ToolbarButton = React.forwardRef<
     />
   );
 });
-export const ToolbarToggleGroup = P.Toolbar.ToggleGroup;
+export const ToolbarToggleGroup = React.forwardRef<
+  React.ComponentRef<typeof P.Toolbar.ToggleGroup>,
+  React.ComponentPropsWithoutRef<typeof P.Toolbar.ToggleGroup>
+>(function Group({ className = "", ...props }, ref) {
+  return (
+    <P.Toolbar.ToggleGroup
+      {...props}
+      ref={ref}
+      className={"cheese-inline " + className}
+    />
+  );
+});
 export const ToolbarToggleItem = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof P.Toolbar.ToggleItem>

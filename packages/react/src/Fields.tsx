@@ -10,6 +10,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useFieldValue } from "./Collections.js";
+import { DateField } from "./DateField.js";
+import { TimeField } from "./TimeField.js";
 
 export interface PinInputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -32,6 +34,8 @@ export const PinInput = React.forwardRef<HTMLInputElement, PinInputProps>(
       onValueChange,
       onComplete,
       id: provided,
+      onInvalid,
+      "aria-describedby": describedBy,
       ...props
     },
     ref,
@@ -43,7 +47,31 @@ export const PinInput = React.forwardRef<HTMLInputElement, PinInputProps>(
       value,
       defaultValue,
       onValueChange,
+      props.form,
     );
+    const input = React.useRef<HTMLInputElement>(null);
+    React.useImperativeHandle(ref, () => input.current!);
+    const [validationError, setValidationError] = React.useState("");
+    React.useEffect(
+      () => setValidationError(""),
+      [code, props.disabled, props.readOnly],
+    );
+    React.useEffect(() => {
+      const owner = input.current?.form;
+      const timers = new Set<ReturnType<typeof setTimeout>>();
+      const reset = (event: Event) => {
+        const timer = setTimeout(() => {
+          timers.delete(timer);
+          if (!event.defaultPrevented) setValidationError("");
+        }, 0);
+        timers.add(timer);
+      };
+      owner?.addEventListener("reset", reset);
+      return () => {
+        owner?.removeEventListener("reset", reset);
+        timers.forEach(clearTimeout);
+      };
+    }, [props.form]);
     return (
       <div ref={root} className="cheese-field">
         <label htmlFor={id} className="cheese-label">
@@ -51,7 +79,7 @@ export const PinInput = React.forwardRef<HTMLInputElement, PinInputProps>(
         </label>
         <input
           {...props}
-          ref={ref}
+          ref={input}
           id={id}
           className="cheese-input cheese-pin-input"
           type="text"
@@ -61,15 +89,55 @@ export const PinInput = React.forwardRef<HTMLInputElement, PinInputProps>(
           maxLength={size}
           value={code}
           placeholder={"○".repeat(size)}
+          aria-invalid={validationError ? true : props["aria-invalid"]}
+          aria-describedby={[
+            describedBy,
+            id + "-help",
+            validationError ? id + "-error" : undefined,
+          ]
+            .filter(Boolean)
+            .join(" ")}
           onChange={(e) => {
             const next = e.target.value.replace(/[^0-9]/g, "").slice(0, size);
+            setValidationError("");
             setCode(next);
             if (next.length === size && next !== code) onComplete?.(next);
           }}
+          onInvalid={(event) => {
+            event.preventDefault();
+            setValidationError(
+              event.currentTarget.validity.valueMissing
+                ? "인증 코드를 입력해 주세요."
+                : `숫자 ${size}자리 인증 코드를 입력해 주세요.`,
+            );
+            const node = event.currentTarget;
+            const first =
+              node.form &&
+              Array.from(node.form.elements).find((element) => {
+                const control = element as HTMLInputElement;
+                return (
+                  control.willValidate &&
+                  control.validity &&
+                  !control.validity.valid
+                );
+              });
+            if (!first || first === node) node.focus();
+            onInvalid?.(event);
+          }}
         />
-        <p className="cheese-help">
+        <p id={id + "-help"} className="cheese-help">
           숫자 {size}자리 · 코드를 붙여넣을 수 있습니다.
         </p>
+        {validationError && (
+          <p
+            id={id + "-error"}
+            className="cheese-help"
+            data-error="true"
+            role="alert"
+          >
+            {validationError}
+          </p>
+        )}
       </div>
     );
   },
@@ -473,6 +541,7 @@ export interface RangeFieldProps {
   defaultValue?: RangeFieldValue;
   onValueChange?: (value: RangeFieldValue) => void;
   name?: string;
+  form?: string;
   disabled?: boolean;
   readOnly?: boolean;
   required?: boolean;
@@ -487,6 +556,7 @@ function RangeField({
   defaultValue = { start: "", end: "" },
   onValueChange,
   name,
+  form,
   disabled,
   readOnly,
   required,
@@ -498,52 +568,63 @@ function RangeField({
       value,
       defaultValue,
       onValueChange,
+      form,
     ),
     id = React.useId();
-  const invalid = !!(range.start && range.end && range.end < range.start);
+  const validShape = (value: string) => {
+    if (type === "time")
+      return /^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/.test(value);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const [year, month, day] = value.split("-").map(Number);
+    const date = new Date(0);
+    date.setUTCFullYear(year, month - 1, day);
+    return (
+      year >= 1 &&
+      date.getUTCFullYear() === year &&
+      date.getUTCMonth() === month - 1 &&
+      date.getUTCDate() === day
+    );
+  };
+  const timeOrder = (value: string) => {
+    const [h, m, s = 0] = value.split(":").map(Number);
+    return h * 3600 + m * 60 + s;
+  };
+  const invalid =
+    validShape(range.start) &&
+    validShape(range.end) &&
+    (type === "time"
+      ? timeOrder(range.end) < timeOrder(range.start)
+      : range.end < range.start);
+  const Control = type === "date" ? DateField : TimeField;
   return (
     <div ref={root}>
       <fieldset className="cheese-range-field" disabled={disabled}>
         <legend className="cheese-label">{label}</legend>
         <div className="cheese-range-inputs">
           {(["start", "end"] as const).map((key) => (
-            <div className="cheese-field" key={key}>
-              <label className="cheese-help" htmlFor={id + key}>
-                {key === "start" ? "시작" : "종료"}
-              </label>
-              <input
-                className="cheese-input"
-                type={type}
-                id={id + key}
-                value={range[key]}
-                ref={(node) => {
-                  if (key === "end")
-                    node?.setCustomValidity(
-                      invalid ? "종료는 시작보다 빠를 수 없습니다." : "",
-                    );
-                }}
-                name={name ? name + "." + key : undefined}
-                readOnly={readOnly}
-                required={required}
-                min={
-                  key === "end"
-                    ? [range.start, min || ""].sort().at(-1) || undefined
-                    : min
-                }
-                max={max}
-                step={step}
-                aria-invalid={key === "end" && invalid}
-                aria-describedby={invalid ? id + "error" : undefined}
-                onChange={(e) => setRange({ ...range, [key]: e.target.value })}
-              />
-            </div>
+            <Control
+              key={key}
+              label={key === "start" ? "시작" : "종료"}
+              id={id + key}
+              value={range[key]}
+              defaultValue={defaultValue[key]}
+              name={name ? name + "." + key : undefined}
+              form={form}
+              disabled={disabled}
+              readOnly={readOnly}
+              required={required}
+              min={min}
+              max={max}
+              step={step}
+              error={
+                key === "end" && invalid
+                  ? "종료는 시작보다 빠를 수 없습니다."
+                  : undefined
+              }
+              onValueChange={(next) => setRange({ ...range, [key]: next })}
+            />
           ))}
         </div>
-        {invalid && (
-          <p id={id + "error"} className="cheese-help" role="alert">
-            종료는 시작보다 빠를 수 없습니다.
-          </p>
-        )}
       </fieldset>
     </div>
   );

@@ -1,4 +1,4 @@
-import { computed, onMounted, onBeforeUnmount, ref, shallowRef } from "vue";
+import { computed, ref, shallowRef, watch } from "vue";
 export interface ChoiceOption {
   value: string;
   label: string;
@@ -14,6 +14,7 @@ export interface RangeFieldProps {
   modelValue?: RangeFieldValue;
   defaultValue?: RangeFieldValue;
   name?: string;
+  form?: string;
   disabled?: boolean;
   readOnly?: boolean;
   required?: boolean;
@@ -25,6 +26,7 @@ export function useFieldModel<T>(
   get: () => T | undefined,
   defaults: () => T,
   emit: (value: T) => void,
+  getForm?: () => string | undefined,
 ) {
   const root = ref<HTMLDivElement>(),
     local = shallowRef<T>(defaults());
@@ -35,20 +37,29 @@ export function useFieldModel<T>(
       emit(next);
     },
   });
-  let form: HTMLFormElement | null | undefined,
-    timer: ReturnType<typeof setTimeout> | undefined;
-  const reset = (event: Event) => {
-    timer = setTimeout(() => {
-      if (!event.defaultPrevented) value.value = defaults();
-    }, 0);
-  };
-  onMounted(() => {
-    form = root.value?.closest("form");
-    form?.addEventListener("reset", reset);
-  });
-  onBeforeUnmount(() => {
-    form?.removeEventListener("reset", reset);
-    clearTimeout(timer);
-  });
+  watch(
+    [root, () => getForm?.()],
+    (_, __, cleanup) => {
+      if (!root.value) return;
+      const formId = getForm?.();
+      const form = formId
+        ? (document.getElementById(formId) as HTMLFormElement | null)
+        : root.value?.closest("form");
+      const timers = new Set<ReturnType<typeof setTimeout>>();
+      const reset = (event: Event) => {
+        const timer = setTimeout(() => {
+          timers.delete(timer);
+          if (!event.defaultPrevented) value.value = defaults();
+        }, 0);
+        timers.add(timer);
+      };
+      form?.addEventListener("reset", reset);
+      cleanup(() => {
+        form?.removeEventListener("reset", reset);
+        timers.forEach(clearTimeout);
+      });
+    },
+    { flush: "post" },
+  );
   return { root, value };
 }

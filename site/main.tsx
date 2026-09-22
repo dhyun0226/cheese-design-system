@@ -35,11 +35,13 @@ import "@cheese/css";
 import "./site.css";
 import { entries, groups, type Entry } from "./catalog";
 import VueDemoSource from "./VueDemo.vue?raw";
-import { Tree } from "@cheese/react";
+import { Tree, DateField } from "@cheese/react";
 const modules = import.meta.glob<{ default: React.ComponentType }>(
   "./examples/*.tsx",
 );
-const examples = Object.fromEntries(
+const examples: Partial<
+  Record<string, React.LazyExoticComponent<React.ComponentType>>
+> = Object.fromEntries(
   Object.entries(modules).map(([path, loader]) => [path, React.lazy(loader)]),
 );
 const sources = import.meta.glob<string>("./examples/*.tsx", {
@@ -66,10 +68,15 @@ function Logo() {
   );
 }
 function useRoute() {
-  const [route, setRoute] = useState(location.hash.slice(2) || "");
+  const readRoute = () =>
+    (location.hash.slice(2) || "").replace(
+      /^components\/native-select$/,
+      "components/select-form",
+    );
+  const [route, setRoute] = useState(readRoute);
   useEffect(() => {
     const listener = () => {
-      setRoute(location.hash.slice(2) || "");
+      setRoute(readRoute());
       window.scrollTo(0, 0);
     };
     window.addEventListener("hashchange", listener);
@@ -116,15 +123,37 @@ function Sidebar({
   onNavigate?: () => void;
 }) {
   const [query, setQuery] = useState("");
+  const navId = React.useId();
+  const navigation = useRef<HTMLElement>(null);
   const active = entries.find((e) => route === "components/" + e.id);
   const [open, setOpen] = useState<Record<string, boolean>>({ 입력: true });
+  const activeGroupOpen = active ? !!open[active.group] : true;
   useEffect(() => {
-    if (active) setOpen({ [active.group]: true });
+    if (active) setOpen((previous) => ({ ...previous, [active.group]: true }));
   }, [active]);
+  useEffect(() => {
+    if (onNavigate) return;
+    const frame = requestAnimationFrame(() => {
+      const sidebar = navigation.current?.closest<HTMLElement>(".site-sidebar");
+      const current = navigation.current?.querySelector<HTMLElement>(
+        'a[aria-current="page"]',
+      );
+      if (!sidebar?.clientHeight || !current) return;
+      const viewport = sidebar.getBoundingClientRect();
+      const item = current.getBoundingClientRect();
+      const padding = 16;
+      // Move only this scroll container; scrollIntoView would also move the page.
+      if (item.top < viewport.top + padding) {
+        sidebar.scrollTop += item.top - viewport.top - padding;
+      } else if (item.bottom > viewport.bottom - padding) {
+        sidebar.scrollTop += item.bottom - viewport.bottom + padding;
+      }
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [route, activeGroupOpen, onNavigate]);
   return (
-    <nav className="sidebar-content" aria-label="문서 탐색">
+    <nav ref={navigation} className="sidebar-content" aria-label="문서 탐색">
       <div className="nav-search">
-        <Search aria-hidden="true" />
         <Input
           aria-label="컴포넌트 검색"
           placeholder="컴포넌트 검색"
@@ -132,6 +161,7 @@ function Sidebar({
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
+      <div className="nav-caption">시작하기</div>
       <div className="nav-intro">
         {[
           ["", "소개"],
@@ -152,7 +182,9 @@ function Sidebar({
           </a>
         ))}
       </div>
-      <div className="nav-caption">COMPONENTS</div>
+      <div className="nav-caption nav-caption-components">
+        컴포넌트 <span>{entries.length}</span>
+      </div>
       {groups.map(([label, english, items]) => {
         const filtered = items.filter((i) =>
           (i[1] + " " + i[2])
@@ -165,7 +197,7 @@ function Sidebar({
             <button
               type="button"
               aria-expanded={!!query || !!open[label]}
-              aria-controls={"group-" + english.replace(/\W/g, "")}
+              aria-controls={navId + "-" + english.replace(/\W/g, "")}
               onClick={() => setOpen((v) => ({ ...v, [label]: !v[label] }))}
             >
               {label}
@@ -175,7 +207,7 @@ function Sidebar({
               />
             </button>
             {(query || open[label]) && (
-              <div id={"group-" + english.replace(/\W/g, "")}>
+              <div id={navId + "-" + english.replace(/\W/g, "")}>
                 {filtered.map((i) => (
                   <a
                     href={"#/components/" + i[0]}
@@ -299,24 +331,58 @@ function EvaluationPreview() {
     </div>
   );
 }
+function OriginIllustration() {
+  return (
+    <div className="origin-illustration" aria-hidden="true">
+      <span className="origin-coordinate">A SMALL DISCOVERY</span>
+      <svg viewBox="0 0 480 320" fill="none">
+        <path className="origin-orbit" d="M46 194C87 91 204 59 319 123" />
+        <circle className="origin-moon" cx="332" cy="178" r="83" />
+        <circle className="origin-crater" cx="300" cy="147" r="15" />
+        <circle className="origin-crater" cx="366" cy="173" r="22" />
+        <circle className="origin-crater" cx="316" cy="214" r="11" />
+        <circle className="origin-crater" cx="356" cy="123" r="7" />
+        <path
+          className="origin-ship"
+          d="M202 137c0-25 14-50 32-65 18 15 32 40 32 65v31h-64v-31Z"
+        />
+        <path
+          className="origin-ship"
+          d="m202 137-17 18v27l17-14m64-31 17 18v27l-17-14M207 168l-8 19m62-19 8 19"
+        />
+        <circle className="origin-window" cx="234" cy="116" r="10" />
+        <path
+          className="origin-door"
+          d="M226 168v-23h16v23l15 16h-18l-13-16Z"
+        />
+        <path className="origin-ground" d="M165 188h128M153 188h4M301 188h7" />
+        <path className="origin-cheese" d="m252 227 25-9 16 11-41 6v-8Z" />
+        <path className="origin-cheese" d="M252 235v14h41v-20l-41 6Z" />
+        <circle className="origin-cheese-hole" cx="261" cy="241" r="2" />
+        <circle className="origin-cheese-hole" cx="283" cy="237" r="3" />
+      </svg>
+      <span className="origin-caption">STARSHIP → MOON → CHEESE</span>
+    </div>
+  );
+}
 function Home() {
   return (
     <>
-      <div className="home-hero">
+      <section className="home-hero" aria-labelledby="home-title">
         <div className="hero-copy">
           <div className="eyebrow">
             <span className="gold-dash" />
             CHEESE DESIGN SYSTEM
           </div>
-          <h1>
-            좋은 도구는,
+          <h1 id="home-title">
+            작은 발견에서,
             <br />
-            일을 단순하게.
+            같은 기준으로.
           </h1>
           <p>
-            차분한 화면. 확실한 동작.
+            차분한 화면과 명확한 동작을 만드는 공통 언어.
             <br />
-            함께 만드는 제품을 위한 공통 언어.
+            토큰, 컴포넌트, 사용 가이드를 한곳에서 만납니다.
           </p>
           <div className="hero-actions">
             <a className="cheese-button" href="#/getting-started">
@@ -324,78 +390,92 @@ function Home() {
               <ChevronRight aria-hidden="true" />
             </a>
             <a className="text-link" href="#/components">
-              컴포넌트 둘러보기{" "}
+              컴포넌트 둘러보기
               <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
             </a>
           </div>
-          <span className="hero-note">
-            React · Vue · Framework-independent tokens
+          <span className="hero-note">React · Vue · Shared tokens</span>
+        </div>
+        <OriginIllustration />
+      </section>
+      <section className="origin-story" aria-labelledby="origin-title">
+        <div>
+          <span className="eyebrow">WHY CHEESE?</span>
+          <h2 id="origin-title">
+            달에 도착했더니,
+            <br />
+            치즈였습니다.
+          </h2>
+        </div>
+        <div>
+          <p>
+            STARSHIP 로고의 우주선이 달로 날아가 착륙합니다. 문을 열고 나와
+            보니, 달은 치즈로 이루어져 있었습니다. 그 첫 발견을 첫 디자인
+            시스템의 이름으로 삼았습니다. <strong>CHEESE.</strong>
+          </p>
+          <span className="origin-note">
+            제작자가 상상한 이름의 이야기입니다. STARSHIP의 공식 브랜드 설명이나
+            승인된 제품은 아닙니다.
           </span>
         </div>
-        <EvaluationPreview />
-      </div>
-      <div className="principle-strip">
-        <div>
-          <span>01 / FOUNDATION</span>
-          <h2>하나의 기준.</h2>
-          <p>
-            색상, 타이포그래피, 여백을 토큰으로.
-            <br />
-            어떤 프레임워크에서도 같은 경험을.
-          </p>
-        </div>
-        <div>
-          <span>02 / COMPONENTS</span>
-          <h2>작동하는 디테일.</h2>
-          <p>
-            입력부터 팝업, 키보드 탐색까지.
-            <br />
-            패키지로 가져다 쓰는 실제 컴포넌트.
-          </p>
-        </div>
-        <div>
-          <span>03 / PATTERNS</span>
-          <h2>업무에 더 가까이.</h2>
-          <p>
-            폼, 평가, 권한 설정을 연결하는
-            <br />
-            다음 제품의 출발점.
-          </p>
-        </div>
-      </div>
+      </section>
+      <nav className="home-paths" aria-label="문서 시작점">
+        {[
+          ["foundations", "01", "디자인 원칙", "색상, 서체, 간격의 공통 기준"],
+          [
+            "components",
+            "02",
+            "컴포넌트",
+            `${count}개의 실행 예제와 사용 가이드`,
+          ],
+          [
+            "patterns",
+            "03",
+            "업무 화면 예제",
+            "작은 부품이 하나의 화면이 되는 과정",
+          ],
+        ].map(([path, number, title, description]) => (
+          <a key={path} href={"#/" + path}>
+            <span className="path-number">{number}</span>
+            <h2>
+              {title}
+              <ArrowUpRight aria-hidden="true" />
+            </h2>
+            <p>{description}</p>
+          </a>
+        ))}
+      </nav>
       <section className="home-section">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">EXPLORE THE SYSTEM</span>
+            <span className="eyebrow">COMPONENTS</span>
             <h2>필요한 것부터, 하나씩.</h2>
           </div>
           <a className="text-link" href="#/components">
-            전체 보기{" "}
+            전체 보기
             <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
           </a>
         </div>
         <div className="explore-grid">
           {[
-            ["button", "Button", "핵심 행동을 명확하게."],
-            ["field", "Form & Field", "입력부터 오류 해결까지."],
-            ["dialog", "Dialog & Overlay", "집중이 필요한 순간."],
-            ["tree", "Tree & Navigation", "복잡한 구조도 간결하게."],
+            ["button", "Button", "다음 행동을 명확하게 안내합니다."],
+            ["field", "Field", "레이블부터 오류까지 연결합니다."],
+            ["dialog", "Dialog", "필요한 일에 집중하게 합니다."],
+            ["tree", "Tree", "정보의 구조를 보여줍니다."],
           ].map(([id, title, desc]) => (
             <article className="explore-card" key={id}>
               <div className="explore-number" inert aria-hidden="true">
                 {id === "button" ? (
-                  <Button variant="accent">저장하기</Button>
+                  <Button>저장하기</Button>
                 ) : id === "field" ? (
                   <div className="preview-inset">
-                    <Input
-                      aria-label="회사 이메일"
-                      placeholder="회사 이메일"
-                      readOnly
-                    />
+                    <Field label="회사 이메일">
+                      <Input placeholder="name@company.com" readOnly />
+                    </Field>
                   </div>
                 ) : id === "dialog" ? (
                   <Card>
-                    <Badge tone="brand">집중이 필요한 순간</Badge>
+                    <Badge>집중이 필요한 순간</Badge>
                   </Card>
                 ) : (
                   <Tree
@@ -422,16 +502,34 @@ function Home() {
           ))}
         </div>
       </section>
+      <section className="home-showcase" aria-labelledby="showcase-title">
+        <div className="showcase-copy">
+          <span className="eyebrow">PUT IT TOGETHER</span>
+          <h2 id="showcase-title">
+            부품을 연결하면,
+            <br />
+            업무가 보입니다.
+          </h2>
+          <p>
+            입력, 진행 상태, 확인 대화창을 조합한 평가 화면입니다. 직접 눌러
+            보고, 화면을 이루는 컴포넌트를 살펴보세요.
+          </p>
+          <a className="text-link" href="#/patterns">
+            업무 화면 예제 보기
+            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
+          </a>
+        </div>
+        <EvaluationPreview />
+      </section>
       <section className="home-note">
-        <span className="eyebrow">BUILT IN THE OPEN</span>
-        <h2>보이는 것과 사용하는 것이 같도록.</h2>
-        <p>
-          이 문서의 실행 예제는 배포 패키지를 직접 사용합니다.
-          <br />
-          구현 상태와 남은 검증 범위도 함께 공개합니다.
-        </p>
+        <div>
+          <h2>도입 전, 현재 범위를 확인하세요.</h2>
+          <p>
+            실행 예제와 구현 상태, 서비스에서 연결할 일을 함께 정리했습니다.
+          </p>
+        </div>
         <a className="text-link" href="#/readiness">
-          도입 준비 상태 확인{" "}
+          도입 체크리스트
           <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
         </a>
       </section>
@@ -513,142 +611,213 @@ function ComponentPage({ entry }: { entry: Entry }) {
   const source = sources["./examples/" + entry.id + ".tsx"];
   const [revision, setRevision] = useState(0);
   return (
-    <>
-      <div className="doc-crumb">
-        <a href="#/components">컴포넌트</a>
-        <span>/</span>
-        {entry.group}
-      </div>
-      <PageHeading
-        eyebrow={entry.group}
-        title={entry.name}
-        description={entry.description}
-      />
-      {Example ? (
-        <>
-          <div className="component-meta">
-            <Badge>React package</Badge>
-            <span>공통 CSS · Pretendard · 키보드 탐색</span>
-          </div>
-          <TabsRoot defaultValue="preview">
-            <div className="preview-toolbar">
-              <TabsList aria-label="예제 보기">
-                <TabsTrigger value="preview">미리보기</TabsTrigger>
-                <TabsTrigger value="code">코드</TabsTrigger>
-              </TabsList>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setRevision((v) => v + 1)}
-              >
-                초기화
-              </Button>
-            </div>
-            <TabsContent value="preview">
-              <section
-                className="demo-stage"
-                aria-label={entry.name + " 실행 예제"}
-              >
-                <div
-                  className={
-                    "demo-content " +
-                    ([
-                      "table",
-                      "data-table",
-                      "file-upload",
-                      "stepper",
-                      "accordion",
-                      "scroll-area",
-                    ].includes(entry.id)
-                      ? "demo-wide"
-                      : "")
-                  }
-                >
-                  <React.Suspense
-                    fallback={
-                      <p role="status" data-example-loading>
-                        예제 불러오는 중…
-                      </p>
-                    }
-                  >
-                    <Example key={revision} />
-                  </React.Suspense>
-                </div>
-                <span className="demo-watermark">CHEESE / LIVE COMPONENT</span>
-              </section>
-            </TabsContent>
-            <TabsContent value="code">
-              <CopyCode code={source} />
-            </TabsContent>
-          </TabsRoot>
-          <div className="doc-details">
-            <section>
-              <h2>사용 가이드</h2>
-              <p>{entry.accessibility}</p>
-              <p className="cheese-help">
-                현재 예제의 값은 브라우저 메모리에만 유지됩니다. 실제 저장·권한
-                검사·서버 검증은 서비스에서 연결하세요.
-              </p>
-            </section>
-            <section>
-              <h2>주요 API</h2>
-              <div className="api-list">
-                {entry.api
-                  .split(/\s*[·/]\s*/)
-                  .filter(Boolean)
-                  .map((s, index) => (
-                    <Badge key={`${s}-${index}`}>{s}</Badge>
-                  ))}
-              </div>
-              <p className="cheese-help">
-                전체 타입은 패키지의 TypeScript 선언을 확인하세요. React는
-                Radix, Vue는 Reka 기반으로 이벤트 API가 다릅니다.
-              </p>
+    <div className="component-document">
+      <article className="component-article">
+        <nav className="doc-crumb" aria-label="문서 위치">
+          <a href="#/components">컴포넌트</a>
+          <ChevronRight aria-hidden="true" />
+          <span>{entry.group}</span>
+        </nav>
+        <PageHeading
+          eyebrow="COMPONENTS"
+          title={entry.name}
+          description={entry.description}
+        />
+        {Example ? (
+          <>
+            <div className="component-meta">
+              <Badge>React package</Badge>
+              <span>@cheese/react</span>
               <a
                 className="text-link"
-                href={github + "/tree/main/packages"}
+                href={github + "/blob/main/site/examples/" + entry.id + ".tsx"}
                 target="_blank"
                 rel="noreferrer"
               >
-                패키지 소스{" "}
+                예제 소스
                 <ArrowUpRight
                   className="cheese-inline-icon"
                   aria-hidden="true"
                 />
               </a>
+            </div>
+            <section
+              className="component-example"
+              aria-labelledby="doc-preview"
+              data-doc-section
+            >
+              <div className="doc-section-heading">
+                <h2 id="doc-preview" tabIndex={-1}>
+                  실행 예제
+                </h2>
+                <span>직접 눌러 보고 동작을 확인하세요.</span>
+              </div>
+              <TabsRoot defaultValue="preview">
+                <div className="preview-toolbar">
+                  <TabsList aria-label="예제 보기">
+                    <TabsTrigger value="preview">미리보기</TabsTrigger>
+                    <TabsTrigger value="code">코드</TabsTrigger>
+                  </TabsList>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setRevision((value) => value + 1)}
+                  >
+                    초기화
+                  </Button>
+                </div>
+                <TabsContent value="preview">
+                  <section
+                    className="demo-stage"
+                    aria-label={entry.name + " 실행 예제"}
+                  >
+                    <div
+                      className={
+                        "demo-content " +
+                        ([
+                          "table",
+                          "data-table",
+                          "file-upload",
+                          "stepper",
+                          "accordion",
+                          "scroll-area",
+                        ].includes(entry.id)
+                          ? "demo-wide"
+                          : "")
+                      }
+                    >
+                      <React.Suspense
+                        fallback={
+                          <p role="status" data-example-loading>
+                            예제 불러오는 중…
+                          </p>
+                        }
+                      >
+                        <Example key={revision} />
+                      </React.Suspense>
+                    </div>
+                    <span className="demo-watermark">
+                      CHEESE / LIVE COMPONENT
+                    </span>
+                  </section>
+                </TabsContent>
+                <TabsContent value="code">
+                  <CopyCode code={source} />
+                </TabsContent>
+              </TabsRoot>
+              <p className="preview-caption">
+                이 예제는 실제 패키지를 사용합니다. 코드 탭에서 전체 소스를
+                복사할 수 있습니다.
+              </p>
             </section>
+            <div className="doc-details">
+              <section aria-labelledby="doc-guide" data-doc-section>
+                <h2 id="doc-guide" tabIndex={-1}>
+                  사용 가이드
+                </h2>
+                <p>{entry.accessibility}</p>
+                <div className="doc-note">
+                  <span className="doc-note-label">서비스에 연결할 때</span>
+                  <p>
+                    현재 예제의 값은 브라우저 메모리에만 유지됩니다. 실제
+                    저장·권한 검사·서버 검증은 서비스에서 연결하세요.
+                  </p>
+                </div>
+              </section>
+              <section aria-labelledby="doc-api" data-doc-section>
+                <h2 id="doc-api" tabIndex={-1}>
+                  주요 API
+                </h2>
+                <div className="api-list">
+                  {entry.api
+                    .split(/\s*[·/]\s*/)
+                    .filter(Boolean)
+                    .map((item, index) => (
+                      <Badge key={item + "-" + index}>{item}</Badge>
+                    ))}
+                </div>
+                <p className="cheese-help">
+                  전체 타입은 패키지의 TypeScript 선언을 확인하세요. React는
+                  Radix, Vue는 Reka 기반으로 이벤트 API가 다릅니다.
+                </p>
+                <a
+                  className="text-link"
+                  href={github + "/tree/main/packages"}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  패키지 소스
+                  <ArrowUpRight
+                    className="cheese-inline-icon"
+                    aria-hidden="true"
+                  />
+                </a>
+              </section>
+            </div>
+          </>
+        ) : (
+          <div className="planned-panel">
+            <Badge>설계 중</Badge>
+            <h2>구현 범위를 정리하고 있습니다.</h2>
+            <p>
+              독립적인 CHEESE 구현과 동작 검증이 완료되면 실행 예제와 사용
+              가이드를 제공합니다.
+            </p>
+            <a href="#/readiness" className="text-link">
+              현재 도입 범위 확인
+              <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
+            </a>
           </div>
-        </>
-      ) : (
-        <div className="planned-panel">
-          <Badge tone="brand">설계 중 · 프로덕션 지원 아님</Badge>
-          <h2>이름만으로 완성을 약속하지 않습니다.</h2>
-          <p>
-            기존 카탈로그에는 있었지만, 독립적인 CHEESE 구현과 동작 검증이
-            완료되지 않은 항목입니다. 모양만 있는 예제 대신 상태를 명확히
-            표시합니다.
-          </p>
-          <p>
-            설계 범위: 제어/비제어 상태, 키보드 탐색, 오류·비활성 상태,
-            React·Vue 통합, 접근성 및 브라우저 테스트.
-          </p>
-          <a href="#/readiness" className="text-link">
-            현재 도입 범위 확인{" "}
+        )}
+        <nav className="doc-bottom" aria-label="다음 문서">
+          <a href="#/components">
+            <ChevronLeft className="cheese-inline-icon" aria-hidden="true" />
+            <span>
+              <small>목록으로</small>전체 컴포넌트
+            </span>
+          </a>
+          <a href="#/patterns">
+            <span>
+              <small>함께 살펴보기</small>업무 화면에서 사용하기
+            </span>
             <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
           </a>
-        </div>
+        </nav>
+      </article>
+      {Example && (
+        <aside className="doc-outline">
+          <nav aria-label="이 페이지에서">
+            <span>이 페이지에서</span>
+            {[
+              ["doc-preview", "실행 예제"],
+              ["doc-guide", "사용 가이드"],
+              ["doc-api", "주요 API"],
+            ].map(([id, label]) => (
+              <a
+                key={id}
+                href={"#" + id}
+                onClick={(event) => {
+                  event.preventDefault();
+                  const heading = document.getElementById(id);
+                  heading?.focus({ preventScroll: true });
+                  heading?.scrollIntoView({ block: "start" });
+                }}
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+          <div className="doc-outline-note">
+            <span className="gold-dash" />
+            <p>
+              작은 디테일,
+              <br />
+              함께 쓰는 기준.
+            </p>
+          </div>
+        </aside>
       )}
-      <div className="doc-bottom">
-        <a href="#/components">
-          <ChevronLeft className="cheese-inline-icon" aria-hidden="true" /> 전체
-          컴포넌트
-        </a>
-        <a href="#/patterns">
-          업무 화면에서 사용하기{" "}
-          <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
-        </a>
-      </div>
-    </>
+    </div>
   );
 }
 function GettingStarted() {
@@ -669,7 +838,7 @@ function GettingStarted() {
           code={
             "git clone " +
             github +
-            ".git\ncd cheese-design-system\nnpm ci\nnpm run build\nnpx playwright install chromium\nnpm run check\nnpm run dev"
+            ".git\ncd cheese-design-system\nnpm ci\nnpm run build\nnpx playwright install chromium firefox webkit\nnpm run check\nnpm run dev"
           }
         />
       </section>
@@ -894,6 +1063,11 @@ function Patterns() {
                   ?.focus();
                 return;
               }
+              if (!e.currentTarget.checkValidity()) {
+                setSaved(false);
+                e.currentTarget.querySelector<HTMLElement>(":invalid")?.focus();
+                return;
+              }
               setError("");
               setSaved(true);
             }}
@@ -919,9 +1093,12 @@ function Patterns() {
                   { value: "tech", label: "개발팀" },
                 ]}
               />
-              <Field label="마감일">
-                <Input name="deadline" type="date" defaultValue="2026-10-30" />
-              </Field>
+              <DateField
+                label="마감일"
+                name="deadline"
+                required
+                defaultValue="2026-10-30"
+              />
             </div>
             <Checkbox label="마감 3일 전 알림 발송" defaultChecked />
             <Switch label="제출 후 본인 수정 허용" />
@@ -1132,7 +1309,7 @@ function App() {
     main.current?.focus();
   }, [route, entry]);
   return (
-    <div className="cheese-root">
+    <div className="cheese-root site-app">
       <a
         className="skip-link"
         href="#main-content"
@@ -1149,9 +1326,29 @@ function App() {
           <strong>CHEESE</strong>
           <span>Design System</span>
         </a>
+        <nav className="header-nav" aria-label="주요 문서">
+          {[
+            ["getting-started", "시작하기"],
+            ["foundations", "디자인 원칙"],
+            ["components", "컴포넌트"],
+            ["patterns", "패턴"],
+          ].map(([path, label]) => (
+            <a
+              key={path}
+              href={"#/" + path}
+              aria-current={
+                route === path || (path === "components" && !!entry)
+                  ? "page"
+                  : undefined
+              }
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
         <div className="header-actions">
-          <a className="header-link" href="#/getting-started">
-            Documentation
+          <a className="header-link" href="./vue.html">
+            Vue 예제
           </a>
           <a
             className="header-link"

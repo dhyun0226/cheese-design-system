@@ -6,6 +6,11 @@ import {
   Field,
   Input,
   DatePicker,
+  DateField,
+  TimeField,
+  NumberField,
+  ScrollArea,
+  Pagination,
   Tree,
   Calendar,
   Select,
@@ -33,6 +38,11 @@ import { tokens } from "@cheese/tokens";
 
 const input = createRef<HTMLInputElement>();
 const picker = createRef<HTMLButtonElement>();
+const date = createRef<HTMLInputElement>();
+const time = createRef<HTMLInputElement>();
+const number = createRef<HTMLInputElement>();
+const scroll = createRef<HTMLDivElement>();
+const viewport = createRef<HTMLDivElement>();
 createRoot(document.getElementById("root")!).render(
   <main className="cheese-root" style={{ color: tokens.color.spaceBlack }}>
     <form>
@@ -40,8 +50,57 @@ createRoot(document.getElementById("root")!).render(
         <Input ref={input} name="employee" />
       </Field>
       <DatePicker ref={picker} label="마감일" name="deadline" required />
+      <DateField
+        ref={date}
+        label="시작일"
+        name="startDate"
+        defaultValue="2026-10-01"
+        min="2026-01-01"
+        max="2026-12-31"
+        step="any"
+        onValueChange={(value) => value.trim()}
+      />
+      <TimeField
+        ref={time}
+        label="알림 시간"
+        name="reminder"
+        defaultValue="09:00"
+        min="09:00"
+        max="18:00"
+        step={900}
+        onValueChange={(value) => value.trim()}
+      />
+      <NumberField
+        ref={number}
+        label="수량"
+        name="quantity"
+        defaultValue={1.5}
+        min={0}
+        max={10}
+        step={0.5}
+        onValueChange={(value) => value.trim()}
+      />
       <Button type="submit">저장</Button>
     </form>
+    <ScrollArea
+      ref={scroll}
+      viewportRef={viewport}
+      label="업무 내역"
+      orientation="both"
+      height="12rem"
+      viewportProps={{ onScroll: (event) => event.currentTarget.scrollTop }}
+    >
+      <p>스크롤 가능한 업무 내역</p>
+    </ScrollArea>
+    <Pagination
+      page={5}
+      count={1000}
+      label="업무 페이지"
+      previousLabel="이전 업무 페이지"
+      nextLabel="다음 업무 페이지"
+      getPageLabel={(page) => `${page}번째 업무 페이지`}
+      onPageChange={(page) => page.toFixed(0)}
+    />
     <Tree nodes={[{ id: "team", label: "팀" }]} />
     <Calendar mode="single" onSelect={(date) => date?.getDate()} />
     <Select label="조직" options={[{ value: "people", label: "피플팀" }]} />

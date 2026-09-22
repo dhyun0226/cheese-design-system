@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, shallowRef, computed, watch, useId } from "vue";
 import {
+  PopoverRoot,
+  PopoverTrigger,
+  PopoverPortal,
+  PopoverContent,
+} from "reka-ui";
+import {
   ArrowUpDown,
   ChevronUp,
   ChevronDown,
@@ -184,31 +190,50 @@ function toggleRow(row: DataRow) {
           @compositionend="composing = false"
         />
       </div>
-      <details class="cheese-column-menu">
-        <summary class="cheese-button" data-variant="weak">
-          <SlidersHorizontal :size="16" aria-hidden="true" />표시 열
-        </summary>
-        <div class="cheese-column-options">
-          <label
-            v-for="column in columns"
-            :key="column.key"
-            class="cheese-check-label"
-            ><CheckboxRoot
-              :model-value="!hidden.includes(column.key)"
-              :disabled="visible.length === 1 && !hidden.includes(column.key)"
-              @update:model-value="
-                hidden = hidden.includes(column.key)
-                  ? hidden.filter((key) => key !== column.key)
-                  : [...hidden, column.key]
-              "
-              ><CheckboxIndicator
-                ><Check
-                  :size="14"
-                  aria-hidden="true" /></CheckboxIndicator></CheckboxRoot
-            >{{ column.label }}</label
+      <PopoverRoot>
+        <PopoverTrigger as-child>
+          <Button variant="weak" class="cheese-column-menu">
+            <SlidersHorizontal :size="16" aria-hidden="true" />표시 열
+          </Button>
+        </PopoverTrigger>
+        <PopoverPortal>
+          <PopoverContent
+            as-child
+            align="end"
+            :side-offset="8"
+            :collision-padding="12"
           >
-        </div>
-      </details>
+            <div
+              class="cheese-column-options cheese-root"
+              :aria-labelledby="id + '-column-title'"
+            >
+              <span :id="id + '-column-title'" class="cheese-sr-only"
+                >{{ label }} 표시 열</span
+              >
+              <label
+                v-for="column in columns"
+                :key="column.key"
+                class="cheese-check-label"
+                ><CheckboxRoot
+                  :model-value="!hidden.includes(column.key)"
+                  :disabled="
+                    visible.length === 1 && !hidden.includes(column.key)
+                  "
+                  @update:model-value="
+                    hidden = hidden.includes(column.key)
+                      ? hidden.filter((key) => key !== column.key)
+                      : [...hidden, column.key]
+                  "
+                  ><CheckboxIndicator
+                    ><Check
+                      :size="14"
+                      aria-hidden="true" /></CheckboxIndicator></CheckboxRoot
+                >{{ column.label }}</label
+              >
+            </div>
+          </PopoverContent>
+        </PopoverPortal>
+      </PopoverRoot>
     </div>
     <div class="cheese-table-selection">
       <span role="status">{{ selected.length }}개 행 선택</span

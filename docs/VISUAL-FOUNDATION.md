@@ -70,7 +70,7 @@ radius: item 8 / control 10 / card 16 / overlay 20. 기존 token API는 보존�
 
 - `tests/surfaces.spec.ts`: 사이트/컴포넌트 Input 일치, 상태, 토큰 재정의,
   무테 Table, 선택 표시, overlay, forced colors, React/Vue 공유 스타일,
-  NativeSelect 화살표, hover/focus 크기 고정, Tags 단일 포커스, 모션 감소.
+  커스텀 Select 아이콘, hover/focus 크기 고정, Tags 단일 포커스, 모션 감소.
 - `tests/contracts.test.mjs`: 기본 입력의 흰색·무그림자 계약, 선택 표시·포커스 보조선의 대비 수치,
   사이트 검색의 시각 override 재도입 방지.
 - 기존 전 카탈로그 접근성/상호작용 테스트 유지.

@@ -131,12 +131,15 @@ for (const framework of ["react", "vue"]) {
       section.getByRole("columnheader", { name: "점수 정렬" }),
     ).toHaveAttribute("aria-sort", "ascending");
     await expect(section.locator("tbody tr").first()).toContainText("직원 12");
-    await section.locator("summary").click();
-    await section.getByRole("checkbox", { name: "점수", exact: true }).click();
+    await section.getByRole("button", { name: "표시 열", exact: true }).click();
+    await page
+      .getByRole("dialog", { name: "Contract table 표시 열" })
+      .getByRole("checkbox", { name: "점수", exact: true })
+      .click();
     await expect(
       section.getByRole("columnheader", { name: "점수 정렬" }),
     ).toHaveCount(0);
-    await section.locator("summary").click();
+    await page.keyboard.press("Escape");
     const input = section.getByRole("textbox", { name: "Contract table 검색" });
     await input.fill("old");
     await expect
@@ -165,6 +168,116 @@ for (const framework of ["react", "vue"]) {
     });
     await local.getByRole("button", { name: "점수 정렬" }).click();
     await expect(local.locator("tbody tr").first()).toContainText("직원 12");
+    await audit(page);
+  });
+  test(`${framework} column popover supports keyboard, outside dismissal and last-column protection`, async ({
+    page,
+  }) => {
+    await page.goto(`/tests/fixtures/business.html?framework=${framework}`);
+    const section = page.getByRole("region", {
+      name: "Contract table",
+      exact: true,
+    });
+    const trigger = section.getByRole("button", {
+      name: "표시 열",
+      exact: true,
+    });
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    const popup = page.getByRole("dialog", { name: "Contract table 표시 열" });
+    await expect(popup).toBeVisible();
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await popup.getByRole("checkbox", { name: "점수", exact: true }).uncheck();
+    await expect(
+      popup.getByRole("checkbox", { name: "이름", exact: true }),
+    ).toBeDisabled();
+    await audit(page);
+    await page.screenshot({
+      path: `artifacts/${test.info().project.name}/${framework}-table-column-popover.png`,
+    });
+    await page.keyboard.press("Escape");
+    await expect(popup).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+    await trigger.click();
+    const search = section.getByRole("textbox", {
+      name: "Contract table 검색",
+    });
+    await search.click();
+    await expect(popup).toHaveCount(0);
+    await expect(search).toBeFocused();
+    await page.setViewportSize({ width: 320, height: 740 });
+    await trigger.click();
+    await expect(popup).toBeVisible();
+    const box = (await popup.boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(320);
+    await page.keyboard.press("Escape");
+    await expect(trigger).toBeFocused();
+  });
+  test(`${framework} upload respects canceled form reset and aborts only an allowed reset`, async ({
+    page,
+  }) => {
+    await page.goto(
+      `/tests/fixtures/business.html?scenario=upload-reset&framework=${framework}`,
+    );
+    const input = page.getByLabel("Contract upload 파일 선택");
+    await input.setInputFiles({
+      name: "reset.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from("x"),
+    });
+    await page
+      .getByRole("button", { name: "reset.txt 업로드", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "reset.txt 업로드 취소" }),
+    ).toBeVisible();
+    await input.setInputFiles({
+      name: "bad.exe",
+      mimeType: "application/octet-stream",
+      buffer: Buffer.from("x"),
+    });
+    await expect(page.getByRole("alert")).toContainText(
+      "지원하지 않는 파일 형식",
+    );
+    await page
+      .getByRole("button", { name: "Cancel upload reset", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Reset upload", exact: true })
+      .click();
+    await expect(page.getByRole("status")).toHaveText("1개 파일 · 0개 완료");
+    await expect(
+      page.getByRole("button", { name: "reset.txt 업로드 취소" }),
+    ).toBeVisible();
+    await expect(page.getByRole("alert")).toContainText(
+      "지원하지 않는 파일 형식",
+    );
+    expect(
+      await page.evaluate(() =>
+        window.businessEvents.filter(
+          (event) => event.kind === "reset-upload" && event.aborted,
+        ),
+      ),
+    ).toEqual([]);
+    await page
+      .getByRole("button", { name: "Allow upload reset", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Reset upload", exact: true })
+      .click();
+    await expect(page.getByRole("status")).toHaveText("0개 파일 · 0개 완료");
+    await expect(page.getByRole("alert")).toHaveCount(0);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            window.businessEvents.filter(
+              (event) => event.kind === "reset-upload" && event.aborted,
+            ).length,
+        ),
+      )
+      .toBe(1);
     await audit(page);
   });
   test(`${framework} real XHR adapter supports validation, failure and retry`, async ({

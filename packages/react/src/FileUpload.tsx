@@ -59,17 +59,24 @@ export function FileUpload({
     );
     queue.current = instance;
     const form = root.current?.closest("form");
+    const resetTimers = new Set<ReturnType<typeof setTimeout>>();
     const reset = (event: Event) => {
-      queueMicrotask(() => {
+      // React's delegated onReset may run after this native listener. Wait
+      // until dispatch finishes before honoring or canceling the reset.
+      const timer = setTimeout(() => {
+        resetTimers.delete(timer);
         if (!event.defaultPrevented) {
           instance.clear();
           setErrors([]);
+          setDrag(false);
         }
-      });
+      }, 0);
+      resetTimers.add(timer);
     };
     form?.addEventListener("reset", reset);
     return () => {
       form?.removeEventListener("reset", reset);
+      resetTimers.forEach(clearTimeout);
       instance.dispose();
       queue.current = null;
     };

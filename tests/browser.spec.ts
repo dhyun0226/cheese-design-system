@@ -11,6 +11,29 @@ for (const name of names)
     await page.goto("/#/components/" + name);
     await expect(page.locator(".demo-stage")).toBeVisible();
     await expect(page.locator("[data-example-loading]")).toHaveCount(0);
+    // Playwright considers a 1px screen-reader-only control "visible" even
+    // when every pixel is clipped. Form proxies/file pickers stay available to
+    // assistive technology; only actual painted native chrome is forbidden.
+    const nativeChrome = await page
+      .locator(
+        ".demo-stage :is(select, input[type=date], input[type=time], input[type=color], input[type=file]):visible",
+      )
+      .evaluateAll((controls) =>
+        controls
+          .filter((node) => {
+            const style = getComputedStyle(node);
+            const box = node.getBoundingClientRect();
+            const clipped =
+              style.clip.replace(/\s/g, "") === "rect(0px,0px,0px,0px)" ||
+              style.clipPath === "inset(50%)";
+            return !(clipped && box.width <= 1 && box.height <= 1);
+          })
+          .map((node) => node.outerHTML),
+      );
+    expect(
+      nativeChrome,
+      name + " must not show OS-styled field chrome",
+    ).toEqual([]);
     await expect(page.locator("h1")).not.toBeEmpty();
     await page.evaluate(() => document.fonts.ready);
     const wrongFonts = await page
@@ -201,9 +224,8 @@ test("Vue package models, errors, switch, tabs, dialog and tree", async ({
     page.getByRole("textbox", { name: "이름", exact: true }),
   ).toHaveAttribute("aria-invalid", "true");
   await page.getByRole("textbox", { name: "이름", exact: true }).fill("치즈");
-  await page
-    .getByRole("combobox", { name: "조직", exact: true })
-    .selectOption("tech");
+  await page.getByRole("combobox", { name: "조직", exact: true }).click();
+  await page.getByRole("option", { name: "개발팀", exact: true }).click();
   await page.getByRole("textbox", { name: "메모" }).fill("Vue 메모");
   await expect(
     page.getByText("입력값: 치즈 / tech / Vue 메모", { exact: true }),

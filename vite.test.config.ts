@@ -13,6 +13,10 @@ export default mergeConfig(
         input: {
           forms: "tests/fixtures/forms.html",
           business: "tests/fixtures/business.html",
+          timeControls: "tests/fixtures/time-controls.html",
+          dateNumberFields: "tests/fixtures/date-number-fields.html",
+          scrollbars: "tests/fixtures/scrollbars.html",
+          navigationPagination: "tests/fixtures/navigation-pagination.html",
         },
       },
     },

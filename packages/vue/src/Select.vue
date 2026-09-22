@@ -18,6 +18,7 @@ const props = defineProps<{
   defaultValue?: string;
   placeholder?: string;
   name?: string;
+  form?: string;
   disabled?: boolean;
   required?: boolean;
   error?: string;
@@ -36,6 +37,7 @@ const { root, value } = useFieldModel(
     validation.value = "";
     emit("update:modelValue", v);
   },
+  () => props.form,
 );
 function capture(node: Element | ComponentPublicInstance | null) {
   const el = node && "$el" in node ? node.$el : node;
@@ -51,22 +53,32 @@ watch(
 function invalid(event: Event) {
   event.preventDefault();
   validation.value = "항목을 선택해 주세요.";
-  root.value
-    ?.querySelector<HTMLButtonElement>('button[role="combobox"]')
-    ?.focus();
+  const input = event.target as HTMLInputElement;
+  const first =
+    input.form &&
+    Array.from(input.form.elements).find((element) => {
+      const control = element as HTMLInputElement;
+      return (
+        control.willValidate && control.validity && !control.validity.valid
+      );
+    });
+  if (!first || first === input)
+    root.value
+      ?.querySelector<HTMLButtonElement>('button[role="combobox"]')
+      ?.focus();
 }
 </script>
 <template>
   <div ref="root" class="cheese-field" @invalid.capture="invalid">
     <label class="cheese-label" :for="id || auto"
-      >{{ label }}{{ required ? " *" : "" }}</label
+      >{{ label }}<span v-if="required" aria-hidden="true"> *</span></label
     >
     <P.SelectRoot
       v-model="value"
       v-model:open="open"
-      :name="name"
+      :name="form ? undefined : name"
       :disabled="disabled"
-      :required="required"
+      :required="form ? false : required"
       ><P.SelectTrigger
         v-bind="$attrs"
         :id="id || auto"
@@ -111,6 +123,20 @@ function invalid(event: Event) {
                 16
               " /></P.SelectScrollDownButton></P.SelectContent></P.SelectPortal
     ></P.SelectRoot>
+    <!-- Reka's native proxy only associates with the nearest form. An explicit
+         form owner needs its own hidden-but-validatable input, not a second value. -->
+    <input
+      v-if="form"
+      class="cheese-sr-only"
+      tabindex="-1"
+      aria-hidden="true"
+      type="text"
+      :form="form"
+      :name="name"
+      :value="value"
+      :required="required"
+      :disabled="disabled"
+    />
     <p
       v-if="error || validation || description"
       :id="auto + '-hint'"

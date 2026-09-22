@@ -1,0 +1,218 @@
+/* Opt in to the document scrollbar with html.cheese-scroll-root. Components
+   and overflow containers inside .cheese-root inherit the same quiet theme.
+   Native scrolling, momentum, wheel behavior and OS size preferences remain. */
+:where(
+  .cheese-scroll-root,
+  .cheese-root,
+  .cheese-root *,
+  [class^="cheese-"],
+  [class*=" cheese-"]
+) {
+  scrollbar-width: auto;
+  scrollbar-color: var(--cheese-border-strong) transparent;
+}
+
+/* Chromium/WebKit's standard color property disables their pseudo-element
+   theme. Opt out of that property only in engines supporting this API so the
+   rounded thumb and arrow-free track below can actually be drawn. Firefox
+   retains its standards-based theme and the user's preferred scrollbar size. */
+@supports selector(::-webkit-scrollbar) {
+  :where(
+    .cheese-scroll-root,
+    .cheese-root,
+    .cheese-root *,
+    [class^="cheese-"],
+    [class*=" cheese-"]
+  ) {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+}
+:where(
+  .cheese-scroll-root,
+  .cheese-root,
+  .cheese-root *,
+  [class^="cheese-"],
+  [class*=" cheese-"]
+)::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+:where(
+  .cheese-scroll-root,
+  .cheese-root,
+  .cheese-root *,
+  [class^="cheese-"],
+  [class*=" cheese-"]
+)::-webkit-scrollbar-track {
+  background: transparent;
+}
+:where(
+  .cheese-scroll-root,
+  .cheese-root,
+  .cheese-root *,
+  [class^="cheese-"],
+  [class*=" cheese-"]
+)::-webkit-scrollbar-thumb {
+  min-width: 28px;
+  min-height: 28px;
+  border: 4px solid transparent;
+  border-radius: var(--cheese-radius-pill);
+  background: var(--cheese-border-strong);
+  background-clip: padding-box;
+}
+:where(
+    .cheese-scroll-root,
+    .cheese-root,
+    .cheese-root *,
+    [class^="cheese-"],
+    [class*=" cheese-"]
+  )::-webkit-scrollbar-thumb:hover {
+  background-color: var(--cheese-text-secondary);
+}
+:where(
+  .cheese-scroll-root,
+  .cheese-root,
+  .cheese-root *,
+  [class^="cheese-"],
+  [class*=" cheese-"]
+)::-webkit-scrollbar-corner {
+  background: transparent;
+}
+:where(
+  .cheese-scroll-root,
+  .cheese-root,
+  .cheese-root *,
+  [class^="cheese-"],
+  [class*=" cheese-"]
+)::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* The high-level Radix / Reka region displays a thumb whenever it overflows,
+   including before hover. Raw primitives can still choose their own behavior. */
+.cheese-scroll-area {
+  --cheese-scroll-size: 16px;
+  min-width: 0;
+  background: var(--cheese-bg);
+}
+.cheese-scroll-viewport {
+  border-radius: inherit;
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.cheese-scroll-area > .cheese-scroll-viewport:focus-visible {
+  outline: 2px solid var(--cheese-focus);
+  outline-offset: -3px;
+  box-shadow: none;
+}
+.cheese-scrollbar {
+  display: flex;
+  box-sizing: border-box;
+  padding: 4px;
+  background: transparent;
+  touch-action: none;
+  user-select: none;
+}
+.cheese-scrollbar[data-orientation="vertical"] {
+  width: var(--cheese-scroll-size);
+}
+.cheese-scrollbar[data-orientation="horizontal"] {
+  height: var(--cheese-scroll-size);
+  width: auto;
+  flex-direction: column;
+}
+.cheese-scroll-thumb {
+  position: relative;
+  flex: 1;
+  background: var(--cheese-border-strong);
+  border-radius: var(--cheese-radius-pill);
+}
+.cheese-scroll-thumb::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  min-width: 24px;
+  min-height: 24px;
+  transform: translate(-50%, -50%);
+}
+.cheese-scroll-thumb:hover,
+.cheese-scroll-thumb:active {
+  background: var(--cheese-text-secondary);
+}
+.cheese-scroll-corner {
+  background: var(--cheese-bg);
+}
+
+@media (prefers-contrast: more) {
+  .cheese-scroll-thumb {
+    background: var(--cheese-text);
+  }
+}
+@media (forced-colors: active) {
+  :where(
+    .cheese-scroll-root,
+    .cheese-root,
+    .cheese-root *,
+    [class^="cheese-"],
+    [class*=" cheese-"]
+  ) {
+    scrollbar-width: auto !important;
+    scrollbar-color: auto !important;
+  }
+  /* Replace the custom thumb with the user's high-contrast native scrollbar. */
+  .cheese-scrollbar,
+  .cheese-scroll-corner {
+    display: none !important;
+  }
+  :where(
+    .cheese-scroll-root,
+    .cheese-root,
+    .cheese-root *,
+    [class^="cheese-"],
+    [class*=" cheese-"]
+  )::-webkit-scrollbar,
+  :where(
+    .cheese-scroll-root,
+    .cheese-root,
+    .cheese-root *,
+    [class^="cheese-"],
+    [class*=" cheese-"]
+  )::-webkit-scrollbar-thumb,
+  :where(
+    .cheese-scroll-root,
+    .cheese-root,
+    .cheese-root *,
+    [class^="cheese-"],
+    [class*=" cheese-"]
+  )::-webkit-scrollbar-track,
+  :where(
+    .cheese-scroll-root,
+    .cheese-root,
+    .cheese-root *,
+    [class^="cheese-"],
+    [class*=" cheese-"]
+  )::-webkit-scrollbar-button,
+  :where(
+    .cheese-scroll-root,
+    .cheese-root,
+    .cheese-root *,
+    [class^="cheese-"],
+    [class*=" cheese-"]
+  )::-webkit-scrollbar-corner {
+    all: revert;
+  }
+  .cheese-scroll-viewport::-webkit-scrollbar {
+    display: block !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cheese-scroll-viewport {
+    scroll-behavior: auto !important;
+  }
+}

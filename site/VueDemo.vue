@@ -9,7 +9,10 @@ import {
   Button,
   Input,
   Textarea,
-  NativeSelect,
+  Select,
+  DateField,
+  TimeField,
+  NumberField,
   Field,
   Card,
   Badge,
@@ -96,6 +99,29 @@ function save() {
       </div>
       <div class="vue-grid">
         <Card>
+          <h2>업무 입력 · 같은 디자인, 같은 검증</h2>
+          <div class="cheese-stack">
+            <DateField
+              label="업무 마감일"
+              default-value="2026-10-30"
+              min="2026-01-01"
+              max="2026-12-31"
+            />
+            <TimeField
+              label="업무 알림 시간"
+              default-value="09:00"
+              :step="900"
+            />
+            <NumberField
+              label="업무 가중치"
+              :default-value="30"
+              :min="0"
+              :max="100"
+              :step="5"
+            />
+          </div>
+        </Card>
+        <Card>
           <h2>Context Menu · 키보드와 포인터</h2>
           <ContextMenuRoot>
             <ContextMenuTrigger as-child>
@@ -139,12 +165,14 @@ function save() {
                   saved = false;
                 "
             /></Field>
-            <Field label="조직"
-              ><NativeSelect v-model="team"
-                ><option value="people">피플팀</option>
-                <option value="tech">개발팀</option></NativeSelect
-              ></Field
-            >
+            <Select
+              label="조직"
+              v-model="team"
+              :options="[
+                { value: 'people', label: '피플팀' },
+                { value: 'tech', label: '개발팀' },
+              ]"
+            />
             <Field
               label="메모"
               description="변경 사항은 브라우저 메모리에만 보관됩니다."

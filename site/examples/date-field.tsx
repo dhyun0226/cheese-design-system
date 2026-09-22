@@ -1,16 +1,12 @@
-import { Field, Input } from "@cheese/react";
+import { DateField } from "@cheese/react";
 export default function Example() {
   return (
-    <Field
+    <DateField
       label="평가 마감일"
-      description="브라우저의 기본 날짜 선택기를 사용합니다."
-    >
-      <Input
-        type="date"
-        min="2026-01-01"
-        max="2026-12-31"
-        defaultValue="2026-10-30"
-      />
-    </Field>
+      description="YYYY-MM-DD로 입력하거나 달력에서 선택하세요."
+      min="2026-01-01"
+      max="2026-12-31"
+      defaultValue="2026-10-30"
+    />
   );
 }
