@@ -51,10 +51,11 @@ Checkbox·Switch·RadioGroup·Slider·Accordion·Tooltip·Progress·Avatar·Toas
 - 카탈로그: `npm run verify:catalog`의 69개 실제 패키지 예제 계약 통과. 변경 후 69개 기본 렌더 확인, 페이지·리소스 오류 0. 네 장의 검토 시트와 OTP·Stepper·Toast의 별도 상태 캡처를 검토했다.
 - `npm run build`, `npm run typecheck`, 토큰 생성 결과 검사, `git diff --check`: 통과.
 - `npm run test:unit`: 21개 통과, 실패·건너뜀 0.
-- `npm run test:consumer`: React 18/19 + Vue 독립 tarball의 설치·타입·SSR·제품 번들 통과. 이후 OTP paste 이벤트 보강을 빌드·타입·단위·브라우저 검사로 재확인했다. 최종 커밋의 소비자 검사는 CI에서 다시 실행한다.
+- `npm run test:consumer`: React 18/19 + Vue 독립 tarball의 설치·타입·SSR·제품 번들 통과. OTP paste 이벤트 보강을 포함한 `b17da60`은 GitHub CI에서도 빌드·타입·21개 단위·카탈로그·소비자 검사를 통과했다.
 - 대상 브라우저 검사: `docs-site`, `typography`, `toast-layout`, `search-validation`, `pin-input`, `workplace`의 **180개 시나리오(3개 엔진 합계)**. 통합 실행에서 178개 통과, WebKit readonly 키 입력 테스트 2개는 아래 테스트 전제 문제로 실패했다. 수정한 readonly 시나리오를 React/Vue × Chromium/Firefox/WebKit **6개 모두 재실행해 통과**했다. 최종 미해결 실패·건너뜀 없음. 한 번의 실행에서 180개가 전부 통과했다는 기록은 아니다.
 - WebKit은 readonly 입력의 Backspace를 브라우저 뒤로 가기로 처리했다. 입력값 불변 테스트는 Delete와 숫자 키로 수정했다. 편집 가능한 입력의 Backspace 삭제 검사는 유지하며 제품에 브라우저 내비게이션 차단을 추가하지 않았다.
 - Firefox는 synthetic ClipboardEvent 생성 시 전달한 clipboard 데이터를 제거했다. 테스트 helper에서 실제 시험용 DataTransfer를 연결하고 payload가 없으면 즉시 실패하도록 했다. 이는 붙여넣기 핸들러 검사이며 실제 OS clipboard/SMS 자동완성 검증을 대체하지 않는다.
+- [첫 전체 CI](https://github.com/dhyun0226/cheese-design-system/actions/runs/35709795454)는 756개 통과, 3개 실패였다. 기존 `extended.spec.ts`에서 버튼 이름 `알림 표시`를 부분 일치로 검색해 새 `긴 알림 표시`까지 동시에 찾은 실패다. `exact: true`로 대상 버튼을 명시한 후 `npx playwright test tests/extended.spec.ts -g 'other interactions'`를 실행해 **3개 엔진 모두 통과**했다. 첫 CI는 배포하지 않았으며 후속 커밋의 전체 결과를 확인해야 한다.
 - 최종 커밋의 **전체** 회귀·독립 설치·Pages 배포는 [GitHub Actions](https://github.com/dhyun0226/cheese-design-system/actions/workflows/pages.yml)에서 해당 커밋의 `verify`/`deploy` 결과를 확인한다. 로컬 대상 검사와 전체 CI를 혼동하지 않는다.
 - 현재 저장소의 스크린샷은 검토 증거이며 자동 픽셀 회귀 기준으로 간주하지 않는다.
 

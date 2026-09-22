@@ -46,14 +46,16 @@ Pretendard, 단순한 업무 UI. 달/C 모양의 새 CHEESE 아이콘 시안은 
 - `npm run build`, `npm run typecheck`, `npm run verify:catalog`: 통과.
 - `npm run test:unit`: 21개 통과, 실패·건너뜀 없음.
 - `npm run test:consumer`: React 18/19 + Vue 독립 tarball 설치·타입·SSR·번들 통과.
-  이후 OTP paste 이벤트 보강은 다시 빌드·타입·단위·브라우저 검사를 수행했으며,
-  최종 커밋의 독립 설치 검사는 CI의 `npm run check`가 재실행합니다.
+  OTP paste 이벤트 보강을 포함한 `b17da60`도 GitHub CI에서 이 검사를 통과했습니다.
 - Toast/OTP 변경 후 69개 카탈로그 기본 렌더와 네 장의 검토 시트 확인.
   페이지·리소스 오류 없음. OTP 입력/제출/초기화·320px 화면, Stepper 완료 아이콘,
   두 개 Toast의 쌓임·개별 닫기도 직접 확인했습니다.
 - 브라우저 회귀 최종 결과: 아래 점검 문서에 기록합니다.
 - 전체 브라우저 회귀와 Pages 배포는 이 커밋의 GitHub Actions 결과가 기준입니다.
   `verify`가 실패하면 새 코드가 사이트에 배포되지 않습니다.
+- 첫 전체 CI(`b17da60`)는 756개 통과, 기존 Toast 버튼 검색의 부분 일치 충돌로
+  3개 실패했습니다. `tests/extended.spec.ts`에 `exact: true`를 적용하여 일반 알림과
+  긴 알림 버튼을 구분했습니다. 상세 재검증 기록은 점검 문서를 참고하세요.
 
 개별 테스트를 실행할 때도 먼저 `npm run build:packages`를 실행하세요.
 문서와 테스트는 `packages/*/dist`를 소비하므로 소스만 수정하고 테스트하면

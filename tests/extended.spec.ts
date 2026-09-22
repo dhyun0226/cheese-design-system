@@ -63,7 +63,7 @@ test("other interactions: accordion, slider, tooltip, toast and pagination", asy
   await page.keyboard.press("Escape");
   await expect(page.getByRole("tooltip")).not.toBeVisible();
   await page.goto("/#/components/toast");
-  await page.getByRole("button", { name: "알림 표시" }).click();
+  await page.getByRole("button", { name: "알림 표시", exact: true }).click();
   await expect(page.locator(".cheese-toast-title")).toHaveText(
     "저장되었습니다.",
   );
