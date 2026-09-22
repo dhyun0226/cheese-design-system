@@ -21,11 +21,22 @@ for (const framework of ["react", "vue"]) {
       .poll(() => region.evaluate((el) => el.scrollTop))
       .toBeGreaterThan(0);
     await expect(region).toHaveCSS("outline-style", "solid");
-    await page.getByRole("button", { name: "목록 중간으로 이동" }).click();
-    await expect.poll(() => region.evaluate((el) => el.scrollTop)).toBe(160);
     await expect(
       page.getByTestId("fits").locator(".cheese-scrollbar"),
     ).toHaveCount(0);
+  });
+
+  test(`${framework} viewport ref scrolls to an exact offset`, async ({
+    page,
+  }) => {
+    // The public-ref contract is independent of keyboard animation. A fresh
+    // page keeps an unfinished native PageDown gesture from continuing after
+    // the programmatic scroll, without disabling motion or weakening 160px.
+    await page.goto(`/tests/fixtures/scrollbars.html?framework=${framework}`);
+    const region = page.getByRole("region", { name: "업무 목록", exact: true });
+    await expect(region).toBeVisible();
+    await page.getByRole("button", { name: "목록 중간으로 이동" }).click();
+    await expect.poll(() => region.evaluate((el) => el.scrollTop)).toBe(160);
   });
 
   test(`${framework} horizontal and two-axis areas support native scrolling`, async ({
