@@ -51,6 +51,10 @@ test("dialog traps focus, closes and restores trigger", async ({ page }) => {
   await expect(
     dialog.getByRole("textbox", { name: "평가 이름" }),
   ).toBeFocused();
+  // WebKit on Linux can finish autofocus before the 160ms opacity animation.
+  // Measure the settled foreground/background, not a transient composited frame.
+  await expect(dialog).toHaveCSS("opacity", "1");
+  await expect(page.locator(".cheese-overlay")).toHaveCSS("opacity", "1");
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
   await page.keyboard.press("Shift+Tab");
