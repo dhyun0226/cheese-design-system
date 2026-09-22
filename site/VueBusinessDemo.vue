@@ -7,12 +7,15 @@ import {
   Card,
 } from "@cheese/vue";
 import {
-  demoLoadOptions,
+  createDemoOptionsLoader,
   demoOptions,
-  demoLoadRows,
+  createDemoRowsLoader,
   demoColumns,
   demoUpload,
 } from "./business-demo";
+const loadEmployees = createDemoOptionsLoader();
+const loadReferences = createDemoOptionsLoader();
+const loadRows = createDemoRowsLoader();
 </script>
 <template>
   <section class="doc-section" aria-label="Vue 업무 컴포넌트">
@@ -27,14 +30,14 @@ import {
           <h3>서버 검색 · 다중 선택</h3>
           <AsyncCombobox
             label="Vue 직원 서버 검색"
-            :load-options="demoLoadOptions"
+            :load-options="loadEmployees"
           /><MultiSelect
             label="Vue 평가자 선택"
             :options="demoOptions.slice(0, 8)"
             :max="3"
           /><MultiSelect
             label="Vue 서버 참조자"
-            :load-options="demoLoadOptions"
+            :load-options="loadReferences"
             :max="5"
           /></div></Card
       ><Card
@@ -42,7 +45,7 @@ import {
         <DataTable
           label="Vue 평가 대상자"
           :columns="demoColumns"
-          :load-rows="demoLoadRows"
+          :load-rows="loadRows"
           :get-row-id="(row) => String(row.id)"
           :row-label="(row) => String(row.name)"
           :is-row-selectable="(row) => row.id !== '24'" /></Card

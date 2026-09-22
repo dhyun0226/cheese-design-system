@@ -124,5 +124,19 @@ function submit(event: Event) {
     </button>
     <output data-testid="form-data">{{ data }}</output>
     <output data-testid="invalid-events">{{ invalidEvents }}</output>
+    <form aria-label="고정 제어 폼">
+      <DateField
+        label="고정 제어 날짜"
+        name="fixedDate"
+        model-value="2024-02-10"
+        @update:model-value="() => {}"
+      />
+      <NumberField
+        label="고정 제어 수량"
+        name="fixedNumber"
+        model-value="2"
+        @update:model-value="() => {}"
+      />
+    </form>
   </main>
 </template>

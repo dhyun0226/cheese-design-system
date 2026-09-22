@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onUpdated, ref, useId, watch } from "vue";
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onUpdated,
+  ref,
+  useId,
+  watch,
+} from "vue";
 import { Minus, Plus } from "@lucide/vue";
 import { useFieldBlur } from "./useFieldBlur";
 defineOptions({ inheritAttrs: false });
@@ -113,6 +121,13 @@ function update(next: string) {
   if (props.modelValue === undefined) local.value = next;
   measure();
   emit("update:modelValue", next);
+  void nextTick(() => {
+    const node = input.value;
+    if (!node || props.modelValue === undefined) return;
+    // A controlled owner may reject or normalize the proposed edit.
+    if (node.value !== current.value) node.value = current.value;
+    measure();
+  });
 }
 function increment(direction: number) {
   const node = input.value;

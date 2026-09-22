@@ -132,6 +132,102 @@ test("button cannot accidentally submit; loading blocks duplicate actions", () =
   assert.match(html, /disabled/);
   assert.match(html, /aria-busy="true"/);
 });
+function assertClasses(html, expected) {
+  const classes = [...html.matchAll(/class="([^"]*)"/g)].map((match) =>
+    match[1].split(/\s+/),
+  );
+  for (const names of expected) {
+    assert.ok(
+      classes.some((tokens) => names.every((name) => tokens.includes(name))),
+      `A rendered element must retain both framework and consumer classes: ${names.join(" ")}`,
+    );
+  }
+}
+test("React selection controls preserve consumer classes alongside default styles", () => {
+  const html = renderToStaticMarkup(
+    h(
+      "div",
+      null,
+      h(R.RadioGroup, {
+        label: "Plan",
+        options: [{ value: "basic", label: "Basic" }],
+        className: "consumer-radio",
+      }),
+      h(R.Slider, {
+        label: "Volume",
+        defaultValue: [50],
+        className: "consumer-slider",
+      }),
+      h(R.Toggle, { className: "consumer-toggle" }, "Bold"),
+      h(
+        R.ToggleGroup,
+        { type: "single", className: "consumer-toggle-group" },
+        h(
+          R.ToggleGroupItem,
+          { value: "left", className: "consumer-toggle-item" },
+          "Align left",
+        ),
+      ),
+    ),
+  );
+  assertClasses(html, [
+    ["cheese-radio-group", "consumer-radio"],
+    ["cheese-slider", "consumer-slider"],
+    ["cheese-toggle", "consumer-toggle"],
+    ["cheese-toggle-group", "consumer-toggle-group"],
+    ["cheese-toggle", "consumer-toggle-item"],
+  ]);
+});
+test("React overlay surfaces and items preserve consumer classes", () => {
+  // Portals have no server DOM target. Render the wrappers' returned children
+  // under their real Radix contexts to verify the resulting content markup.
+  const alert = renderToStaticMarkup(
+    h(
+      R.AlertDialogRoot,
+      { open: true },
+      R.AlertDialogContent({
+        className: "consumer-dialog",
+        children: [
+          h(
+            R.AlertDialogTitle,
+            { key: "title", className: "consumer-title" },
+            "Delete item",
+          ),
+          h(
+            R.AlertDialogDescription,
+            { key: "description", className: "consumer-description" },
+            "This cannot be undone.",
+          ),
+        ],
+      }).props.children,
+    ),
+  );
+  assertClasses(alert, [
+    ["cheese-dialog", "cheese-root", "consumer-dialog"],
+    ["cheese-dialog-title", "consumer-title"],
+    ["cheese-dialog-description", "consumer-description"],
+  ]);
+  for (const [Root, Content, Item] of [
+    [R.DropdownMenuRoot, R.DropdownMenuContent, R.DropdownMenuItem],
+    [R.ContextMenuRoot, R.ContextMenuContent, R.ContextMenuItem],
+  ]) {
+    const menu = renderToStaticMarkup(
+      h(
+        Root,
+        null,
+        Content({
+          forceMount: true,
+          className: "consumer-menu",
+          children: h(Item, { className: "consumer-item" }, "Edit"),
+        }).props.children,
+      ),
+    );
+    assertClasses(menu, [
+      ["cheese-menu", "consumer-menu"],
+      ["cheese-menu-item", "consumer-item"],
+    ]);
+  }
+});
 test("Field preserves existing describedby and assigns deterministic IDs", () => {
   const html = renderToStaticMarkup(
     h(

@@ -11,9 +11,9 @@ for (const name of names)
     await page.goto("/#/components/" + name);
     await expect(page.locator(".demo-stage")).toBeVisible();
     await expect(page.locator("[data-example-loading]")).toHaveCount(0);
-    // Playwright considers a 1px screen-reader-only control "visible" even
-    // when every pixel is clipped. Form proxies/file pickers stay available to
-    // assistive technology; only actual painted native chrome is forbidden.
+    // Native controls may retain an intrinsic height even when every pixel is
+    // clipped. Form proxies/file pickers stay available to assistive technology;
+    // only actual painted native chrome is forbidden.
     const nativeChrome = await page
       .locator(
         ".demo-stage :is(select, input[type=date], input[type=time], input[type=color], input[type=file]):visible",
@@ -22,11 +22,11 @@ for (const name of names)
         controls
           .filter((node) => {
             const style = getComputedStyle(node);
-            const box = node.getBoundingClientRect();
             const clipped =
-              style.clip.replace(/\s/g, "") === "rect(0px,0px,0px,0px)" ||
+              ((style.position === "absolute" || style.position === "fixed") &&
+                style.clip.replace(/\s/g, "") === "rect(0px,0px,0px,0px)") ||
               style.clipPath === "inset(50%)";
-            return !(clipped && box.width <= 1 && box.height <= 1);
+            return !clipped;
           })
           .map((node) => node.outerHTML),
       );

@@ -19,7 +19,10 @@ export default function Example() {
         <ToolbarToggleGroup
           type="multiple"
           value={formats}
-          onValueChange={setFormats}
+          onValueChange={(value) => {
+            setFormats(value);
+            setSaved(false);
+          }}
           aria-label="문자 서식"
         >
           <ToolbarToggleItem value="굵게" aria-label="굵게">

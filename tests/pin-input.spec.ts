@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { tabKey } from "./platform";
 
 async function openOTP(
   page: Page,
@@ -171,6 +172,7 @@ for (const framework of ["react", "vue"]) {
 
     test("native focus, arrow selection and Backspace update the active slots", async ({
       page,
+      browserName,
     }) => {
       const input = await openOTP(page, framework);
       const slots = page.locator(".cheese-pin-slot");
@@ -205,12 +207,12 @@ for (const framework of ["react", "vue"]) {
       await input.press("Backspace");
       await expect(input).toHaveValue("1");
       await expectSelection(input, 1);
-      await input.press("Tab");
+      await input.press(tabKey(browserName));
       await expect(
         page.getByRole("button", { name: "Submit OTP", exact: true }),
       ).toBeFocused();
       await expect(active).toHaveCSS("outline-style", "none");
-      await page.keyboard.press("Shift+Tab");
+      await page.keyboard.press(tabKey(browserName, true));
       await expect(input).toBeFocused();
     });
 
@@ -260,11 +262,11 @@ for (const framework of ["react", "vue"]) {
         );
         await expectSelection(input, 6);
       }
-      await input.press("Home");
-      await input.press("ArrowRight");
-      await input.press("ArrowRight");
-      await input.press("Shift+ArrowRight");
-      await input.press("Shift+ArrowRight");
+      // Select from the known end position; Home has native OS-specific meaning.
+      await input.press("ArrowLeft");
+      await input.press("ArrowLeft");
+      await input.press("Shift+ArrowLeft");
+      await input.press("Shift+ArrowLeft");
       await expectSelection(input, 2, 4);
       await paste(input, "9 0");
       await expect(input).toHaveValue("129056");

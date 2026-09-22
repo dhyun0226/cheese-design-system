@@ -270,32 +270,38 @@ export class UploadQueue {
     item.status = "uploading";
     item.progress = 0;
     item.error = undefined;
-    this.publish();
     try {
-      const result = await upload(item.file, {
-        signal: controller.signal,
-        onProgress: (percent) => {
-          if (current() && Number.isFinite(percent)) {
-            item.progress = Math.max(
-              item.progress,
-              Math.min(99, Math.max(0, percent)),
-            );
-            this.publish();
-          }
-        },
-      });
+      this.publish();
+      let result: unknown;
+      try {
+        result = await upload(item.file, {
+          signal: controller.signal,
+          onProgress: (percent) => {
+            if (current() && Number.isFinite(percent)) {
+              item.progress = Math.max(
+                item.progress,
+                Math.min(99, Math.max(0, percent)),
+              );
+              this.publish();
+            }
+          },
+        });
+      } catch {
+        if (current()) {
+          item.status = "error";
+          item.error = "업로드에 실패했습니다. 다시 시도해 주세요.";
+          this.publish();
+        }
+        return;
+      }
       if (current()) {
         item.status = "success";
         item.progress = 100;
         item.result = result;
+        // Observer errors must not make an already saved file retryable.
+        // Let start() reject while preserving the transport's success state.
         this.publish();
         this.complete?.({ ...item });
-      }
-    } catch {
-      if (current()) {
-        item.status = "error";
-        item.error = "업로드에 실패했습니다. 다시 시도해 주세요.";
-        this.publish();
       }
     } finally {
       if (this.controllers.get(id) === controller) this.controllers.delete(id);

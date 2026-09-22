@@ -1,6 +1,8 @@
 import { DataTable } from "@cheese/react";
-import { demoColumns, demoLoadRows } from "../business-demo";
+import { useState } from "react";
+import { demoColumns, createDemoRowsLoader } from "../business-demo";
 export default function Example() {
+  const [loadRows] = useState(createDemoRowsLoader);
   return (
     <div className="cheese-stack">
       <p className="cheese-help">
@@ -10,7 +12,7 @@ export default function Example() {
       <DataTable
         label="평가 대상자"
         columns={demoColumns}
-        loadRows={demoLoadRows}
+        loadRows={loadRows}
         getRowId={(row) => String(row.id)}
         rowLabel={(row) => String(row.name)}
         isRowSelectable={(row) => row.id !== "24"}

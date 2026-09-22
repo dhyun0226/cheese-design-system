@@ -117,6 +117,19 @@ const validation = computed(() => {
   return "";
 });
 const nativeError = ref("");
+watch(
+  [
+    current,
+    () => props.min,
+    () => props.max,
+    () => props.step,
+    () => props.required,
+    () => props.error,
+  ],
+  () => {
+    nativeError.value = "";
+  },
+);
 const visibleError = computed(
   () =>
     props.error || (touched.value ? validation.value || nativeError.value : ""),
@@ -160,6 +173,13 @@ function change(next: string) {
   nativeError.value = "";
   if (props.modelValue === undefined) local.value = next;
   emit("update:modelValue", next);
+  void nextTick(() => {
+    const node = input.value;
+    if (!node || props.modelValue === undefined) return;
+    // A rejected edit must not become the native form's submitted value.
+    if (node.value !== current.value) node.value = current.value;
+    node.setCustomValidity(validation.value);
+  });
 }
 function show(next: boolean) {
   if (props.disabled || props.readOnly) return;

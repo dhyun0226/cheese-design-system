@@ -29,7 +29,14 @@ export {
   type DatePickerProps,
 } from "./Calendar.js";
 import * as P from "radix-ui";
-import { Check, Minus, ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react";
+import {
+  Check,
+  Minus,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  X,
+} from "lucide-react";
 export {
   Search,
   Plus,
@@ -270,6 +277,7 @@ export const RadioGroupRoot = P.RadioGroup.Root;
 export function RadioGroup({
   options,
   label,
+  className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof P.RadioGroup.Root> & {
   label: string;
@@ -279,7 +287,7 @@ export function RadioGroup({
   return (
     <P.RadioGroup.Root
       {...props}
-      className="cheese-radio-group"
+      className={cx("cheese-radio-group", className)}
       aria-label={label}
     >
       {options.map((o) => (
@@ -304,11 +312,12 @@ export function RadioGroup({
 }
 export function Slider({
   label,
+  className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof P.Slider.Root> & { label: string }) {
   const count = (props.value || props.defaultValue || [0]).length;
   return (
-    <P.Slider.Root {...props} className="cheese-slider">
+    <P.Slider.Root {...props} className={cx("cheese-slider", className)}>
       <P.Slider.Track className="cheese-slider-track">
         <P.Slider.Range className="cheese-slider-range" />
       </P.Slider.Track>
@@ -406,28 +415,39 @@ export const AlertDialogRoot = P.AlertDialog.Root,
   AlertDialogTrigger = P.AlertDialog.Trigger,
   AlertDialogCancel = P.AlertDialog.Cancel,
   AlertDialogAction = P.AlertDialog.Action;
-export function AlertDialogTitle(
-  props: React.ComponentPropsWithoutRef<typeof P.AlertDialog.Title>,
-) {
-  return <P.AlertDialog.Title {...props} className="cheese-dialog-title" />;
-}
-export function AlertDialogDescription(
-  props: React.ComponentPropsWithoutRef<typeof P.AlertDialog.Description>,
-) {
+export function AlertDialogTitle({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.AlertDialog.Title>) {
   return (
-    <P.AlertDialog.Description
+    <P.AlertDialog.Title
       {...props}
-      className="cheese-dialog-description"
+      className={cx("cheese-dialog-title", className)}
     />
   );
 }
-export function AlertDialogContent(
-  props: React.ComponentPropsWithoutRef<typeof P.AlertDialog.Content>,
-) {
+export function AlertDialogDescription({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.AlertDialog.Description>) {
+  return (
+    <P.AlertDialog.Description
+      {...props}
+      className={cx("cheese-dialog-description", className)}
+    />
+  );
+}
+export function AlertDialogContent({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.AlertDialog.Content>) {
   return (
     <P.AlertDialog.Portal>
       <P.AlertDialog.Overlay className="cheese-overlay" />
-      <P.AlertDialog.Content {...props} className="cheese-dialog cheese-root" />
+      <P.AlertDialog.Content
+        {...props}
+        className={cx("cheese-dialog cheese-root", className)}
+      />
     </P.AlertDialog.Portal>
   );
 }
@@ -470,23 +490,30 @@ export function Tooltip({
 }
 export const DropdownMenuRoot = P.DropdownMenu.Root,
   DropdownMenuTrigger = P.DropdownMenu.Trigger;
-export function DropdownMenuContent(
-  props: React.ComponentPropsWithoutRef<typeof P.DropdownMenu.Content>,
-) {
+export function DropdownMenuContent({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.DropdownMenu.Content>) {
   return (
     <P.DropdownMenu.Portal>
       <P.DropdownMenu.Content
         sideOffset={8}
         {...props}
-        className="cheese-menu"
+        className={cx("cheese-menu", className)}
       />
     </P.DropdownMenu.Portal>
   );
 }
-export function DropdownMenuItem(
-  props: React.ComponentPropsWithoutRef<typeof P.DropdownMenu.Item>,
-) {
-  return <P.DropdownMenu.Item {...props} className="cheese-menu-item" />;
+export function DropdownMenuItem({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.DropdownMenu.Item>) {
+  return (
+    <P.DropdownMenu.Item
+      {...props}
+      className={cx("cheese-menu-item", className)}
+    />
+  );
 }
 export const ContextMenuRoot = P.ContextMenu.Root;
 export const ContextMenuTrigger = React.forwardRef<
@@ -528,19 +555,29 @@ export const ContextMenuTrigger = React.forwardRef<
     />
   );
 });
-export function ContextMenuContent(
-  props: React.ComponentPropsWithoutRef<typeof P.ContextMenu.Content>,
-) {
+export function ContextMenuContent({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.ContextMenu.Content>) {
   return (
     <P.ContextMenu.Portal>
-      <P.ContextMenu.Content {...props} className="cheese-menu" />
+      <P.ContextMenu.Content
+        {...props}
+        className={cx("cheese-menu", className)}
+      />
     </P.ContextMenu.Portal>
   );
 }
-export function ContextMenuItem(
-  props: React.ComponentPropsWithoutRef<typeof P.ContextMenu.Item>,
-) {
-  return <P.ContextMenu.Item {...props} className="cheese-menu-item" />;
+export function ContextMenuItem({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.ContextMenu.Item>) {
+  return (
+    <P.ContextMenu.Item
+      {...props}
+      className={cx("cheese-menu-item", className)}
+    />
+  );
 }
 export function Accordion({
   items,
@@ -744,8 +781,10 @@ export function Breadcrumb({
     </nav>
   );
 }
-export interface PaginationProps
-  extends Omit<React.HTMLAttributes<HTMLElement>, "children"> {
+export interface PaginationProps extends Omit<
+  React.HTMLAttributes<HTMLElement>,
+  "children"
+> {
   page: number;
   count: number;
   onPageChange: (page: number) => void;
@@ -916,20 +955,32 @@ export function Stepper({
     </ol>
   );
 }
-export function Toggle(
-  props: React.ComponentPropsWithoutRef<typeof P.Toggle.Root>,
-) {
-  return <P.Toggle.Root {...props} className="cheese-toggle" />;
+export function Toggle({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.Toggle.Root>) {
+  return (
+    <P.Toggle.Root {...props} className={cx("cheese-toggle", className)} />
+  );
 }
-export function ToggleGroup(
-  props: React.ComponentPropsWithoutRef<typeof P.ToggleGroup.Root>,
-) {
-  return <P.ToggleGroup.Root {...props} className="cheese-toggle-group" />;
+export function ToggleGroup({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.ToggleGroup.Root>) {
+  return (
+    <P.ToggleGroup.Root
+      {...props}
+      className={cx("cheese-toggle-group", className)}
+    />
+  );
 }
-export function ToggleGroupItem(
-  props: React.ComponentPropsWithoutRef<typeof P.ToggleGroup.Item>,
-) {
-  return <P.ToggleGroup.Item {...props} className="cheese-toggle" />;
+export function ToggleGroupItem({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof P.ToggleGroup.Item>) {
+  return (
+    <P.ToggleGroup.Item {...props} className={cx("cheese-toggle", className)} />
+  );
 }
 export const ToastProvider = P.Toast.Provider;
 export function Toast({

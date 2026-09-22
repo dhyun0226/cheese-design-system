@@ -58,7 +58,8 @@ for (const framework of ["react", "vue"]) {
         .locator('.cheese-scrollbar[data-orientation="vertical"]'),
     ).toHaveCount(0);
     await horizontal.focus();
-    await horizontal.press("ArrowRight");
+    // Native WebKit scrolling needs a held key across an animation frame.
+    await horizontal.press("ArrowRight", { delay: 100 });
     await expect
       .poll(() => horizontal.evaluate((el) => el.scrollLeft))
       .toBeGreaterThan(0);
@@ -71,7 +72,24 @@ for (const framework of ["react", "vue"]) {
     await expect
       .poll(() => both.evaluate((el) => el.scrollTop))
       .toBeGreaterThan(0);
-    await both.press("ArrowRight");
+    // Let the native PageDown gesture finish before changing axes. WebKit can
+    // otherwise restore its earlier horizontal offset during the vertical animation.
+    await both.evaluate(
+      (element) =>
+        new Promise<void>((resolve) => {
+          let previous = element.scrollTop;
+          let stableFrames = 0;
+          const check = () => {
+            const current = element.scrollTop;
+            stableFrames = current === previous ? stableFrames + 1 : 0;
+            previous = current;
+            if (stableFrames === 3) resolve();
+            else requestAnimationFrame(check);
+          };
+          requestAnimationFrame(check);
+        }),
+    );
+    await both.press("ArrowRight", { delay: 100 });
     await expect
       .poll(() => both.evaluate((el) => el.scrollLeft))
       .toBeGreaterThan(0);

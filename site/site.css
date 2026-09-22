@@ -314,93 +314,132 @@ a {
   font-size: 12px;
   color: var(--cheese-text-secondary);
 }
-.origin-illustration {
-  margin: 0;
+.hero-playground {
   width: 100%;
   min-width: 0;
   padding: 24px;
   background: var(--cheese-surface);
   border-radius: var(--cheese-radius-card);
-  overflow: hidden;
 }
-.origin-kicker {
+.hero-playground-heading {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.hero-playground-heading .eyebrow {
+  font-size: 10px;
+  letter-spacing: 1.2px;
+}
+.hero-playground-live {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
   gap: 8px;
   color: var(--cheese-text-secondary);
   font-size: 10px;
-  line-height: 1.5;
-  font-weight: 500;
-  letter-spacing: 1.3px;
 }
-.origin-scene {
-  position: relative;
-  width: 100%;
-  margin-block: 12px;
+.hero-task-card {
+  min-width: 0;
+  background: var(--cheese-bg);
+  border-radius: var(--cheese-radius-card);
+  box-shadow: var(--cheese-shadow-card);
 }
-.origin-scene > svg {
-  display: block;
-  width: 100%;
-}
-.origin-caption {
+.hero-task-header {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--cheese-border-subtle);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.5;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 0;
+}
+.hero-task-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  background: var(--cheese-brand-soft);
+  border-radius: var(--cheese-radius-control);
   color: var(--cheese-text);
 }
-.origin-signature {
+.hero-task-overline {
   color: var(--cheese-text-secondary);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.8px;
+  font-size: 8px;
+  letter-spacing: 1px;
 }
-.origin-flight {
-  transform: translate(0, 0);
-  animation: cheese-origin-launch 2.2s cubic-bezier(0.2, 0.65, 0.2, 1) 0.15s
-    both;
+.hero-task-header h2 {
+  margin: 4px 0 0;
+  font-size: 17px;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.5px;
 }
-.origin-trail {
-  stroke: var(--cheese-border-strong);
-  stroke-width: 1;
-  stroke-linecap: round;
+.hero-task-form,
+.hero-task-result {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 268px;
+  padding: 24px;
 }
-.origin-orbit {
-  stroke: var(--cheese-border);
-  stroke-width: 1;
+.hero-task-form > .cheese-button,
+.hero-task-result > .cheese-button {
+  width: 100%;
+  margin-top: auto;
 }
-.origin-orbit-point {
-  fill: var(--cheese-border-strong);
+.hero-task-result {
+  animation: cheese-task-created var(--cheese-duration) ease-out;
 }
-.origin-light {
-  stop-color: var(--cheese-brand-soft);
+.hero-task-created h3 {
+  margin: 16px 0 24px;
+  font-size: 22px;
+  line-height: 1.5;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+  overflow-wrap: anywhere;
 }
-.origin-gold {
-  stop-color: var(--cheese-brand);
+.hero-task-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-.origin-shadow {
-  stop-color: var(--cheese-text);
+.hero-task-person > div > strong,
+.hero-task-person > div > span {
+  display: block;
+  font-size: 12px;
+  line-height: 1.6;
 }
-.origin-crater-rim {
-  fill: var(--cheese-brand-soft);
-  fill-opacity: 0.3;
+.hero-task-person > div > span {
+  font-size: 11px;
+  color: var(--cheese-text-secondary);
 }
-@keyframes cheese-origin-launch {
+.hero-task-footnote {
+  padding: 12px 16px;
+  border-top: 1px solid var(--cheese-border-subtle);
+  font-size: 10px;
+  color: var(--cheese-text-secondary);
+  text-align: center;
+}
+.hero-playground-caption {
+  margin: 20px 0 0;
+  font-size: 11px;
+  color: var(--cheese-text-secondary);
+  text-align: center;
+}
+@keyframes cheese-task-created {
   from {
-    transform: translate(-28px, 22px);
+    opacity: 0;
+    transform: translateY(4px);
   }
   to {
-    transform: translate(0, 0);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .origin-flight {
+  .hero-task-result {
     animation: none;
   }
 }
@@ -1523,23 +1562,10 @@ a {
   .hero-note {
     margin-top: 20px;
   }
-  .origin-illustration {
+  .hero-playground {
     padding: 20px;
     max-width: 500px;
     margin-inline: auto;
-  }
-  .origin-scene {
-    margin-block: 8px;
-  }
-  .origin-kicker {
-    font-size: 9px;
-  }
-  .origin-caption {
-    padding-top: 12px;
-    font-size: 11px;
-  }
-  .origin-signature {
-    font-size: 8px;
   }
   .home-scope {
     gap: 12px;

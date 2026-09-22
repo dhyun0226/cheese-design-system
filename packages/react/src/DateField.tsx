@@ -190,7 +190,11 @@ export const DateField = React.forwardRef<HTMLInputElement, DateFieldProps>(
       if (disabled || readOnly) return;
       setNativeError("");
       if (value === undefined) setLocal(next);
-      input.current?.setCustomValidity(error || validationMessage(next));
+      // Controlled owners can reject a draft. React restores the accepted value,
+      // so validity must describe that same value until the owner updates it.
+      input.current?.setCustomValidity(
+        error || validationMessage(value === undefined ? next : value),
+      );
       onValueChange?.(next);
     };
 

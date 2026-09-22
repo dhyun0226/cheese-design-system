@@ -9,6 +9,8 @@ async function completeRequiredSelections(page: Page) {
 
   await submit.click();
   await expect(first).toBeFocused();
+  await expect(first).toHaveAttribute("aria-invalid", "true");
+  await expect(second).toHaveAttribute("aria-invalid", "true");
   await expect(result).toBeEmpty();
   await expect(count).toHaveText("0");
 
@@ -17,6 +19,8 @@ async function completeRequiredSelections(page: Page) {
   await first.press("Escape");
   await submit.click();
   await expect(second).toBeFocused();
+  await expect(first).toHaveAttribute("aria-invalid", "false");
+  await expect(second).toHaveAttribute("aria-invalid", "true");
   await expect(result).toBeEmpty();
   await expect(count).toHaveText("0");
 
@@ -25,6 +29,8 @@ async function completeRequiredSelections(page: Page) {
   await second.press("Escape");
   await submit.click();
   await expect(count).toHaveText("1");
+  await expect(first).toHaveAttribute("aria-invalid", "false");
+  await expect(second).toHaveAttribute("aria-invalid", "false");
   const entries = JSON.parse((await result.textContent())!) as [
     string,
     string,
@@ -35,6 +41,41 @@ async function completeRequiredSelections(page: Page) {
 }
 
 for (const framework of ["react", "vue"]) {
+  for (const local of framework === "react" ? [false, true] : [false])
+    test(`${framework} ${local ? "local" : "async/multi"} required searches clear local errors after externally restored values and retain server errors`, async ({
+      page,
+    }) => {
+      await page.goto(
+        `/tests/fixtures/search-validation.html?framework=${framework}&scenario=controlled${local ? "&local" : ""}`,
+      );
+      const first = page.getByRole("combobox", { name: "First selection" });
+      const second = page.getByRole("combobox", { name: "Second selection" });
+      const submit = page.getByRole("button", { name: "Submit selections" });
+
+      await submit.click();
+      await expect(first).toBeFocused();
+      await expect(first).toHaveAttribute("aria-invalid", "true");
+      await expect(second).toHaveAttribute("aria-invalid", "true");
+      await first.press("Escape");
+      await page.getByRole("button", { name: "Load saved selections" }).click();
+      await expect(first).toHaveValue("하나");
+      await expect(first).toHaveAttribute("aria-invalid", "false");
+      await expect(second).toHaveAttribute("aria-invalid", "false");
+      await expect(page.getByRole("alert")).toHaveCount(0);
+      await submit.click();
+      await expect(page.getByLabel("Submit count")).toHaveText("1");
+      await expect(page.getByLabel("Form result")).toHaveText(
+        '[["first","one"],["second","two"]]',
+      );
+
+      await page.getByRole("button", { name: "Set server error" }).click();
+      await page.getByRole("button", { name: "Load saved selections" }).click();
+      await expect(first).toHaveAttribute("aria-invalid", "true");
+      await expect(page.getByRole("alert")).toHaveText(
+        "담당자 권한을 확인해 주세요.",
+      );
+    });
+
   for (const order of ["async-first", "multi-first"]) {
     test(`${framework} ${order} required searches retain the first invalid focus and block incomplete submission`, async ({
       page,

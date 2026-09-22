@@ -149,7 +149,14 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
                 ? "날짜를 선택해 주세요."
                 : "선택 가능한 날짜 범위를 확인해 주세요.",
             );
-            trigger.current?.focus();
+            const node = event.currentTarget;
+            const first = Array.from(node.form?.elements ?? []).find(
+              (element) => {
+                const control = element as HTMLInputElement;
+                return control.willValidate && !control.validity.valid;
+              },
+            );
+            if (!first || first === node) trigger.current?.focus();
           }}
         />
         <Popover.Root

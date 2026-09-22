@@ -13,6 +13,30 @@ import { useFieldValue } from "./Collections.js";
 import { DateField } from "./DateField.js";
 import { TimeField } from "./TimeField.js";
 
+function useFieldDraftReset(
+  root: React.RefObject<HTMLDivElement | null>,
+  onReset: () => void,
+) {
+  const latest = React.useRef(onReset);
+  latest.current = onReset;
+  React.useEffect(() => {
+    const form = root.current?.closest("form");
+    const timers = new Set<ReturnType<typeof setTimeout>>();
+    const reset = (event: Event) => {
+      const timer = setTimeout(() => {
+        timers.delete(timer);
+        if (!event.defaultPrevented) latest.current();
+      }, 0);
+      timers.add(timer);
+    };
+    form?.addEventListener("reset", reset);
+    return () => {
+      form?.removeEventListener("reset", reset);
+      timers.forEach(clearTimeout);
+    };
+  }, [root]);
+}
+
 export interface PinInputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   "value" | "defaultValue" | "onChange" | "size"
@@ -287,6 +311,10 @@ export function TagsInput({
     [message, setMessage] = React.useState("");
   const input = React.useRef<HTMLInputElement>(null),
     id = React.useId();
+  useFieldDraftReset(root, () => {
+    setDraft("");
+    setMessage("");
+  });
   const remove = (tag: string) => {
     setTags(tags.filter((t) => t !== tag));
     setMessage(tag + " 삭제됨");
@@ -394,11 +422,19 @@ export function Editable({
     [error, setError] = React.useState("");
   const input = React.useRef<HTMLInputElement>(null),
     trigger = React.useRef<HTMLButtonElement>(null),
+    focusOnEdit = React.useRef(false),
     id = React.useId();
+  useFieldDraftReset(root, () => {
+    setDraft("");
+    setError("");
+    setEditing(false);
+    focusOnEdit.current = false;
+  });
   React.useEffect(() => {
-    if (editing) {
+    if (editing && focusOnEdit.current) {
       input.current?.focus();
       input.current?.select();
+      focusOnEdit.current = false;
     }
   }, [editing]);
   const finish = (save: boolean) => {
@@ -426,7 +462,7 @@ export function Editable({
             aria-invalid={!!error}
             aria-describedby={error ? id + "-error" : undefined}
             value={draft}
-            required={required}
+            aria-required={required || undefined}
             disabled={disabled}
             onChange={(e) => {
               setDraft(e.target.value);
@@ -466,6 +502,7 @@ export function Editable({
           className="cheese-editable-preview"
           aria-label={label + " 수정"}
           onClick={() => {
+            focusOnEdit.current = true;
             setDraft(text);
             setEditing(true);
           }}
@@ -481,6 +518,38 @@ export function Editable({
       )}
       {name && (
         <input type="hidden" name={name} value={text} disabled={disabled} />
+      )}
+      {required && (
+        <input
+          className="cheese-sr-only"
+          tabIndex={-1}
+          aria-hidden="true"
+          value={text.trim()}
+          required
+          disabled={disabled}
+          onChange={() => {}}
+          onInvalid={(event) => {
+            event.preventDefault();
+            const node = event.currentTarget;
+            const first =
+              node.form &&
+              Array.from(node.form.elements).find((element) => {
+                const control = element as HTMLInputElement;
+                return control.willValidate && !control.validity.valid;
+              });
+            const shouldFocus = !first || first === node;
+            setError(
+              editing && draft.trim()
+                ? "변경 내용을 저장해 주세요."
+                : "내용을 입력해 주세요.",
+            );
+            if (!editing) {
+              setDraft(text);
+              focusOnEdit.current = shouldFocus;
+              setEditing(true);
+            } else if (shouldFocus) input.current?.focus();
+          }}
+        />
       )}
     </div>
   );
@@ -514,7 +583,24 @@ export function Rating({
     count = Math.min(10, Math.max(1, max));
   const id = React.useId();
   return (
-    <div className="cheese-field" ref={root}>
+    <div
+      className="cheese-field"
+      ref={root}
+      onInvalidCapture={(event) => {
+        event.preventDefault();
+        const node = event.target as HTMLInputElement;
+        const first =
+          node.form &&
+          Array.from(node.form.elements).find((element) => {
+            const control = element as HTMLInputElement;
+            return control.willValidate && !control.validity.valid;
+          });
+        if (!first || first === node)
+          root.current
+            ?.querySelector<HTMLButtonElement>('[role="radio"]')
+            ?.focus();
+      }}
+    >
       <span id={id} className="cheese-label">
         {label}
       </span>
@@ -525,7 +611,8 @@ export function Rating({
         onValueChange={(v) => setRating(Number(v))}
         name={name}
         disabled={disabled}
-        required={required}
+        required={required && !!name}
+        aria-required={required || undefined}
         orientation="horizontal"
         onKeyDown={(event) => {
           if (
@@ -571,6 +658,21 @@ export function Rating({
           </RadioGroup.Item>
         ))}
       </RadioGroup.Root>
+      {!name && required && (
+        <input
+          className="cheese-sr-only"
+          tabIndex={-1}
+          aria-hidden="true"
+          value={
+            Number.isInteger(rating) && rating >= 1 && rating <= count
+              ? String(rating)
+              : ""
+          }
+          required
+          disabled={disabled}
+          onChange={() => {}}
+        />
+      )}
       <p className="cheese-help" role="status">
         {rating ? `${count}점 중 ${rating}점` : "평점을 선택하세요."}
       </p>
@@ -817,7 +919,6 @@ export function MonthPicker({
         value={month}
         onValueChange={setMonth}
         disabled={disabled}
-        name={name}
       >
         {Array.from({ length: 12 }, (_, i) => {
           const key = `${year}-${String(i + 1).padStart(2, "0")}`;
@@ -834,6 +935,9 @@ export function MonthPicker({
           );
         })}
       </RadioGroup.Root>
+      {name && month && (
+        <input type="hidden" name={name} value={month} disabled={disabled} />
+      )}
     </div>
   );
 }
@@ -901,7 +1005,6 @@ export function YearPicker({
         value={String(year)}
         onValueChange={(v) => setYear(Number(v))}
         disabled={disabled}
-        name={name}
       >
         {Array.from({ length: 12 }, (_, i) => (
           <RadioGroup.Item
@@ -914,6 +1017,9 @@ export function YearPicker({
           </RadioGroup.Item>
         ))}
       </RadioGroup.Root>
+      {name && (
+        <input type="hidden" name={name} value={year} disabled={disabled} />
+      )}
     </div>
   );
 }

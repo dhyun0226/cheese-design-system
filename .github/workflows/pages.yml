@@ -31,11 +31,11 @@ jobs:
             test-results/
             artifacts/
       - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
           path: dist
   deploy:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: verify
     runs-on: ubuntu-latest
     permissions:

@@ -152,6 +152,20 @@ function ReactFields() {
       </button>
       <output data-testid="form-data">{data}</output>
       <output data-testid="invalid-events">{invalidEvents}</output>
+      <form aria-label="고정 제어 폼">
+        <DateField
+          label="고정 제어 날짜"
+          name="fixedDate"
+          value="2024-02-10"
+          onValueChange={() => {}}
+        />
+        <NumberField
+          label="고정 제어 수량"
+          name="fixedNumber"
+          value="2"
+          onValueChange={() => {}}
+        />
+      </form>
     </main>
   );
 }

@@ -42,6 +42,7 @@ const output = (form: HTMLFormElement) =>
 function ReactFixture() {
   const [result, setResult] = React.useState(""),
     [controlled, setControlled] = React.useState("12:00"),
+    [constraintTime, setConstraintTime] = React.useState("10:00"),
     [changes, setChanges] = React.useState(0),
     [invalids, setInvalids] = React.useState(0);
   return (
@@ -73,6 +74,13 @@ function ReactFixture() {
             setControlled(value);
             setChanges((n) => n + 1);
           }}
+        />
+        <ReactTimeField
+          label="Fixed time"
+          name="fixed"
+          value="12:00"
+          required
+          onValueChange={() => {}}
         />
         <ReactTimeField
           label="Readonly"
@@ -111,6 +119,21 @@ function ReactFixture() {
         </button>
       </form>
       <ReactTimeField label="No slots" min="18:00" max="09:00" />
+      <form
+        aria-label="Native constraint form"
+        onSubmit={(event) => event.preventDefault()}
+      >
+        <ReactTimeField
+          label="Native constrained"
+          value={constraintTime}
+          onValueChange={setConstraintTime}
+          pattern="11:00"
+        />
+        <button type="submit">Validate native constraint</button>
+        <button type="button" onClick={() => setConstraintTime("11:00")}>
+          Correct constrained time
+        </button>
+      </form>
       <output data-testid="result">{result}</output>
       <output data-testid="changes">{changes}</output>
       <output data-testid="invalids">{invalids}</output>
@@ -122,6 +145,7 @@ if (new URLSearchParams(location.search).get("framework") === "vue") {
     setup() {
       const result = ref(""),
         controlled = ref("12:00"),
+        constraintTime = ref("10:00"),
         changes = ref(0),
         invalids = ref(0);
       const button = (label: string, type: "submit" | "reset") =>
@@ -155,6 +179,13 @@ if (new URLSearchParams(location.search).get("framework") === "vue") {
                 },
               }),
               h(VueTimeField, {
+                label: "Fixed time",
+                name: "fixed",
+                modelValue: "12:00",
+                required: true,
+                "onUpdate:modelValue": () => {},
+              }),
+              h(VueTimeField, {
                 label: "Readonly",
                 name: "readonly",
                 defaultValue: "10:00",
@@ -177,6 +208,34 @@ if (new URLSearchParams(location.search).get("framework") === "vue") {
               button("External reset", "reset"),
             ]),
             h(VueTimeField, { label: "No slots", min: "18:00", max: "09:00" }),
+            h(
+              "form",
+              {
+                "aria-label": "Native constraint form",
+                onSubmit: (event: Event) => event.preventDefault(),
+              },
+              [
+                h(VueTimeField, {
+                  label: "Native constrained",
+                  modelValue: constraintTime.value,
+                  "onUpdate:modelValue": (value: string) => {
+                    constraintTime.value = value;
+                  },
+                  pattern: "11:00",
+                }),
+                button("Validate native constraint", "submit"),
+                h(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => {
+                      constraintTime.value = "11:00";
+                    },
+                  },
+                  "Correct constrained time",
+                ),
+              ],
+            ),
             h("output", { "data-testid": "result" }, result.value),
             h("output", { "data-testid": "changes" }, changes.value),
             h("output", { "data-testid": "invalids" }, invalids.value),

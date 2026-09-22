@@ -4,6 +4,8 @@ import {
   ref,
   shallowRef,
   watch,
+  onMounted,
+  onUnmounted,
   type ComponentPublicInstance,
 } from "vue";
 import { inertOutside } from "./inert";
@@ -30,6 +32,31 @@ const auto = useId();
 const validation = ref(""),
   content = shallowRef<HTMLElement>(),
   open = ref(false);
+const focusOrigin = ref<"keyboard" | "pointer">("keyboard");
+let pointerPosition: { x: number; y: number } | null = null;
+function trackPointer(event: PointerEvent) {
+  if (event.isTrusted) pointerPosition = { x: event.clientX, y: event.clientY };
+}
+onMounted(() => document.addEventListener("pointermove", trackPointer));
+onUnmounted(() => document.removeEventListener("pointermove", trackPointer));
+watch(open, (isOpen) => {
+  if (!isOpen) focusOrigin.value = "keyboard";
+});
+function pointerFocus(event: PointerEvent) {
+  trackPointer(event);
+  focusOrigin.value = "pointer";
+}
+function pointerMove(event: PointerEvent) {
+  // Safari's movement deltas can be zero; compare the last client position.
+  // A first real pointer movement after keyboard-only use has no prior point.
+  if (
+    pointerPosition
+      ? pointerPosition.x !== event.clientX ||
+        pointerPosition.y !== event.clientY
+      : event.isTrusted
+  )
+    pointerFocus(event);
+}
 const { root, value } = useFieldModel(
   () => props.modelValue,
   () => props.defaultValue ?? "",
@@ -83,6 +110,8 @@ function invalid(event: Event) {
         v-bind="$attrs"
         :id="id || auto"
         class="cheese-input cheese-select-trigger"
+        @pointerdown.capture="pointerFocus"
+        @keydown.capture="focusOrigin = 'keyboard'"
         :aria-invalid="!!(error || validation)"
         :aria-describedby="
           error || validation || description ? auto + '-hint' : undefined
@@ -96,9 +125,13 @@ function invalid(event: Event) {
         ><P.SelectContent
           :ref="capture"
           class="cheese-select-content cheese-root"
+          :data-focus-origin="focusOrigin"
           position="popper"
           :side-offset="6"
           :collision-padding="12"
+          @keydown.capture="focusOrigin = 'keyboard'"
+          @pointerdown.capture="pointerFocus"
+          @pointermove.capture="pointerMove"
           ><P.SelectScrollUpButton class="cheese-select-scroll"
             ><ChevronUp :size="16" /></P.SelectScrollUpButton
           ><P.SelectViewport
@@ -123,10 +156,10 @@ function invalid(event: Event) {
                 16
               " /></P.SelectScrollDownButton></P.SelectContent></P.SelectPortal
     ></P.SelectRoot>
-    <!-- Reka's native proxy only associates with the nearest form. An explicit
-         form owner needs its own hidden-but-validatable input, not a second value. -->
+    <!-- Reka creates its native proxy only for a name and the nearest form.
+         Nameless required fields and explicit form owners still need validation. -->
     <input
-      v-if="form"
+      v-if="form || !name"
       class="cheese-sr-only"
       tabindex="-1"
       aria-hidden="true"

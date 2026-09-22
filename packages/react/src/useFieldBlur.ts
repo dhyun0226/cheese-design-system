@@ -29,11 +29,10 @@ export function useFieldBlur(input: React.RefObject<HTMLInputElement | null>) {
   return (event: React.FocusEvent<HTMLInputElement>) => {
     const fromPointer = pointerFormAction.current;
     pointerFormAction.current = false;
-    // Safari does not focus mouse-clicked buttons: relatedTarget is then null.
-    // Other outside clicks still validate; only actual owner-form actions defer.
+    // Safari may focus an ancestor instead of the mouse-clicked form action.
+    // Trust the actual pointer target; other outside clicks still validate.
     return !(
-      formAction(event.relatedTarget, event.currentTarget) ||
-      (!event.relatedTarget && fromPointer)
+      formAction(event.relatedTarget, event.currentTarget) || fromPointer
     );
   };
 }

@@ -18,7 +18,7 @@ import {
 } from "@cheese/react";
 import { ArrowUpRight } from "lucide-react";
 import Logo from "./Logo";
-import OriginIllustration from "./OriginIllustration";
+import HeroTaskDemo from "./HeroTaskDemo";
 
 export function EvaluationPreview() {
   const [submitted, setSubmitted] = useState(false);
@@ -140,7 +140,7 @@ export default function Home({ exampleCount }: { exampleCount: number }) {
             </a>
           </div>
         </div>
-        <OriginIllustration />
+        <HeroTaskDemo />
       </section>
       <dl className="home-scope" aria-label="제공 범위">
         <div>

@@ -1,6 +1,8 @@
 import "@cheese/css";
 import { useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { createApp, h, ref } from "vue";
+import VueSelect from "../../packages/vue/src/Select.vue";
 import {
   Button,
   DatePicker,
@@ -124,7 +126,102 @@ function Forms() {
         <Button type="submit">선택 폼 제출</Button>
         <Button type="reset">선택 폼 초기화</Button>
       </form>
+      <form
+        aria-label="다중 날짜 폼"
+        className="cheese-stack"
+        onSubmit={(event) => event.preventDefault()}
+      >
+        <DatePicker
+          label="첫 필수 날짜"
+          name="firstDate"
+          required
+          {...bounds}
+        />
+        <DatePicker
+          label="둘째 필수 날짜"
+          name="secondDate"
+          required
+          {...bounds}
+        />
+        <Button type="submit">다중 날짜 제출</Button>
+      </form>
     </main>
   );
 }
-createRoot(document.getElementById("root")!).render(<Forms />);
+const namelessOptions = [{ value: "tech", label: "개발팀" }];
+function NamelessSelectForm() {
+  const [submissions, setSubmissions] = useState(0);
+  const [data, setData] = useState("");
+  return (
+    <main className="cheese-root cheese-stack">
+      <h1>이름 없는 필수 선택</h1>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSubmissions((count) => count + 1);
+          setData(
+            JSON.stringify(
+              Object.fromEntries(new FormData(event.currentTarget)),
+            ),
+          );
+        }}
+      >
+        <Select label="필수 조직" required options={namelessOptions} />
+        <Button type="submit">선택 저장</Button>
+        <Button type="reset">선택 초기화</Button>
+      </form>
+      <output aria-label="저장 횟수">{submissions}</output>
+      <output aria-label="선택 제출 데이터">{data}</output>
+    </main>
+  );
+}
+const params = new URLSearchParams(location.search);
+if (params.has("namelessSelect") && params.get("framework") === "vue") {
+  createApp({
+    setup() {
+      const submissions = ref(0),
+        data = ref("");
+      return () =>
+        h("main", { class: "cheese-root cheese-stack" }, [
+          h("h1", "이름 없는 필수 선택"),
+          h(
+            "form",
+            {
+              onSubmit: (event: Event) => {
+                event.preventDefault();
+                submissions.value++;
+                data.value = JSON.stringify(
+                  Object.fromEntries(
+                    new FormData(event.currentTarget as HTMLFormElement),
+                  ),
+                );
+              },
+            },
+            [
+              h(VueSelect, {
+                label: "필수 조직",
+                required: true,
+                options: namelessOptions,
+              }),
+              h(
+                "button",
+                { class: "cheese-button", type: "submit" },
+                "선택 저장",
+              ),
+              h(
+                "button",
+                { class: "cheese-button", type: "reset" },
+                "선택 초기화",
+              ),
+            ],
+          ),
+          h("output", { "aria-label": "저장 횟수" }, submissions.value),
+          h("output", { "aria-label": "선택 제출 데이터" }, data.value),
+        ]);
+    },
+  }).mount("#root");
+} else {
+  createRoot(document.getElementById("root")!).render(
+    params.has("namelessSelect") ? <NamelessSelectForm /> : <Forms />,
+  );
+}

@@ -58,6 +58,9 @@ export function SearchSelect({
     sequence = React.useRef(0),
     id = React.useId();
   React.useEffect(() => {
+    if (selected.length) setInvalid(false);
+  }, [selected.length]);
+  React.useEffect(() => {
     const ticket = ++sequence.current,
       controller = new AbortController();
     setActive(-1);

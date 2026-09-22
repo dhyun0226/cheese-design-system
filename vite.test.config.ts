@@ -19,6 +19,7 @@ export default mergeConfig(
           navigationPagination: "tests/fixtures/navigation-pagination.html",
           toastLayout: "tests/fixtures/toast-layout.html",
           searchValidation: "tests/fixtures/search-validation.html",
+          fieldContracts: "tests/fixtures/field-contracts.html",
         },
       },
     },

@@ -167,6 +167,7 @@ function submit(event: Event) {
           ><ToolbarRoot aria-label="Vue 문서 서식"
             ><ToolbarToggleGroup
               v-model="formats"
+              @update:model-value="saved = false"
               type="multiple"
               aria-label="문자 서식"
               ><ToolbarToggleItem value="굵게" aria-label="굵게"

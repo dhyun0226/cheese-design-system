@@ -63,7 +63,7 @@ radius: item 8 / control 10 / card 16 / overlay 20. 기존 token API는 보존�
 - `line-height` 생략은 줄상자의 제거가 아니라 상속 또는 `normal`을 뜻한다. flex가 맞추는 것은 줄상자이며, 모든 문자 조합의 실제 잉크 영역까지 동일한 것은 아니다.
 - 굵기 토큰: regular 400 / medium 500 / semibold 600 / bold 700. 입력 값·설명은 regular, 라벨·배지는 medium, 행동·선택·섹션 제목은 semibold, 문서 페이지 제목은 bold.
 - 주요 API는 코드처럼 꾸민 별도 CSS가 아닌 실제 Badge 컴포넌트로 표시한다. 여러 API 이름은 개별 배지로 분리한다.
-- `tests/typography.spec.ts`: 공통 줄 높이, 실제 DOM 텍스트 상자 중심, React/Vue 독립 소비자, API 배지와 문서 크기/굵기 계층을 검사한다. DOM 상자 측정은 모든 언어의 광학적 중앙 정렬 인증이 아니다.
+- `tests/typography.spec.ts`: 공통 줄 높이, 실제 DOM 텍스트 상자 중심, 사이트 CSS를 제외한 React/Vue 모노레포 fixture, API 배지와 문서 크기/굵기 계층을 검사한다. 독립 tarball 소비자 검사는 타입·SSR·번들 범위이며, DOM 상자 측정은 모든 언어의 광학적 중앙 정렬 인증이 아니다.
 - 토큰 소비자는 `lineHeight.control`을 숫자로 곱하지 않고 CSS 값으로 사용한다(`normal`로 변경됨).
 
 ### 검사

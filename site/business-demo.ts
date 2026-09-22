@@ -44,52 +44,60 @@ export function demoDelay(ms: number, signal: AbortSignal) {
     signal.addEventListener("abort", abort, { once: true });
   });
 }
-const failed = new Set<string>();
-export const demoLoadOptions: OptionsLoader = async (query, { signal }) => {
-  await demoDelay(450, signal);
-  if (query === "오류" && !failed.has("options")) {
-    failed.add("options");
-    throw Error("Demo failure");
-  }
-  return demoOptions
-    .filter(
-      (item) =>
-        query === "오류" ||
-        item.label.includes(query) ||
-        item.description.includes(query),
-    )
-    .slice(0, 12);
-};
-export const demoLoadRows: RowsLoader = async (query, { signal }) => {
-  await demoDelay(450, signal);
-  if (query.search === "오류" && !failed.has("table")) {
-    failed.add("table");
-    throw Error("Demo failure");
-  }
-  let rows = demoRows.filter(
-    (row) =>
-      query.search === "오류" ||
-      Object.values(row).some((value) => String(value).includes(query.search)),
-  );
-  if (query.sort) {
-    const { key, direction } = query.sort;
-    rows = [...rows].sort(
-      (a, b) =>
-        String(a[key as keyof typeof a]).localeCompare(
-          String(b[key as keyof typeof b]),
-          "ko",
-          { numeric: true },
-        ) * (direction === "asc" ? 1 : -1),
-    );
-  }
-  return {
-    rows: rows.slice(
-      (query.page - 1) * query.pageSize,
-      query.page * query.pageSize,
-    ),
-    total: rows.length,
+// Create once per mounted example: retries share state, other examples do not.
+export function createDemoOptionsLoader(): OptionsLoader {
+  let failed = false;
+  return async (query, { signal }) => {
+    await demoDelay(450, signal);
+    if (query === "오류" && !failed) {
+      failed = true;
+      throw Error("Demo failure");
+    }
+    return demoOptions
+      .filter(
+        (item) =>
+          query === "오류" ||
+          item.label.includes(query) ||
+          item.description.includes(query),
+      )
+      .slice(0, 12);
   };
-};
+}
+export function createDemoRowsLoader(): RowsLoader {
+  let failed = false;
+  return async (query, { signal }) => {
+    await demoDelay(450, signal);
+    if (query.search === "오류" && !failed) {
+      failed = true;
+      throw Error("Demo failure");
+    }
+    let rows = demoRows.filter(
+      (row) =>
+        query.search === "오류" ||
+        Object.values(row).some((value) =>
+          String(value).includes(query.search),
+        ),
+    );
+    if (query.sort) {
+      const { key, direction } = query.sort;
+      rows = [...rows].sort(
+        (a, b) =>
+          String(a[key as keyof typeof a]).localeCompare(
+            String(b[key as keyof typeof b]),
+            "ko",
+            { numeric: true },
+          ) * (direction === "asc" ? 1 : -1),
+      );
+    }
+    return {
+      rows: rows.slice(
+        (query.page - 1) * query.pageSize,
+        query.page * query.pageSize,
+      ),
+      total: rows.length,
+    };
+  };
+}
 const attempts = new WeakMap<File, number>();
 export const demoUpload: UploadHandler = async (
   file,

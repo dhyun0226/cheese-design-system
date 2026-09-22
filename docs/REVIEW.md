@@ -11,7 +11,7 @@
 | 정적 카탈로그 개수가 구현 완료 근거로 사용됨  | 예제 import/export 계약, 타입, 브라우저 동작을 검증. 후속 확장으로 69개 카탈로그 / 69개 실행 예제 연결 |
 | root CSS와 package CSS의 중복                 | package 공통 스타일로 단일화. 레이아웃 유틸도 CSS 패키지로 이동                                        |
 | 라벨·오류 메시지와 입력의 연결 부족           | ID, required, aria-invalid, aria-describedby 연결                                                      |
-| 트리에 다수 Tab 진입점과 부분 방향키 지원     | 단일 Tab 진입점, ↑↓←→, Home/End, 선택·펼침 분리, React/Vue 양쪽 검증                                   |
+| 트리에 다수 Tab 진입점과 부분 방향키 지원     | 양쪽 구현에 단일 Tab 진입점, ↑↓←→, Home/End, 선택·펼침 분리. 자동 키보드 검사는 React가 전체 키, Vue는 펼침·선택 중심 |
 | 모달·메뉴의 실제 포커스 동작 검증 부재        | 포커스 가두기·복귀, Esc, 취소 우선 포커스, 메뉴 선택 시나리오 추가                                     |
 | 캘린더가 카탈로그에만 존재                    | React Calendar·DatePicker·기간 선택, Vue Calendar 구현 및 한국어/날짜 제한 검증                        |
 | 폰트 외부 CDN 의존                            | Pretendard를 로컬 asset으로 묶고 원문 라이선스 포함                                                    |

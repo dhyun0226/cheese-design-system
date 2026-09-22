@@ -267,6 +267,33 @@ for (const framework of ["react", "vue"]) {
       await expect(page.getByRole("alert")).toContainText("실제 존재하는 날짜");
     });
 
+    test("rejected controlled drafts preserve displayed values, validity and FormData", async ({
+      page,
+    }) => {
+      const date = page.getByRole("textbox", {
+        name: "고정 제어 날짜",
+        exact: true,
+      });
+      const number = page.getByRole("spinbutton", {
+        name: "고정 제어 수량",
+        exact: true,
+      });
+      await date.fill("invalid");
+      await expect(date).toHaveValue("2024-02-10");
+      expect(
+        await date.evaluate((node: HTMLInputElement) => node.validity.valid),
+      ).toBe(true);
+      await number.fill("8");
+      await expect(number).toHaveValue("2");
+      expect(
+        await page
+          .getByRole("form", { name: "고정 제어 폼" })
+          .evaluate((node: HTMLFormElement) =>
+            Object.fromEntries(new FormData(node)),
+          ),
+      ).toEqual({ fixedDate: "2024-02-10", fixedNumber: "2" });
+    });
+
     test("civil dates survive timezone changes and calendar today stays local", async ({
       browser,
       baseURL,

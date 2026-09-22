@@ -1,5 +1,6 @@
 import { test, expect, type Locator } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { tabKey } from "./platform";
 
 const visibleRange = async (pagination: Locator) =>
   (await pagination.locator(".cheese-pagination-list").innerText()).match(
@@ -20,6 +21,7 @@ for (const framework of ["react", "vue"]) {
 
     test("page buttons, previous and next keep controlled state and keyboard activation", async ({
       page,
+      browserName,
     }) => {
       const pagination = page.getByRole("navigation", { name: "페이지 탐색" });
       const current = pagination.locator('button[aria-current="page"]:visible');
@@ -47,8 +49,10 @@ for (const framework of ["react", "vue"]) {
       });
       // Enter through Tab: programmatic focus after a click retains pointer
       // modality in Firefox and does not itself activate :focus-visible.
-      await pagination.getByRole("button", { name: "4페이지", exact: true }).focus();
-      await page.keyboard.press("Tab");
+      await pagination
+        .getByRole("button", { name: "4페이지", exact: true })
+        .focus();
+      await page.keyboard.press(tabKey(browserName));
       await expect(fifth).toBeFocused();
       await fifth.press("Enter");
       await expect(current).toHaveAccessibleName("5페이지");

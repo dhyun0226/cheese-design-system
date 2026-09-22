@@ -45,6 +45,12 @@ const id = useId(),
   invalid = ref(false);
 let sequence = 0;
 watch(
+  () => selected.value.length,
+  (length) => {
+    if (length) invalid.value = false;
+  },
+);
+watch(
   [
     query,
     open,

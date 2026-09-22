@@ -52,6 +52,28 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       props.defaultOpen ?? false,
     );
     const open = props.open ?? localOpen;
+    const [focusOrigin, setFocusOrigin] = React.useState<
+      "keyboard" | "pointer"
+    >("keyboard");
+    const pointerPosition = React.useRef<{ x: number; y: number } | null>(null);
+    React.useEffect(() => {
+      // Remember the pointer before opening too: Safari reports zero movement
+      // deltas, while a stationary pointer may cross a repositioned popup.
+      const trackPointer = (event: PointerEvent) => {
+        if (event.isTrusted)
+          pointerPosition.current = { x: event.clientX, y: event.clientY };
+      };
+      document.addEventListener("pointermove", trackPointer);
+      return () => document.removeEventListener("pointermove", trackPointer);
+    }, []);
+    React.useEffect(() => {
+      if (!open) setFocusOrigin("keyboard");
+    }, [open]);
+    const pointerFocus = (event: React.PointerEvent) => {
+      pointerPosition.current = { x: event.clientX, y: event.clientY };
+      setFocusOrigin("pointer");
+    };
+    const keyboardFocus = () => setFocusOrigin("keyboard");
     const undoInert = React.useRef<(() => void) | undefined>(undefined);
     const releaseInert = React.useCallback(() => {
       undoInert.current?.();
@@ -104,6 +126,8 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
             ref={ref}
             id={id}
             className="cheese-input cheese-select-trigger"
+            onPointerDownCapture={pointerFocus}
+            onKeyDownCapture={keyboardFocus}
             aria-invalid={!!invalid}
             aria-describedby={hint ? id + "-hint" : undefined}
           >
@@ -116,9 +140,24 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
             <Primitive.Content
               ref={setContent}
               className="cheese-select-content cheese-root"
+              data-focus-origin={focusOrigin}
               position="popper"
               sideOffset={6}
               collisionPadding={12}
+              onKeyDownCapture={keyboardFocus}
+              onPointerDownCapture={pointerFocus}
+              onPointerMoveCapture={(event) => {
+                const previous = pointerPosition.current;
+                // A page opened entirely by keyboard has no prior coordinates;
+                // its first real pointer event can also report zero deltas.
+                if (
+                  previous
+                    ? previous.x !== event.clientX ||
+                      previous.y !== event.clientY
+                    : event.isTrusted
+                )
+                  pointerFocus(event);
+              }}
               onCloseAutoFocus={(event) => {
                 event.preventDefault();
                 releaseInert();
@@ -242,10 +281,15 @@ export function Combobox({
   error,
   emptyText = "검색 결과가 없습니다.",
 }: ComboboxProps) {
+  const [invalid, setInvalid] = React.useState(false);
+  const message = error || (invalid ? "항목을 선택해 주세요." : undefined);
   const [selected, setSelected, root] = useFieldValue(
     value,
     defaultValue,
-    onValueChange,
+    (next) => {
+      setInvalid(false);
+      onValueChange?.(next);
+    },
   );
   const [open, setOpen] = React.useState(false),
     [query, setQuery] = React.useState(""),
@@ -285,6 +329,9 @@ export function Combobox({
   React.useEffect(() => {
     if (disabled) setOpen(false);
   }, [disabled]);
+  React.useEffect(() => {
+    if (selected) setInvalid(false);
+  }, [selected]);
   return (
     <div
       className="cheese-field cheese-combobox"
@@ -313,8 +360,8 @@ export function Combobox({
           aria-activedescendant={
             open && filtered[active] ? id + "-option-" + active : undefined
           }
-          aria-invalid={!!error}
-          aria-describedby={error ? id + "-error" : undefined}
+          aria-invalid={!!message}
+          aria-describedby={message ? id + "-error" : undefined}
           aria-required={required}
           disabled={disabled}
           placeholder={placeholder}
@@ -378,6 +425,7 @@ export function Combobox({
           disabled={disabled}
           onInvalid={(e) => {
             e.preventDefault();
+            setInvalid(true);
             const target = e.currentTarget;
             const first =
               target.form &&
@@ -434,9 +482,9 @@ export function Combobox({
           )}
         </div>
       )}
-      {error && (
+      {message && (
         <p id={id + "-error"} className="cheese-help" role="alert">
-          {error}
+          {message}
         </p>
       )}
     </div>

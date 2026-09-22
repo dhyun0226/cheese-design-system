@@ -1,8 +1,9 @@
 import { AsyncCombobox, Button } from "@cheese/react";
 import { useState } from "react";
-import { demoLoadOptions } from "../business-demo";
+import { createDemoOptionsLoader } from "../business-demo";
 export default function Example() {
   const [result, setResult] = useState("미선택");
+  const [loadOptions] = useState(createDemoOptionsLoader);
   return (
     <form
       className="cheese-stack"
@@ -17,7 +18,7 @@ export default function Example() {
       </p>
       <AsyncCombobox
         label="직원 서버 검색"
-        loadOptions={demoLoadOptions}
+        loadOptions={loadOptions}
         name="employee"
         required
       />

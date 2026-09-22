@@ -5,6 +5,18 @@
   outline-offset: 3px;
   box-shadow: 0 0 0 1px var(--cheese-focus-contrast);
 }
+/* Select primitives focus an option even for pointer opens. On the first
+   interaction some browsers still match :focus-visible; keep the ring tied
+   to the actual input method and inset it within the scrolling viewport. */
+.cheese-select-content .cheese-option:focus-visible {
+  outline-offset: -2px;
+  box-shadow: inset 0 0 0 3px var(--cheese-focus-contrast);
+}
+.cheese-select-content[data-focus-origin="pointer"]
+  .cheese-option:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
 .cheese-tree-node:focus-visible {
   outline: none;
   box-shadow: none;

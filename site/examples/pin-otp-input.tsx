@@ -12,7 +12,14 @@ export default function Example() {
         setStatus("6자리 입력이 확인되었습니다. 서버 검증은 별도입니다.");
       }}
     >
-      <PinInput label="인증 코드" name="code" length={6} required />
+      <PinInput
+        label="인증 코드"
+        name="code"
+        length={6}
+        required
+        onValueChange={() => setStatus(initialStatus)}
+        onInvalid={() => setStatus(initialStatus)}
+      />
       <div className="cheese-inline">
         <Button type="submit">코드 확인</Button>
         <Button type="reset" variant="weak">

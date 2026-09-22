@@ -13,7 +13,7 @@
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.site.json && vue-tsc -p tsconfig.vue-site.json",
     "test": "playwright test",
     "build:test": "vite build --config vite.test.config.ts",
-    "test:unit": "node --test tests/contracts.test.mjs",
+    "test:unit": "node --test tests/contracts.test.mjs tests/upload-queue.test.mjs",
     "test:consumer": "node scripts/verify-consumer.mjs",
     "check": "npm run build && npm run typecheck && npm run verify:catalog && npm run test:unit && npm run test:consumer && npm test",
     "clean": "npm run clean --workspaces --if-present",

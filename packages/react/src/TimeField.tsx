@@ -133,6 +133,9 @@ export const TimeField = React.forwardRef<HTMLInputElement, TimeFieldProps>(
       input.current?.setCustomValidity(validation);
     }, [validation]);
     React.useEffect(() => {
+      setNativeError("");
+    }, [current, min, max, step, required, error]);
+    React.useEffect(() => {
       if (disabled || readOnly) setOpen(false);
     }, [disabled, readOnly]);
     React.useEffect(() => {

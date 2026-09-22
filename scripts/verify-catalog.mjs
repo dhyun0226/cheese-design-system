@@ -19,6 +19,12 @@ if (new Set(ids).size !== ids.length) throw Error("Duplicate catalog ID");
 const demos = readdirSync(new URL("../site/examples", import.meta.url)).filter(
   (n) => n.endsWith(".tsx"),
 );
+const demoIds = new Set(demos.map((file) => file.slice(0, -4)));
+const missing = ids.filter((id) => !demoIds.has(id));
+if (missing.length)
+  throw Error(
+    "Catalog entries without executable examples: " + missing.join(", "),
+  );
 for (const file of demos) {
   const id = file.slice(0, -4),
     entry = entries.find((e) => e.id === id);

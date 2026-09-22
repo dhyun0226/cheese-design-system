@@ -442,7 +442,7 @@ const extendedDetails: Record<string, [string, string]> = {
   ],
   editable: [
     "label · value/defaultValue · onValueChange · name · disabled · required",
-    "수정 시 입력으로 포커스가 이동합니다. Enter로 저장, Esc로 취소하며 결과와 관계없이 수정 버튼으로 돌아갑니다.",
+    "수정 시 입력으로 포커스가 이동합니다. Enter로 저장, Esc로 취소하면 수정 버튼으로 돌아가며, 필수값 오류가 있으면 입력에 머무릅니다.",
   ],
   "color-picker": [
     "label · swatches · value/defaultValue · onValueChange · name · disabled",

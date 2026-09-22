@@ -6,6 +6,10 @@ import {
   useId,
   cloneVNode,
   isVNode,
+  Fragment,
+  Comment,
+  Text,
+  type VNode,
 } from "vue";
 import * as P from "reka-ui";
 export function styled<T extends Component>(
@@ -226,8 +230,24 @@ export const Field = defineComponent({
   },
   setup(props, { slots }) {
     const auto = useId();
+    // A Field owns one control. Vue comments, whitespace and template
+    // fragments are slot scaffolding, not the control receiving its label.
+    function findControl(children: unknown[]): VNode | undefined {
+      for (const child of children) {
+        if (!isVNode(child) || child.type === Comment || child.type === Text)
+          continue;
+        if (child.type === Fragment) {
+          const control = Array.isArray(child.children)
+            ? findControl(child.children)
+            : undefined;
+          if (control) return control;
+          continue;
+        }
+        return child;
+      }
+    }
     return () => {
-      const child = slots.default?.().find(isVNode),
+      const child = findControl(slots.default?.() ?? []),
         id = props.id || child?.props?.id || auto,
         hint = props.error || props.description;
       return h("div", { class: "cheese-field" }, [

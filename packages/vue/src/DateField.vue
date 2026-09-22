@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, useId, watch, watchEffect } from "vue";
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  ref,
+  useId,
+  watch,
+  watchEffect,
+} from "vue";
 import {
   PopoverRoot,
   PopoverTrigger,
@@ -167,6 +175,17 @@ function update(next: string) {
   if (props.modelValue === undefined) local.value = next;
   input.value?.setCustomValidity(props.error || validationMessage(next));
   emit("update:modelValue", next);
+  void nextTick(() => {
+    const node = input.value;
+    if (!node || props.modelValue === undefined) return;
+    // Keep the submitted value and validity tied to the owner's accepted value.
+    if (node.value !== current.value) node.value = current.value;
+    node.setCustomValidity(
+      props.disabled || props.readOnly
+        ? ""
+        : props.error || validationMessage(current.value),
+    );
+  });
 }
 function invalid(event: Event) {
   event.preventDefault();

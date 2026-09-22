@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, useId } from "vue";
+import { ref, useId, watch } from "vue";
 import { X } from "@lucide/vue";
 import { useFieldModel } from "./fieldModel";
 const props = withDefaults(
@@ -24,6 +24,24 @@ const id = useId(),
   draft = ref(""),
   message = ref(""),
   input = ref<HTMLInputElement>();
+watch(root, (node, _, cleanup) => {
+  const form = node?.closest("form");
+  const timers = new Set<ReturnType<typeof setTimeout>>();
+  const reset = (event: Event) => {
+    const timer = setTimeout(() => {
+      timers.delete(timer);
+      if (event.defaultPrevented) return;
+      draft.value = "";
+      message.value = "";
+    }, 0);
+    timers.add(timer);
+  };
+  form?.addEventListener("reset", reset);
+  cleanup(() => {
+    form?.removeEventListener("reset", reset);
+    timers.forEach(clearTimeout);
+  });
+});
 function remove(tag: string) {
   value.value = value.value.filter((t) => t !== tag);
   message.value = tag + " 삭제됨";

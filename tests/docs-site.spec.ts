@@ -1,203 +1,123 @@
 import { test, expect } from "@playwright/test";
-import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import AxeBuilder from "@axe-core/playwright";
 
-function visibleSvgViewportBounds(svg: SVGSVGElement) {
-  // Project the clipping viewport from parent coordinates, independent of the
-  // nested SVG's viewBox transform and its oversized image content bounds.
-  const x = svg.x.baseVal.value;
-  const y = svg.y.baseVal.value;
-  const width = svg.width.baseVal.value;
-  const height = svg.height.baseVal.value;
-  const parent = svg.parentElement;
-  if (!(parent instanceof SVGGraphicsElement)) {
-    throw new Error("The rocket viewport has no SVG parent");
-  }
-  const matrix = parent.getScreenCTM();
-  if (!matrix) throw new Error("The rocket viewport has no screen transform");
-  const corners = [
-    new DOMPoint(x, y),
-    new DOMPoint(x + width, y),
-    new DOMPoint(x, y + height),
-    new DOMPoint(x + width, y + height),
-  ].map((point) => point.matrixTransform(matrix));
-  const left = Math.min(...corners.map((point) => point.x));
-  const top = Math.min(...corners.map((point) => point.y));
-  const right = Math.max(...corners.map((point) => point.x));
-  const bottom = Math.max(...corners.map((point) => point.y));
-  return {
-    x: left,
-    y: top,
-    right,
-    bottom,
-    width: right - left,
-    height: bottom - top,
-  };
-}
-
-test("home shows the original A rocket as a vector with a readable responsive illustration", async ({
+test("home task demo creates the entered task and resets at desktop and mobile widths", async ({
   page,
 }) => {
-  const original = await readFile(
-    join(__dirname, "../site/assets/starship-logo.png"),
-  );
-  expect(createHash("sha256").update(original).digest("hex")).toBe(
-    "e0d5e68aa4988f5f067db931e71d11e35b700cd3bb942efbe1e9048f7daded8a",
-  );
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const width of [1440, 900, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
-    await expect(
-      page.getByRole("img", {
-        name: "STARSHIP 로고의 A 모양 우주선이 치즈 달을 향해 올라가는 장면",
-      }),
-    ).toBeVisible();
-    const rocket = page.locator(".origin-rocket");
-    await expect(rocket).toHaveAttribute("viewBox", "100 10 50 90");
-    await expect(rocket).toHaveAttribute("overflow", "hidden");
-    await expect(page.locator(".origin-starship-logo")).toHaveCount(0);
-    await expect(page.locator(".origin-flight")).toHaveCSS(
+    const demo = page.locator(".hero-playground");
+    await expect(demo).toBeVisible();
+    await expect(page.locator(".origin-illustration")).toHaveCount(0);
+    const title = demo.getByRole("textbox", { name: "업무 이름" });
+    await expect(title).not.toBeFocused();
+    await title.fill("온보딩 가이드 검토");
+    const assignee = demo.getByRole("combobox", {
+      name: "담당자",
+      exact: true,
+    });
+    await assignee.click();
+    await page
+      .getByRole("option", { name: "박하린 · 디자인팀", exact: true })
+      .click();
+    await demo
+      .getByRole("button", { name: "업무 만들기", exact: true })
+      .click();
+    const result = demo.getByRole("heading", {
+      name: "온보딩 가이드 검토",
+      exact: true,
+    });
+    await expect(result).toBeVisible();
+    await expect(result).toBeFocused();
+    await expect(demo.locator(".hero-task-person")).toContainText("박하린");
+    await expect(demo.locator(".hero-task-person")).toContainText("디자인팀");
+    await expect(demo.locator(".hero-task-result")).toHaveCSS(
       "animation-name",
       "none",
     );
-    const drawing = rocket.locator("use");
-    await expect
-      .poll(() =>
-        drawing.evaluate((element: SVGUseElement) => {
-          const box = element.getBBox();
-          return box.width * box.height;
-        }),
-      )
-      .toBeGreaterThan(0);
-    if (width === 1440) {
-      const source = (await drawing.getAttribute("href"))!;
-      const asset = await page.evaluate(async (reference) => {
-        const url = new URL(reference, window.location.href);
-        const fragment = decodeURIComponent(url.hash.slice(1));
-        url.hash = "";
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("The rocket asset failed to load");
-        const document = new DOMParser().parseFromString(
-          await response.text(),
-          "image/svg+xml",
-        );
-        const target = document.getElementById(fragment);
-        const vectorShapes =
-          "path, polygon, polyline, circle, ellipse, rect, line";
-        return {
-          root: document.documentElement.localName,
-          fragment,
-          targetHasGeometry:
-            !!target &&
-            (target.matches(vectorShapes) ||
-              !!target.querySelector(vectorShapes)),
-          embeddedImages: document.querySelectorAll(
-            "image, feImage, foreignObject",
-          ).length,
-        };
-      }, source);
-      expect(asset.root).toBe("svg");
-      expect(asset.fragment).toBe("rocket");
-      expect(asset.targetHasGeometry).toBe(true);
-      expect(asset.embeddedImages).toBe(0);
-    }
-    const box = await rocket.evaluate(visibleSvgViewportBounds);
-    const scene = await page.locator(".origin-scene").boundingBox();
-    const moon = await page.locator(".origin-moon").boundingBox();
-    const kicker = await page.locator(".origin-kicker").boundingBox();
-    const caption = await page.locator(".origin-caption").boundingBox();
-    expect(box.x).toBeGreaterThanOrEqual(scene!.x);
-    expect(box.right).toBeLessThanOrEqual(scene!.x + scene!.width);
-    expect(box.y).toBeGreaterThanOrEqual(scene!.y);
-    expect(box.bottom).toBeLessThanOrEqual(scene!.y + scene!.height);
-    expect(kicker!.y + kicker!.height).toBeLessThanOrEqual(scene!.y);
-    expect(scene!.y + scene!.height).toBeLessThanOrEqual(caption!.y);
-    expect(box.bottom).toBeLessThan(caption!.y);
-    expect(moon!.y + moon!.height).toBeLessThan(caption!.y);
-    await expect(
-      page.getByRole("link", { name: /우주선 원본/ }),
-    ).toHaveAttribute("href", "https://www.starship-ent.com/about");
-    await expect(page.locator(".origin-note")).toContainText("개인 프로젝트");
-    await expect
-      .poll(() =>
-        page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-      )
-      .toBe(true);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await demo
+      .getByRole("button", { name: "다시 만들어 보기", exact: true })
+      .click();
+    await expect(title).toBeFocused();
+    await expect(title).toHaveValue("신규 입사자 온보딩 준비");
+    await expect(assignee).toHaveText("김치즈 · 피플팀");
+    await expect(demo.locator(".hero-task-result")).toHaveCount(0);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
   }
 });
 
-test("rocket launches once toward the moon and reduced motion keeps its final position", async ({
+test("home task demo validates blank input, supports keyboard selection and keeps long text within its card", async ({
   page,
 }) => {
-  for (const width of [1440, 900, 390, 320]) {
-    await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto("/");
-    const flight = page.locator(".origin-flight");
-    const rocket = page.locator(".origin-rocket");
-    await expect(flight).toHaveCSS("animation-name", "cheese-origin-launch");
-    const motion = await flight.evaluate(async (element) => {
-      const animation = element.getAnimations()[0];
-      animation.pause();
-      await animation.ready;
-      const timing = animation.effect!.getTiming();
-      animation.currentTime = 0;
-      return {
-        duration: timing.duration,
-        iterations: timing.iterations,
-        fill: timing.fill,
-      };
-    });
-    const start = await rocket.evaluate(visibleSvgViewportBounds);
-    await flight.evaluate((element) => {
-      const animation = element.getAnimations()[0];
-      animation.currentTime = animation.effect!.getComputedTiming()
-        .endTime as number;
-    });
-    const end = await rocket.evaluate(visibleSvgViewportBounds);
-    await flight.evaluate((element) => element.getAnimations()[0].finish());
-    expect(motion.iterations).toBe(1);
-    expect(motion.duration).toBe(2200);
-    expect(motion.fill).toBe("both");
-    expect(end.y).toBeLessThan(start.y);
-    expect(end.x).toBeGreaterThan(start.x);
-    const scene = await page.locator(".origin-scene").boundingBox();
-    const caption = await page.locator(".origin-caption").boundingBox();
-    const moon = await page.locator(".origin-moon").boundingBox();
-    const distanceToMoon = (box: typeof start) =>
-      Math.hypot(
-        box.x + box.width / 2 - (moon!.x + moon!.width / 2),
-        box.y + box.height / 2 - (moon!.y + moon!.height / 2),
-      );
-    expect(distanceToMoon(end)).toBeLessThan(distanceToMoon(start));
-    for (const box of [start, end]) {
-      expect(box.x).toBeGreaterThanOrEqual(scene!.x);
-      expect(box.right).toBeLessThanOrEqual(scene!.x + scene!.width);
-      expect(box.y).toBeGreaterThanOrEqual(scene!.y);
-      expect(box.bottom).toBeLessThanOrEqual(scene!.y + scene!.height);
-      expect(box.bottom).toBeLessThan(caption!.y);
-    }
-    if (width === 1440) {
-      await flight.evaluate(async (element) => {
-        const animation = element.getAnimations()[0];
-        animation.currentTime = 0;
-        animation.play();
-        await animation.finished;
-      });
-      const settled = await rocket.evaluate(visibleSvgViewportBounds);
-      expect(settled.x).toBeCloseTo(end.x, 1);
-      expect(settled.y).toBeCloseTo(end.y, 1);
-    }
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await expect(flight).toHaveCSS("animation-name", "none");
-    const reduced = await rocket.evaluate(visibleSvgViewportBounds);
-    expect(reduced.x).toBeCloseTo(end.x, 1);
-    expect(reduced.y).toBeCloseTo(end.y, 1);
-  }
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto("/");
+  const demo = page.locator(".hero-playground");
+  const title = demo.getByRole("textbox", { name: "업무 이름" });
+  await title.fill("   ");
+  await title.press("Enter");
+  await expect(title).toBeFocused();
+  await expect(title).toHaveAttribute("aria-invalid", "true");
+  await expect(demo.getByRole("alert")).toHaveText(
+    "업무 이름을 입력해 주세요.",
+  );
+  await expect(demo.locator(".hero-task-result")).toHaveCount(0);
+  const taskTitle = "온보딩가이드검토".repeat(8);
+  await title.fill(taskTitle);
+  await expect(title).not.toHaveAttribute("aria-invalid", "true");
+  await expect(demo.getByRole("alert")).toHaveCount(0);
+  const assignee = demo.getByRole("combobox", { name: "담당자", exact: true });
+  await assignee.focus();
+  await assignee.press("ArrowDown");
+  await page
+    .getByRole("option", { name: "김치즈 · 피플팀", exact: true })
+    .press("ArrowDown");
+  await page
+    .getByRole("option", { name: "이서준 · 개발팀", exact: true })
+    .press("Enter");
+  await demo
+    .getByRole("button", { name: "업무 만들기", exact: true })
+    .press("Enter");
+  await expect(
+    demo.getByRole("heading", { name: taskTitle, exact: true }),
+  ).toBeFocused();
+  await expect(demo.locator(".hero-task-person")).toContainText("이서준");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("home task demo stays accessible before and after its one-time result transition", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const demo = page.locator(".hero-playground");
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await demo.getByRole("button", { name: "업무 만들기", exact: true }).click();
+  const result = demo.locator(".hero-task-result");
+  await expect(result).toHaveCSS("animation-name", "cheese-task-created");
+  await expect(result).toHaveCSS("animation-iteration-count", "1");
+  await expect(result).toHaveCSS("opacity", "1");
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await demo
+    .getByRole("button", { name: "다시 만들어 보기", exact: true })
+    .click();
+  await page.reload();
+  await expect(demo.getByRole("textbox", { name: "업무 이름" })).toHaveValue(
+    "신규 입사자 온보딩 준비",
+  );
 });
 
 test("home guides visitors into the docs and its evaluation example updates after submission", async ({

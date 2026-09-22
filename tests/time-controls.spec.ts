@@ -108,6 +108,25 @@ for (const framework of ["react", "vue"]) {
       await expect(page.getByTestId("result")).not.toContainText('"disabled"');
     });
 
+    test("rejected controlled edits preserve native value, validity and submission", async ({
+      page,
+    }) => {
+      const field = page.getByRole("textbox", {
+        name: "Fixed time",
+        exact: true,
+      });
+      for (const candidate of ["13:30", "25:73", ""]) {
+        await field.fill(candidate);
+        await expect(field).toHaveValue("12:00");
+        expect(
+          await field.evaluate((node: HTMLInputElement) => node.validity.valid),
+        ).toBe(true);
+      }
+      await page.getByRole("button", { name: "Submit", exact: true }).click();
+      await expect(page.getByTestId("result")).toContainText('"fixed":"12:00"');
+      await expect(field).toHaveAttribute("aria-invalid", "false");
+    });
+
     test("seconds picker and default-value step origin stay valid", async ({
       page,
     }) => {
@@ -182,6 +201,30 @@ for (const framework of ["react", "vue"]) {
       await expect(
         page.getByRole("button", { name: "No slots 시간 선택" }),
       ).toBeFocused();
+    });
+
+    test("an external controlled correction clears a stale native constraint error", async ({
+      page,
+    }) => {
+      const form = page.getByRole("form", { name: "Native constraint form" });
+      const input = form.getByRole("textbox", {
+        name: "Native constrained",
+        exact: true,
+      });
+      await form
+        .getByRole("button", { name: "Validate native constraint" })
+        .click();
+      await expect(input).toHaveAttribute("aria-invalid", "true");
+      await expect(form.getByRole("alert")).toHaveCount(1);
+      await form
+        .getByRole("button", { name: "Correct constrained time" })
+        .click();
+      await expect(input).toHaveValue("11:00");
+      expect(
+        await input.evaluate((node: HTMLInputElement) => node.validity.valid),
+      ).toBe(true);
+      await expect(input).toHaveAttribute("aria-invalid", "false");
+      await expect(form.getByRole("alert")).toHaveCount(0);
     });
   });
 }

@@ -394,6 +394,20 @@ function ComponentPage({ entry }: { entry: Entry }) {
                 </TabsContent>
                 <TabsContent value="code">
                   <CopyCode code={source} />
+                  {source.includes("../business-demo") && (
+                    <p className="cheese-help">
+                      이 예제의 가상 데이터와 검색·업로드 동작은{" "}
+                      <a
+                        href={github + "/blob/main/site/business-demo.ts"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        공통 예제 코드
+                        <span className="cheese-sr-only"> (새 창)</span>
+                      </a>
+                      에 있습니다. 함께 복사하거나 서비스 API로 교체하세요.
+                    </p>
+                  )}
                 </TabsContent>
               </TabsRoot>
               <p className="preview-caption">
@@ -554,7 +568,7 @@ function GettingStarted() {
         <h2>03. React에서 사용하기</h2>
         <CopyCode
           code={
-            'import "@cheese/css"\nimport { Button, Field, Input } from "@cheese/react"\n\nexport function Profile() {\n  return (\n    <div className="cheese-root">\n      <Field label="이름" required>\n        <Input autoComplete="name" />\n      </Field>\n      <Button type="submit">저장</Button>\n    </div>\n  )\n}'
+            'import { useState } from "react"\nimport "@cheese/css"\nimport { Button, Field, Input } from "@cheese/react"\n\nexport function Profile() {\n  const [submittedName, setSubmittedName] = useState<string | null>(null)\n\n  return (\n    <form\n      className="cheese-root"\n      onChange={() => setSubmittedName(null)}\n      onSubmit={(event) => {\n        event.preventDefault()\n        const data = new FormData(event.currentTarget)\n        setSubmittedName(String(data.get("name") ?? ""))\n      }}\n    >\n      <Field label="이름" required>\n        <Input name="name" autoComplete="name" />\n      </Field>\n      <Button type="submit">입력 확인</Button>\n      <p role="status">\n        {submittedName === null\n          ? "실제 저장은 업무 API에 연결하세요."\n          : `${submittedName} · 예제 입력 확인 완료`}\n      </p>\n    </form>\n  )\n}'
           }
         />
       </section>
@@ -778,6 +792,7 @@ function Patterns() {
                 label="대상 조직"
                 name="team"
                 defaultValue="all"
+                onValueChange={() => setSaved(false)}
                 options={[
                   { value: "all", label: "전체 조직" },
                   { value: "people", label: "피플팀" },
@@ -789,10 +804,18 @@ function Patterns() {
                 name="deadline"
                 required
                 defaultValue="2026-10-30"
+                onValueChange={() => setSaved(false)}
               />
             </div>
-            <Checkbox label="마감 3일 전 알림 발송" defaultChecked />
-            <Switch label="제출 후 본인 수정 허용" />
+            <Checkbox
+              label="마감 3일 전 알림 발송"
+              defaultChecked
+              onCheckedChange={() => setSaved(false)}
+            />
+            <Switch
+              label="제출 후 본인 수정 허용"
+              onCheckedChange={() => setSaved(false)}
+            />
             <div className="form-actions">
               <Button
                 type="reset"

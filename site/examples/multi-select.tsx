@@ -1,8 +1,9 @@
 import { MultiSelect, Button } from "@cheese/react";
 import { useState } from "react";
-import { demoOptions, demoLoadOptions } from "../business-demo";
+import { demoOptions, createDemoOptionsLoader } from "../business-demo";
 export default function Example() {
   const [result, setResult] = useState("미선택");
+  const [loadOptions] = useState(createDemoOptionsLoader);
   return (
     <form
       className="cheese-stack"
@@ -22,7 +23,7 @@ export default function Example() {
       />
       <MultiSelect
         label="서버에서 참조자 검색"
-        loadOptions={demoLoadOptions}
+        loadOptions={loadOptions}
         max={5}
       />
       <div className="cheese-inline">
