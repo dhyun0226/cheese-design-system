@@ -44,7 +44,7 @@ test("React table demo replays its error after toolbar reset", async ({
 }) => {
   await page.goto("/#/components/data-table");
   const table = page.getByRole("region", { name: "평가 대상자", exact: true });
-  const search = table.getByRole("textbox", {
+  const search = table.getByRole("searchbox", {
     name: "평가 대상자 검색",
     exact: true,
   });

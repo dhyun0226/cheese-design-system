@@ -2,6 +2,9 @@ import { h, ref } from "vue";
 import {
   Button,
   Input,
+  SearchInput,
+  ErrorSummary,
+  AttachmentList,
   Field,
   Calendar,
   DateField,
@@ -37,9 +40,62 @@ import {
   FileUpload,
   createOptionsLoader,
   createXHRUpload,
+  type TableQuery,
 } from "@cheese/vue";
 import { CalendarDate } from "@internationalized/date";
 const name = ref("");
+const search = ref<InstanceType<typeof SearchInput> | null>(null);
+const summary = ref<InstanceType<typeof ErrorSummary> | null>(null);
+search.value?.focus();
+search.value?.input?.select();
+summary.value?.focus({ preventScroll: true });
+const tableQuery = ref<TableQuery>({
+  page: 1,
+  pageSize: 5,
+  search: "직원",
+  sort: { key: "name", direction: "asc" },
+});
+h(SearchInput, {
+  ref: search,
+  label: "직원 검색",
+  modelValue: name.value,
+  name: "employeeSearch",
+  description: "이름 또는 부서를 검색하세요.",
+  "onUpdate:modelValue": (value) => {
+    name.value = value.trim();
+  },
+  onSearch: (value) => value.toUpperCase(),
+});
+h(ErrorSummary, {
+  ref: summary,
+  errors: [
+    {
+      id: "employee-required",
+      message: "이름을 입력해 주세요.",
+      targetId: "employee",
+    },
+  ],
+  onNavigate: (item, event) => {
+    if (!item.targetId) event.preventDefault();
+  },
+});
+h(AttachmentList, {
+  label: "저장된 첨부파일",
+  items: [
+    {
+      id: "guide",
+      name: "입사 안내.pdf",
+      size: 2048,
+      href: "/files/guide.pdf",
+    },
+  ],
+  remove: async (item, { signal }) => {
+    await fetch(`/api/files/${encodeURIComponent(item.id)}`, {
+      method: "DELETE",
+      signal,
+    });
+  },
+});
 h(AsyncCombobox, {
   label: "검색",
   loadOptions: createOptionsLoader("/api/employees"),
@@ -55,7 +111,19 @@ h(DataTable, {
   columns: [{ key: "name", label: "이름" }],
   rows: [{ id: "1", name: "직원" }],
   getRowId: (row) => String(row.id),
+  query: tableQuery.value,
+  "onUpdate:query": (query) => {
+    tableQuery.value = query;
+  },
+  "onQuery-change": (query) => query.sort?.direction.toUpperCase(),
   "onUpdate:selected": (ids) => ids.join(","),
+});
+h(DataTable, {
+  label: "기본 목록",
+  columns: [{ key: "name", label: "이름" }],
+  rows: [{ id: "1", name: "직원" }],
+  getRowId: (row) => String(row.id),
+  defaultQuery: { page: 1, pageSize: 5, search: "", sort: null },
 });
 h(FileUpload, {
   label: "첨부",

@@ -5,6 +5,9 @@ export * from "./business.js";
 export * from "./SearchSelect.js";
 export * from "./DataTable.js";
 export * from "./FileUpload.js";
+export * from "./ErrorSummary.js";
+export * from "./AttachmentList.js";
+export * from "./SearchInput.js";
 export {
   Select,
   Combobox,

@@ -18,6 +18,13 @@ export const groups = [
         "항상 연결된 label을 제공하세요. placeholder는 label을 대신하지 않습니다.",
       ],
       [
+        "search-input",
+        "Search Input",
+        "검색어를 입력하고 지우거나 검색을 실행합니다.",
+        "label · value/defaultValue · onValueChange · onSearch · name/form · description/error · disabled/readOnly",
+        "검색 아이콘과 지우기를 제공합니다. onSearch가 있으면 Enter로 검색하며 한글 조합 중에는 실행하지 않습니다. 추천 목록에서 값을 선택할 때는 Combobox를 사용하세요.",
+      ],
+      [
         "textarea",
         "Textarea",
         "긴 의견과 설명을 자연스럽게 입력합니다.",
@@ -327,6 +334,13 @@ export const groups = [
         "tone · children",
         "긴급 오류는 alert, 일반 안내는 status로 전달합니다.",
       ],
+      [
+        "error-summary",
+        "Error Summary",
+        "폼의 오류를 한곳에 모으고 해당 입력으로 이동합니다.",
+        "errors: id · message · targetId? · title · ref · onNavigate",
+        "실패한 제출 뒤 ref로 요약에 포커스합니다. 오류 링크는 보이는 입력이나 선택 버튼으로 이동하며 일반 오류는 문구로 남깁니다. 입력 도중 오류 갱신은 포커스를 빼앗지 않습니다.",
+      ],
     ],
   ],
   [
@@ -337,8 +351,15 @@ export const groups = [
         "data-table",
         "Data Table",
         "실제 업무 목록을 검색·정렬·선택합니다.",
-        "label · columns · rows / loadRows(query, { signal }) · getRowId · selected · onSelectedChange · defaultPageSize · renderCell",
-        "실제 table 구조, 열 정렬 상태, 현재 페이지 선택, 열 표시와 페이지 이동. 서버 검색·정렬은 loadRows에 전달된 query를 서버에서 실행하세요. 행 ID는 전체 데이터에서 안정적이고 고유해야 합니다. Vue는 cell 슬롯을 사용합니다.",
+        "label · columns · rows / loadRows(query, { signal }) · getRowId · query/defaultQuery · onQueryChange · selected · onSelectedChange · renderCell",
+        "검색·정렬·페이지를 query/onQueryChange로 제어하거나 defaultQuery로 시작합니다. Vue는 v-model:query와 cell 슬롯을 사용합니다. URL 저장·복원은 소비자가 맡고 서버 검색·정렬은 loadRows의 query를 서버에서 실행하세요. 행 ID는 전체 데이터에서 안정적이고 고유해야 합니다.",
+      ],
+      [
+        "attachment-list",
+        "Attachment List",
+        "저장된 첨부파일을 내려받고 삭제 실패를 복구합니다.",
+        "label · items: id/name/size/href? · onRemove(item, { signal })",
+        "실제 href로 내려받으며 삭제 성공 뒤 부모가 items를 갱신합니다. 삭제 중 중복 요청을 막고 실패하면 재시도합니다. Vue는 remove prop을 사용합니다. 확인·권한·서버 삭제 정책은 사용하는 화면에서 정합니다.",
       ],
       [
         "badge",

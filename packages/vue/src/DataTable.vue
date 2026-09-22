@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, shallowRef, computed, watch, useId } from "vue";
+import { ref, shallowRef, computed, watch, useId, nextTick } from "vue";
 import {
   PopoverRoot,
   PopoverTrigger,
@@ -18,6 +18,7 @@ import {
 } from "@lucide/vue";
 import Button from "./Button.vue";
 import Select from "./Select.vue";
+import SearchInput from "./SearchInput.vue";
 import { CheckboxRoot, CheckboxIndicator } from "./styled";
 import {
   queryRows,
@@ -39,6 +40,8 @@ const props = withDefaults(
     selected?: string[];
     defaultSelected?: string[];
     defaultPageSize?: number;
+    query?: TableQuery;
+    defaultQuery?: TableQuery;
     debounceMs?: number;
   }>(),
   { defaultPageSize: 5, debounceMs: 250 },
@@ -46,58 +49,110 @@ const props = withDefaults(
 const emit = defineEmits<{
   "update:selected": [keys: string[]];
   "query-change": [query: TableQuery];
+  "update:query": [query: TableQuery];
 }>();
-const query = ref<TableQuery>({
-    page: 1,
-    pageSize: Math.max(1, props.defaultPageSize),
-    search: "",
-    sort: null,
-  }),
+function copyQuery(query: TableQuery): TableQuery {
+  return {
+    page: Math.max(1, Math.floor(query.page) || 1),
+    pageSize: Math.max(1, Math.floor(query.pageSize) || 1),
+    search: query.search,
+    sort: query.sort ? { ...query.sort } : null,
+  };
+}
+function keyOf(query: TableQuery): string {
+  return JSON.stringify([
+    query.page,
+    query.pageSize,
+    query.search,
+    query.sort?.key,
+    query.sort?.direction,
+  ]);
+}
+const localQuery = ref<TableQuery>(
+    copyQuery(
+      props.defaultQuery ?? {
+        page: 1,
+        pageSize: Math.max(1, props.defaultPageSize),
+        search: "",
+        sort: null,
+      },
+    ),
+  ),
   localSelected = ref(props.defaultSelected ?? []),
   hidden = ref<string[]>([]),
-  loading = ref(false),
-  error = ref(false),
-  retry = ref(0),
-  search = ref(""),
+  retry = ref(0);
+const query = computed(() => copyQuery(props.query ?? localQuery.value));
+const queryKey = computed(() => keyOf(query.value));
+const search = ref(query.value.search),
   composing = ref(false);
-const remote = shallowRef<TableResult>({ rows: [], total: 0 }),
+const remote = shallowRef<{
+    key: string;
+    loader: RowsLoader;
+    retry: number;
+    status: "loading" | "success" | "error";
+    result: TableResult;
+  } | null>(null),
   id = useId();
 let ticket = 0;
+let canceledComposition = false;
+function changeQuery(next: TableQuery) {
+  const value = copyQuery(next);
+  if (keyOf(value) === queryKey.value) return;
+  if (props.query === undefined) localQuery.value = value;
+  emit("update:query", copyQuery(value));
+  emit("query-change", copyQuery(value));
+}
+watch(
+  [() => props.query, queryKey],
+  () => {
+    if (composing.value) canceledComposition = true;
+    search.value = query.value.search;
+  },
+  { flush: "sync" },
+);
+if (props.query === undefined) emit("query-change", copyQuery(query.value));
 const selected = computed(() => props.selected ?? localSelected.value);
 function changeSelection(keys: string[]) {
   if (props.selected === undefined) localSelected.value = keys;
   emit("update:selected", keys);
 }
-watch([search, composing], (_, __, cleanup) => {
-  if (composing.value) return;
-  const timer = setTimeout(
-    () => {
-      query.value = { ...query.value, page: 1, search: search.value };
-    },
-    Math.max(0, props.debounceMs),
-  );
-  cleanup(() => clearTimeout(timer));
-});
-watch(query, (value) => emit("query-change", { ...value }), {
-  immediate: true,
-});
 watch(
-  [() => props.loadRows, query, retry],
+  [search, composing, queryKey, () => props.query, () => props.debounceMs],
+  (_, __, cleanup) => {
+    if (composing.value || search.value === query.value.search) return;
+    const value = { ...query.value, page: 1, search: search.value };
+    const timer = setTimeout(
+      () => {
+        changeQuery(value);
+        if (props.query !== undefined)
+          void nextTick(() => {
+            search.value = query.value.search;
+          });
+      },
+      Math.max(0, props.debounceMs),
+    );
+    cleanup(() => clearTimeout(timer));
+  },
+);
+watch(
+  [() => props.loadRows, queryKey, retry],
   (_, __, cleanup) => {
     const request = ++ticket,
       controller = new AbortController();
     cleanup(() => controller.abort());
     if (!props.loadRows) {
-      loading.value = false;
-      error.value = false;
       return;
     }
-    loading.value = true;
-    error.value = false;
+    const loader = props.loadRows,
+      value = copyQuery(query.value),
+      source = { key: queryKey.value, loader, retry: retry.value };
+    remote.value = {
+      ...source,
+      status: "loading",
+      result: { rows: [], total: 0 },
+    };
     Promise.resolve()
-      .then(() =>
-        props.loadRows!({ ...query.value }, { signal: controller.signal }),
-      )
+      .then(() => loader(value, { signal: controller.signal }))
       .then((result) => {
         if (!controller.signal.aborted && ticket === request) {
           if (
@@ -106,31 +161,61 @@ watch(
             result.total < 0
           )
             throw Error("Invalid table response");
-          remote.value = { ...result, total: Math.floor(result.total) };
-          loading.value = false;
+          remote.value = {
+            ...source,
+            status: "success",
+            result: { ...result, total: Math.floor(result.total) },
+          };
         }
       })
       .catch(() => {
         if (!controller.signal.aborted && ticket === request) {
-          error.value = true;
-          loading.value = false;
+          remote.value = {
+            ...source,
+            status: "error",
+            result: { rows: [], total: 0 },
+          };
         }
       });
   },
   { immediate: true },
 );
+const currentRemote = computed(() =>
+  remote.value?.key === queryKey.value &&
+  remote.value.loader === props.loadRows &&
+  remote.value.retry === retry.value
+    ? remote.value
+    : null,
+);
+const loading = computed(
+  () =>
+    !!props.loadRows &&
+    (!currentRemote.value || currentRemote.value.status === "loading"),
+);
+const error = computed(
+  () => !!props.loadRows && currentRemote.value?.status === "error",
+);
+const ready = computed(
+  () => !props.loadRows || currentRemote.value?.status === "success",
+);
 const result = computed(() =>
   props.loadRows
-    ? remote.value
+    ? (currentRemote.value?.result ?? { rows: [], total: 0 })
     : queryRows(props.rows ?? [], props.columns, query.value),
 );
 const pages = computed(() =>
-  Math.max(1, Math.ceil(result.value.total / query.value.pageSize)),
+  ready.value
+    ? Math.max(1, Math.ceil(result.value.total / query.value.pageSize))
+    : query.value.page,
 );
-watch([pages, loading, error], () => {
-  if (!loading.value && !error.value && query.value.page > pages.value)
-    query.value = { ...query.value, page: pages.value };
-});
+watch(
+  [pages, ready, queryKey],
+  () => {
+    if (ready.value && query.value.page > pages.value)
+      changeQuery({ ...query.value, page: pages.value });
+  },
+  { immediate: true },
+);
 const visible = computed(() =>
   props.columns.filter((column) => !hidden.value.includes(column.key)),
 );
@@ -155,7 +240,7 @@ function toggleAll() {
   );
 }
 function sort(key: string) {
-  query.value = {
+  changeUserQuery({
     ...query.value,
     page: 1,
     sort:
@@ -164,7 +249,34 @@ function sort(key: string) {
           ? { key, direction: "desc" }
           : null
         : { key, direction: "asc" },
-  };
+  });
+}
+function changeUserQuery(next: TableQuery) {
+  const nextSearch = composing.value ? query.value.search : search.value;
+  changeQuery({
+    ...next,
+    search: nextSearch,
+    page: nextSearch === query.value.search ? next.page : 1,
+  });
+  if (props.query !== undefined)
+    void nextTick(() => {
+      search.value = query.value.search;
+    });
+}
+function changeSearch(value: string) {
+  search.value =
+    canceledComposition && value !== "" ? query.value.search : value;
+}
+function compositionEnd(event: CompositionEvent) {
+  if (canceledComposition)
+    (event.target as HTMLInputElement).value = query.value.search;
+  search.value = canceledComposition
+    ? query.value.search
+    : (event.target as HTMLInputElement).value;
+  composing.value = false;
+}
+function resumeInput() {
+  if (!composing.value) canceledComposition = false;
 }
 function toggleRow(row: DataRow) {
   const key = props.getRowId(row);
@@ -178,18 +290,20 @@ function toggleRow(row: DataRow) {
 <template>
   <section class="cheese-data-table" :aria-label="label">
     <div class="cheese-table-toolbar">
-      <div class="cheese-field">
-        <label :for="id + '-search'" class="cheese-label"
-          >{{ label }} 검색</label
-        ><input
-          :id="id + '-search'"
-          class="cheese-input"
-          v-model="search"
-          placeholder="이름, 부서 등으로 검색"
-          @compositionstart="composing = true"
-          @compositionend="composing = false"
-        />
-      </div>
+      <SearchInput
+        :id="id + '-search'"
+        :label="label + ' 검색'"
+        :model-value="search"
+        placeholder="이름, 부서 등으로 검색"
+        @update:model-value="changeSearch"
+        @compositionstart="
+          composing = true;
+          canceledComposition = false;
+        "
+        @compositionend="compositionEnd"
+        @keydown.capture="resumeInput"
+        @pointerdown.capture="resumeInput"
+      />
       <PopoverRoot>
         <PopoverTrigger as-child>
           <Button variant="weak" class="cheese-column-menu">
@@ -359,7 +473,7 @@ function toggleRow(row: DataRow) {
             .map((size) => ({ value: String(size), label: size + '개씩' }))
         "
         @update:model-value="
-          query = { ...query, page: 1, pageSize: Number($event) }
+          changeUserQuery({ ...query, page: 1, pageSize: Number($event) })
         "
       />
       <div class="cheese-inline">
@@ -367,13 +481,13 @@ function toggleRow(row: DataRow) {
           variant="weak"
           aria-label="이전 페이지"
           :disabled="query.page <= 1 || loading"
-          @click="query = { ...query, page: query.page - 1 }"
+          @click="changeUserQuery({ ...query, page: query.page - 1 })"
           ><ChevronLeft :size="17" aria-hidden="true" /></Button
         ><Button
           variant="weak"
           aria-label="다음 페이지"
           :disabled="query.page >= pages || loading"
-          @click="query = { ...query, page: query.page + 1 }"
+          @click="changeUserQuery({ ...query, page: query.page + 1 })"
           ><ChevronRight :size="17" aria-hidden="true"
         /></Button>
       </div>

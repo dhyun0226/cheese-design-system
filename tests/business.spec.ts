@@ -140,7 +140,9 @@ for (const framework of ["react", "vue"]) {
       section.getByRole("columnheader", { name: "점수 정렬" }),
     ).toHaveCount(0);
     await page.keyboard.press("Escape");
-    const input = section.getByRole("textbox", { name: "Contract table 검색" });
+    const input = section.getByRole("searchbox", {
+      name: "Contract table 검색",
+    });
     await input.fill("old");
     await expect
       .poll(() =>
@@ -199,7 +201,7 @@ for (const framework of ["react", "vue"]) {
     await expect(popup).toHaveCount(0);
     await expect(trigger).toBeFocused();
     await trigger.click();
-    const search = section.getByRole("textbox", {
+    const search = section.getByRole("searchbox", {
       name: "Contract table 검색",
     });
     await search.click();
@@ -403,7 +405,7 @@ test("business documentation examples render, retry and fit mobile", async ({
     name: "평가 대상자",
     exact: true,
   });
-  await section.getByRole("textbox").fill("오류");
+  await section.getByRole("searchbox").fill("오류");
   await expect(page.getByRole("alert")).toContainText(
     "데이터를 불러오지 못했습니다",
   );

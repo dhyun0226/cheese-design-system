@@ -4,17 +4,34 @@
 
 ## 먼저 확인할 상태
 
-- 최신 작업은 **대화형 소개와 전체 점검**입니다. 사용자는 이전 삽화를
-  거절했고, 해당 자리를 실제 업무 생성 체험으로 교체했습니다.
-- 전체 범위·수정 결함·추가로 필요한 업무 패턴·검증 결과는
-  [전체 점검 기록](FULL-AUDIT-2026-09-22.md)부터 확인하세요.
+- 최신 작업은 **업무 흐름과 SearchInput·ErrorSummary·AttachmentList 추가**입니다.
+  사용자는 전체 점검의 다음 우선순위를 진행하고 검색 전용 입력도 추가하도록 요청했습니다.
+- 최신 계약·범위·남은 과제·검증 결과는 [업무 흐름 패턴](WORKFLOW-PATTERNS.md),
+  추가 전 점검 근거는 [전체 점검 기록](FULL-AUDIT-2026-09-22.md)을 확인하세요.
 - 로컬 검증과 원격 배포는 별개입니다. `git log -1`의 커밋에 해당하는
   [GitHub Actions 실행](https://github.com/dhyun0226/cheese-design-system/actions/workflows/pages.yml)에서
   `verify`와 `deploy`를 각각 확인하세요. 예전 커밋의 초록 체크는 새 배포의 증거가 아닙니다.
 - 로컬 `artifacts/`, `test-results/`, `node_modules/`는 Git에 포함하지 않습니다.
   집 PC에는 자동으로 옮겨지지 않으며, 검증 자료는 CI artifact로도 확인합니다.
 
-## 최신 요청 — 대화형 소개와 전체 점검
+## 최신 요청 — 업무 흐름과 검색 입력
+
+- 카탈로그는 **72개 React 실행 예제**입니다. 공개 export 수나 React/Vue 완전 동등성을 뜻하지 않습니다.
+- SearchInput: 자유 검색어, 돋보기·지우기, Enter 검색, 한글 조합 처리,
+  설명·오류·form 연결. 선택형 Combobox와 용도를 분리합니다.
+- ErrorSummary: 오류 항목을 모으고 해당 보이는 입력으로 이동합니다.
+  제출 실패 뒤 소비자가 요약에 포커스하며 입력 도중 갱신은 포커스를 빼앗지 않습니다.
+- AttachmentList: 실제 다운로드 링크, 비동기 삭제·중복 방지·실패·재시도·취소.
+  성공 뒤 부모가 items를 갱신합니다. FileUpload 큐 삭제와 서버 첨부 삭제는 구분합니다.
+- DataTable: React query/onQueryChange, Vue v-model:query와 defaultQuery를 제공합니다.
+  부모가 검색·페이지·정렬 상태를 저장하고 복원할 수 있습니다.
+- `#/workflows`와 `workflow-vue.html`: URL 목록 조건 복원 → 수정 → 오류 요약 →
+  필드/전체 저장 실패 → 입력 보존·재시도 → 같은 조건의 목록으로 복귀.
+  데이터는 메모리 예제이며 실제 서버를 제공하지 않습니다.
+- React 18/19·Vue의 독립 소비자 타입·SSR·번들 계약도 신규 API를 포함합니다.
+  최종 통합 결과는 [업무 흐름 검증 기록](WORKFLOW-PATTERNS.md#검증-기록)에 기록합니다.
+
+## 이전 요청 — 대화형 소개와 전체 점검
 
 - `site/HeroTaskDemo.tsx`: 업무 이름 입력 → 담당자 선택 → 생성된 카드 → 다시 체험.
   실제 패키지의 Field·Input·Select·Button·Avatar·Badge를 사용합니다.
@@ -95,17 +112,15 @@ Pretendard, 단순한 업무 UI. 달/C 모양의 새 CHEESE 아이콘 시안은 
 
 ## 다음 작업과 우선순위
 
-자세한 근거와 완료 기준은 [사내 시스템 점검](WORKPLACE-AUDIT-2026-09-22.md)을
-읽으세요. 컴포넌트 수를 늘리는 것 자체가 목적은 아닙니다.
+오류 요약·목록 조건 복원·저장 실패 복구·기존 첨부 관리는 이번에 구현했습니다.
+다음 과제는 [업무 흐름 패턴](WORKFLOW-PATTERNS.md#더-필요한-구성요소를-고르는-기준)을
+기준으로 고르세요. 기존 [사내 시스템 점검](WORKPLACE-AUDIT-2026-09-22.md)은 구현 전 근거입니다.
 
-1. 사용할 프레임워크부터 확정. Vue라면 Stepper·Alert 등 실제 필요한 공개 API의
-   지원 격차부터 메웁니다. React 예제가 있다는 사실은 Vue 지원 증거가 아닙니다.
-2. 긴 평가 폼의 오류 요약과 해당 입력으로 이동하는 계약.
-3. 필터 조건·페이지·정렬 복원과 DataTable 외부 상태 제어.
-4. 저장 중·실패·재시도·이탈 확인을 연결한 실제 평가 폼 예제.
-5. 기존 첨부파일 관리, 필요 시 조직 하위 선택을 지원하는 TreeSelect.
-
-새 기능은 요구사항 확인 후 한 과제씩 구현합니다. 현재 작업 범위에 전부 추가하지 않습니다.
+1. 사용할 프레임워크와 실제 첫 업무 화면을 정하고 필요한 공개 API 격차부터 보완합니다.
+2. 실제 API의 권한·필드 오류·전체 오류·버전 충돌·중복 요청 계약을 연결합니다.
+3. 계층 선택 규칙이 필요한 경우 TreeSelect, 금액 계산이 있으면 통화·정밀도 입력을 검토합니다.
+4. 주소 제공자와 결재 규칙을 확인한 뒤 기존 입력·Timeline·Stepper를 조합합니다.
+5. 영속 임시저장·라우터 이탈 확인, 대용량 가상화는 실제 작성 시간과 데이터 규모로 우선순위를 정합니다.
 
 ## 이전 Toast·OTP 작업의 검증 기록
 
@@ -148,7 +163,7 @@ npm run check
 
 새 Codex에 전달할 문구:
 
-> docs/HANDOFF.md와 docs/WORKPLACE-AUDIT-2026-09-22.md부터 읽어줘.
+> docs/HANDOFF.md와 docs/WORKFLOW-PATTERNS.md부터 읽어줘.
 > 현재 git 상태와 최신 GitHub Actions 결과를 확인하고, 완료한 작업은 반복하지 마.
 > 검증되지 않은 부분을 먼저 확인한 뒤 다음 우선순위 과제부터 이어가자.
 > 기존 CHEESE 아이콘·파비콘과 Pretendard·Cheese Gold는 유지해줘.

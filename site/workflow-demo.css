@@ -1,0 +1,117 @@
+.workflow-demo {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.workflow-guide {
+  display: grid;
+  gap: var(--cheese-space-3);
+  padding: var(--cheese-space-6);
+  border-radius: var(--cheese-radius-card);
+  background: var(--cheese-bg);
+}
+.workflow-guide p {
+  margin: 0;
+}
+.workflow-guide a {
+  width: fit-content;
+  color: var(--cheese-text);
+  text-underline-offset: 4px;
+}
+.workflow-panel {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--cheese-border);
+  border-radius: 20px;
+  background: var(--cheese-surface);
+}
+.workflow-panel > h2,
+.workflow-success > h2 {
+  margin: 0;
+  font-size: 22px;
+}
+.workflow-toolbar {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.workflow-toolbar > .cheese-field {
+  flex: 1 1 180px;
+  max-width: 260px;
+}
+.workflow-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.workflow-form-grid > :first-child {
+  grid-column: 1 / -1;
+}
+.workflow-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+.workflow-note {
+  font-size: var(--cheese-font-size-caption);
+  color: var(--cheese-text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+details.workflow-note > summary {
+  cursor: pointer;
+  width: fit-content;
+}
+details.workflow-note[open] > .cheese-field {
+  max-width: 300px;
+  margin-top: 16px;
+}
+.workflow-success {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+}
+.workflow-success p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.workflow-cell-link {
+  appearance: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--cheese-text);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.workflow-cell-link:focus-visible,
+.workflow-panel h2:focus-visible,
+details.workflow-note > summary:focus-visible {
+  outline: 2px solid var(--cheese-focus);
+  outline-offset: 4px;
+}
+@media (max-width: 600px) {
+  .workflow-panel,
+  .workflow-guide {
+    padding: 20px 16px;
+  }
+  .workflow-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .workflow-actions > .cheese-button {
+    flex: 1 1 auto;
+  }
+}

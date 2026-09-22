@@ -1,0 +1,37 @@
+/* The native input supplies the single boundary and focus edge. */
+.cheese-search-input-control {
+  position: relative;
+  min-width: 0;
+}
+.cheese-search-input {
+  padding-inline-start: 40px;
+  padding-inline-end: 44px;
+  appearance: none;
+}
+.cheese-search-input-icon {
+  position: absolute;
+  inset-inline-start: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--cheese-text-secondary);
+  stroke-width: 1.8;
+}
+.cheese-search-input-clear {
+  position: absolute;
+  inset-inline-end: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.cheese-search-input-control .cheese-search-input-clear:focus-visible {
+  outline-offset: -2px;
+  box-shadow: none;
+}
+.cheese-search-input::-webkit-search-cancel-button,
+.cheese-search-input::-webkit-search-decoration,
+.cheese-search-input::-webkit-search-results-button,
+.cheese-search-input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}

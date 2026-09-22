@@ -35,6 +35,7 @@ import { entries, groups, type Entry } from "./catalog";
 import VueDemoSource from "./VueDemo.vue?raw";
 import Home, { EvaluationPreview } from "./Home";
 import Logo from "./Logo";
+import WorkflowDemo from "./WorkflowDemo";
 import { DateField } from "@cheese/react";
 const modules = import.meta.glob<{ default: React.ComponentType }>(
   "./examples/*.tsx",
@@ -153,6 +154,7 @@ function Sidebar({
           ["getting-started", "시작하기"],
           ["foundations", "디자인 원칙"],
           ["patterns", "업무 화면 예제"],
+          ["workflows", "저장과 복구"],
           ["components", "전체 컴포넌트"],
           ["readiness", "도입 체크리스트"],
         ].map(([id, label]) => (
@@ -748,6 +750,16 @@ function Patterns() {
         title="작은 부품에서, 하나의 업무로."
         description="실제 컴포넌트를 조합한 인사평가 설정 예제입니다. 모든 데이터는 가상입니다."
       />
+      <section className="doc-section">
+        <h2>목록에서 저장까지 연결하기</h2>
+        <p>
+          필터 조건을 유지하면서 업무를 수정하고, 오류 요약·저장 실패 복구·첨부
+          관리를 체험하세요.
+        </p>
+        <a className="cheese-button" href="#/workflows">
+          저장과 복구 예제 열기
+        </a>
+      </section>
       <div className="pattern-layout">
         <Card>
           <h2>평가 기본 설정</h2>
@@ -1012,6 +1024,7 @@ function App() {
             components: "컴포넌트",
             foundations: "디자인 원칙",
             patterns: "업무 화면 예제",
+            workflows: "저장과 복구",
             readiness: "도입 체크리스트",
           } as Record<string, string>
         )[route] ||
@@ -1118,6 +1131,15 @@ function App() {
             <Foundations />
           ) : route === "patterns" ? (
             <Patterns />
+          ) : route === "workflows" ? (
+            <>
+              <PageHeading
+                eyebrow="WORKFLOW PATTERN"
+                title="목록에서 저장까지."
+                description="검색 조건과 작성한 내용을 지키는 업무 화면. 오류를 확인하고, 복구한 뒤, 하던 일로 돌아옵니다."
+              />
+              <WorkflowDemo />
+            </>
           ) : route === "readiness" ? (
             <Readiness />
           ) : (

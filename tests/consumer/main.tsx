@@ -5,6 +5,9 @@ import {
   Button,
   Field,
   Input,
+  SearchInput,
+  ErrorSummary,
+  AttachmentList,
   DatePicker,
   DateField,
   TimeField,
@@ -33,6 +36,7 @@ import {
   FileUpload,
   createXHRUpload,
   createOptionsLoader,
+  type TableQuery,
 } from "@cheese/react";
 import { tokens } from "@cheese/tokens";
 
@@ -43,11 +47,32 @@ const time = createRef<HTMLInputElement>();
 const number = createRef<HTMLInputElement>();
 const scroll = createRef<HTMLDivElement>();
 const viewport = createRef<HTMLDivElement>();
+const search = createRef<HTMLInputElement>();
+const summary = createRef<HTMLDivElement>();
+const tableQuery: TableQuery = {
+  page: 1,
+  pageSize: 5,
+  search: "직원",
+  sort: { key: "name", direction: "asc" },
+};
 createRoot(document.getElementById("root")!).render(
   <main className="cheese-root" style={{ color: tokens.color.spaceBlack }}>
     <form>
+      <ErrorSummary
+        ref={summary}
+        errors={[
+          {
+            id: "employee-required",
+            message: "이름을 입력해 주세요.",
+            targetId: "employee",
+          },
+        ]}
+        onNavigate={(item, event) => {
+          if (!item.targetId) event.preventDefault();
+        }}
+      />
       <Field label="이름" required>
-        <Input ref={input} name="employee" />
+        <Input ref={input} id="employee" name="employee" />
       </Field>
       <DatePicker ref={picker} label="마감일" name="deadline" required />
       <DateField
@@ -82,6 +107,15 @@ createRoot(document.getElementById("root")!).render(
       />
       <Button type="submit">저장</Button>
     </form>
+    <SearchInput
+      ref={search}
+      label="직원 검색"
+      name="employeeSearch"
+      defaultValue="김치즈"
+      description="이름 또는 부서를 검색하세요."
+      onValueChange={(value) => value.trim()}
+      onSearch={(value) => value.toUpperCase()}
+    />
     <ScrollArea
       ref={scroll}
       viewportRef={viewport}
@@ -139,7 +173,34 @@ createRoot(document.getElementById("root")!).render(
       columns={[{ key: "name", label: "이름" }]}
       rows={[{ id: "1", name: "가상 직원" }]}
       getRowId={(row) => row.id}
+      defaultQuery={{ page: 1, pageSize: 5, search: "", sort: null }}
+      onQueryChange={(query) => query.sort?.key.trim()}
       renderCell={(row, column) => String(row[column.key as keyof typeof row])}
+    />
+    <DataTable
+      label="복원한 목록"
+      columns={[{ key: "name", label: "이름" }]}
+      rows={[{ id: "1", name: "가상 직원" }]}
+      getRowId={(row) => row.id}
+      query={tableQuery}
+      onQueryChange={(query) => query.page.toFixed(0)}
+    />
+    <AttachmentList
+      label="저장된 첨부파일"
+      items={[
+        {
+          id: "guide",
+          name: "입사 안내.pdf",
+          size: 2048,
+          href: "/files/guide.pdf",
+        },
+      ]}
+      onRemove={async (item, { signal }) => {
+        await fetch(`/api/files/${encodeURIComponent(item.id)}`, {
+          method: "DELETE",
+          signal,
+        });
+      }}
     />
     <FileUpload
       label="자료"

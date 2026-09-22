@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button, CheckboxRoot } from "./index.js";
 import { Select } from "./Collections.js";
+import { SearchInput } from "./SearchInput.js";
 import {
   queryRows,
   type DataRow,
@@ -32,9 +33,28 @@ export interface DataTableProps<T extends DataRow = DataRow> {
   defaultSelected?: string[];
   onSelectedChange?: (keys: string[]) => void;
   defaultPageSize?: number;
+  query?: TableQuery;
+  defaultQuery?: TableQuery;
   onQueryChange?: (query: TableQuery) => void;
   debounceMs?: number;
   renderCell?: (row: T, column: TableColumn) => React.ReactNode;
+}
+function copyQuery(query: TableQuery): TableQuery {
+  return {
+    page: Math.max(1, Math.floor(query.page) || 1),
+    pageSize: Math.max(1, Math.floor(query.pageSize) || 1),
+    search: query.search,
+    sort: query.sort ? { ...query.sort } : null,
+  };
+}
+function queryKey(query: TableQuery): string {
+  return JSON.stringify([
+    query.page,
+    query.pageSize,
+    query.search,
+    query.sort?.key,
+    query.sort?.direction,
+  ]);
 }
 export function DataTable<T extends DataRow>({
   label,
@@ -48,64 +68,95 @@ export function DataTable<T extends DataRow>({
   defaultSelected = [],
   onSelectedChange,
   defaultPageSize = 5,
+  query: controlledQuery,
+  defaultQuery,
   onQueryChange,
   debounceMs = 250,
   renderCell,
 }: DataTableProps<T>) {
-  const [query, setQuery] = React.useState<TableQuery>({
-    page: 1,
-    pageSize: Math.max(1, defaultPageSize),
-    search: "",
-    sort: null,
-  });
+  const [localQuery, setLocalQuery] = React.useState<TableQuery>(() =>
+    copyQuery(
+      defaultQuery ?? {
+        page: 1,
+        pageSize: Math.max(1, defaultPageSize),
+        search: "",
+        sort: null,
+      },
+    ),
+  );
+  const value = controlledQuery ?? localQuery;
+  const query = React.useMemo(
+    () => copyQuery(value),
+    [
+      value.page,
+      value.pageSize,
+      value.search,
+      value.sort?.key,
+      value.sort?.direction,
+    ],
+  );
+  const key = queryKey(query);
   const [localSelected, setLocalSelected] = React.useState(defaultSelected),
     [hidden, setHidden] = React.useState<string[]>([]),
-    [loading, setLoading] = React.useState(false),
-    [error, setError] = React.useState(false),
     [retry, setRetry] = React.useState(0);
-  const [remote, setRemote] = React.useState<TableResult<T>>({
-      rows: [],
-      total: 0,
-    }),
-    [search, setSearch] = React.useState(""),
+  const [remote, setRemote] = React.useState<{
+      key: string;
+      loader: RowsLoader<T>;
+      retry: number;
+      status: "loading" | "success" | "error";
+      result: TableResult<T>;
+    } | null>(null),
+    [search, setSearch] = React.useState(query.search),
     [composing, setComposing] = React.useState(false);
   const selected = controlled ?? localSelected,
     latest = React.useRef(onQueryChange),
     ticket = React.useRef(0),
     id = React.useId();
   latest.current = onQueryChange;
+  const changeQuery = React.useCallback(
+    (next: TableQuery) => {
+      const value = copyQuery(next);
+      if (queryKey(value) === queryKey(query)) return;
+      if (controlledQuery === undefined) setLocalQuery(value);
+      latest.current?.(copyQuery(value));
+    },
+    [query, controlledQuery === undefined],
+  );
+  const composingRef = React.useRef(false);
+  const canceledComposition = React.useRef(false);
+  React.useLayoutEffect(() => {
+    if (composingRef.current) canceledComposition.current = true;
+    setSearch(query.search);
+  }, [query, controlledQuery]);
+  React.useEffect(() => {
+    // Keep the original initial notification for uncontrolled consumers.
+    if (controlledQuery === undefined) latest.current?.(copyQuery(query));
+  }, []);
   const changeSelection = (keys: string[]) => {
     if (controlled === undefined) setLocalSelected(keys);
     onSelectedChange?.(keys);
   };
   React.useEffect(() => {
-    if (composing) return;
+    if (composing || search === query.search) return;
     const timer = setTimeout(
-      () =>
-        setQuery((previous) =>
-          previous.search === search
-            ? previous
-            : { ...previous, page: 1, search },
-        ),
+      () => {
+        changeQuery({ ...query, page: 1, search });
+        if (controlledQuery !== undefined) setSearch(query.search);
+      },
       Math.max(0, debounceMs),
     );
     return () => clearTimeout(timer);
-  }, [search, composing, debounceMs]);
-  React.useEffect(() => {
-    latest.current?.(query);
-  }, [query]);
+  }, [search, composing, debounceMs, query, controlledQuery, changeQuery]);
   React.useEffect(() => {
     const request = ++ticket.current,
       controller = new AbortController();
     if (!loadRows) {
-      setLoading(false);
-      setError(false);
       return;
     }
-    setLoading(true);
-    setError(false);
+    const source = { key, loader: loadRows, retry };
+    setRemote({ ...source, status: "loading", result: { rows: [], total: 0 } });
     Promise.resolve()
-      .then(() => loadRows(query, { signal: controller.signal }))
+      .then(() => loadRows(copyQuery(query), { signal: controller.signal }))
       .then((result) => {
         if (!controller.signal.aborted && ticket.current === request) {
           if (
@@ -114,24 +165,50 @@ export function DataTable<T extends DataRow>({
             result.total < 0
           )
             throw Error("Invalid table response");
-          setRemote({ ...result, total: Math.floor(result.total) });
-          setLoading(false);
+          setRemote({
+            ...source,
+            status: "success",
+            result: { ...result, total: Math.floor(result.total) },
+          });
         }
       })
       .catch(() => {
         if (!controller.signal.aborted && ticket.current === request) {
-          setError(true);
-          setLoading(false);
+          setRemote({
+            ...source,
+            status: "error",
+            result: { rows: [], total: 0 },
+          });
         }
       });
     return () => controller.abort();
-  }, [loadRows, query, retry]);
-  const result = loadRows ? remote : queryRows(rows, columns, query),
-    pages = Math.max(1, Math.ceil(result.total / query.pageSize));
+  }, [loadRows, query, key, retry]);
+  const currentRemote =
+    remote?.key === key && remote.loader === loadRows && remote.retry === retry
+      ? remote
+      : null;
+  const loading =
+    !!loadRows && (!currentRemote || currentRemote.status === "loading");
+  const error = !!loadRows && currentRemote?.status === "error";
+  const ready = !loadRows || currentRemote?.status === "success";
+  const result = loadRows
+      ? (currentRemote?.result ?? { rows: [], total: 0 })
+      : queryRows(rows, columns, query),
+    pages = ready
+      ? Math.max(1, Math.ceil(result.total / query.pageSize))
+      : query.page;
   React.useEffect(() => {
-    if (!loading && !error && query.page > pages)
-      setQuery((previous) => ({ ...previous, page: pages }));
-  }, [pages, loading, error, query.page]);
+    if (ready && query.page > pages) changeQuery({ ...query, page: pages });
+  }, [pages, ready, query, changeQuery]);
+  const changeUserQuery = (next: TableQuery) => {
+    const nextSearch = composing ? query.search : search;
+    changeQuery({
+      ...next,
+      search: nextSearch,
+      page: nextSearch === query.search ? next.page : 1,
+    });
+    if (controlledQuery !== undefined) setSearch(query.search);
+  };
   const visible = columns.filter((column) => !hidden.includes(column.key));
   const selectable = result.rows
       .filter((row) => isRowSelectable?.(row) !== false)
@@ -145,33 +222,52 @@ export function DataTable<T extends DataRow>({
         : [...new Set([...selected, ...selectable])],
     );
   const sort = (key: string) =>
-    setQuery((previous) => ({
-      ...previous,
+    changeUserQuery({
+      ...query,
       page: 1,
       sort:
-        previous.sort?.key === key
-          ? previous.sort.direction === "asc"
+        query.sort?.key === key
+          ? query.sort.direction === "asc"
             ? { key, direction: "desc" }
             : null
           : { key, direction: "asc" },
-    }));
+    });
   return (
     <section className="cheese-data-table" aria-label={label}>
       <div className="cheese-table-toolbar">
-        <div className="cheese-field">
-          <label htmlFor={id + "-search"} className="cheese-label">
-            {label} 검색
-          </label>
-          <input
-            id={id + "-search"}
-            className="cheese-input"
-            value={search}
-            placeholder="이름, 부서 등으로 검색"
-            onChange={(event) => setSearch(event.target.value)}
-            onCompositionStart={() => setComposing(true)}
-            onCompositionEnd={() => setComposing(false)}
-          />
-        </div>
+        <SearchInput
+          id={id + "-search"}
+          label={label + " 검색"}
+          value={search}
+          placeholder="이름, 부서 등으로 검색"
+          onValueChange={(value) =>
+            setSearch(
+              canceledComposition.current && value !== ""
+                ? query.search
+                : value,
+            )
+          }
+          onCompositionStart={() => {
+            composingRef.current = true;
+            canceledComposition.current = false;
+            setComposing(true);
+          }}
+          onCompositionEnd={(event) => {
+            setSearch(
+              canceledComposition.current
+                ? query.search
+                : event.currentTarget.value,
+            );
+            composingRef.current = false;
+            setComposing(false);
+          }}
+          onKeyDownCapture={() => {
+            if (!composingRef.current) canceledComposition.current = false;
+          }}
+          onPointerDownCapture={() => {
+            if (!composingRef.current) canceledComposition.current = false;
+          }}
+        />
         <Popover.Root>
           <Popover.Trigger asChild>
             <Button variant="weak" className="cheese-column-menu">
@@ -338,11 +434,11 @@ export function DataTable<T extends DataRow>({
             .sort((a, b) => a - b)
             .map((size) => ({ value: String(size), label: size + "개씩" }))}
           onValueChange={(value) =>
-            setQuery((previous) => ({
-              ...previous,
+            changeUserQuery({
+              ...query,
               page: 1,
               pageSize: Number(value),
-            }))
+            })
           }
         />
         <div className="cheese-inline">
@@ -350,9 +446,7 @@ export function DataTable<T extends DataRow>({
             variant="weak"
             aria-label="이전 페이지"
             disabled={query.page <= 1 || loading}
-            onClick={() =>
-              setQuery((previous) => ({ ...previous, page: previous.page - 1 }))
-            }
+            onClick={() => changeUserQuery({ ...query, page: query.page - 1 })}
           >
             <ChevronLeft size={17} aria-hidden="true" />
           </Button>
@@ -360,9 +454,7 @@ export function DataTable<T extends DataRow>({
             variant="weak"
             aria-label="다음 페이지"
             disabled={query.page >= pages || loading}
-            onClick={() =>
-              setQuery((previous) => ({ ...previous, page: previous.page + 1 }))
-            }
+            onClick={() => changeUserQuery({ ...query, page: query.page + 1 })}
           >
             <ChevronRight size={17} aria-hidden="true" />
           </Button>

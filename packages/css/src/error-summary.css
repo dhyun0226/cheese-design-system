@@ -1,0 +1,40 @@
+.cheese-error-summary {
+  min-width: 0;
+  padding: var(--cheese-space-4);
+  border: 1px solid var(--cheese-border);
+  border-inline-start: 4px solid var(--cheese-brand);
+  border-radius: var(--cheese-radius-control);
+  color: var(--cheese-text);
+  background: var(--cheese-bg);
+  font-size: var(--cheese-font-size-body);
+  line-height: var(--cheese-line-height-body);
+  overflow-wrap: anywhere;
+  scroll-margin-block: var(--cheese-space-4);
+}
+.cheese-error-summary-title {
+  margin: 0;
+  font-size: var(--cheese-font-size-body);
+  font-weight: var(--cheese-font-weight-semibold);
+  line-height: var(--cheese-line-height-body);
+}
+.cheese-error-summary-list {
+  display: grid;
+  gap: var(--cheese-space-2);
+  margin: var(--cheese-space-3) 0 0;
+  padding-inline-start: 20px;
+}
+.cheese-error-summary-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  border-radius: 2px;
+}
+.cheese-error-summary-link:hover {
+  text-decoration-thickness: 2px;
+}
+@media (forced-colors: active) {
+  .cheese-error-summary {
+    border-color: CanvasText;
+  }
+}

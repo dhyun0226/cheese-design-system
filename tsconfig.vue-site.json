@@ -9,5 +9,10 @@
     "jsx": "preserve",
     "types": ["vite/client", "vue"]
   },
-  "include": ["site/VueDemo.vue", "site/vue-main.ts", "site/env.d.ts"]
+  "include": [
+    "site/**/*.vue",
+    "site/vue-main.ts",
+    "site/workflow-vue-main.ts",
+    "site/env.d.ts"
+  ]
 }

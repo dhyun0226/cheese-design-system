@@ -1,0 +1,87 @@
+.cheese-attachment-list {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+.cheese-attachment-label {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cheese-attachment-count {
+  color: var(--cheese-text-secondary);
+  font-size: 12px;
+  font-weight: var(--cheese-font-weight-regular);
+}
+.cheese-attachment-items {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cheese-attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border-radius: var(--cheese-radius-card);
+  background: var(--cheese-surface);
+}
+.cheese-attachment-item > svg {
+  flex: none;
+  color: var(--cheese-text-secondary);
+}
+.cheese-attachment-copy {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
+  overflow-wrap: anywhere;
+}
+.cheese-attachment-copy > strong {
+  font-size: 14px;
+  font-weight: var(--cheese-font-weight-semibold);
+}
+.cheese-attachment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: none;
+  gap: 4px;
+}
+.cheese-attachment-actions [aria-disabled="true"] {
+  color: var(--cheese-text-secondary);
+  cursor: progress;
+}
+.cheese-attachment-actions [aria-disabled="true"]:hover {
+  filter: none;
+}
+.cheese-attachment-error {
+  font-size: 13px;
+  color: var(--cheese-danger);
+}
+.cheese-attachment-empty {
+  margin: 0;
+  padding: 24px 16px;
+  border-radius: var(--cheese-radius-card);
+  background: var(--cheese-surface);
+  color: var(--cheese-text-secondary);
+  font-size: 14px;
+  text-align: center;
+}
+@media (max-width: 480px) {
+  .cheese-attachment-item {
+    flex-wrap: wrap;
+    padding: 12px;
+  }
+  .cheese-attachment-copy {
+    flex-basis: calc(100% - 32px);
+  }
+  .cheese-attachment-actions {
+    width: 100%;
+  }
+}

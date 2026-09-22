@@ -68,6 +68,118 @@ for (const [framework, ui, render] of [
     assert.match(field, new RegExp(`value="${value}"`));
     assert.match(field, /\brequired(?:="")?(?:\s|>)/);
   }
+
+  for (const controlled of [false, true]) {
+    const search = await render(ui.SearchInput, {
+      id: "employee-search",
+      label: "Employee search",
+      name: "employeeSearch",
+      defaultValue: controlled ? "ignored default" : "onboarding",
+      ...(controlled
+        ? { [framework === "React" ? "value" : "modelValue"]: "onboarding" }
+        : {}),
+      description: "Search by name or department.",
+      clearLabel: "Clear employee search",
+      required: true,
+      onSearch: () => {},
+    });
+    const field = search.match(/<input\b[^>]*>/)?.[0];
+    assert.ok(
+      field,
+      `${framework} SearchInput renders its native search control`,
+    );
+    assert.match(field, /type="search"/);
+    assert.match(field, /name="employeeSearch"/);
+    assert.match(field, /value="onboarding"/);
+    assert.match(field, /\brequired(?:="")?(?:\s|>)/);
+    assert.match(field, /aria-describedby="employee-search-hint"/);
+    assert.match(search, /<label\b[^>]*for="employee-search"/);
+    assert.match(search, /id="employee-search-hint"/);
+    assert.match(search, /aria-label="Clear employee search"/);
+    assert.match(search, /Search by name or department\./);
+    assert.doesNotMatch(search, /ignored default/);
+  }
+
+  const summary = await render(ui.ErrorSummary, {
+    title: "Check the form",
+    errors: [
+      {
+        id: "name-required",
+        message: "Enter a name.",
+        targetId: "employee name",
+      },
+      { id: "save-failed", message: "Saving failed. Your draft is preserved." },
+    ],
+  });
+  assert.match(summary, /role="region"/);
+  assert.match(summary, /tabindex="-1"/i);
+  assert.match(summary, /aria-labelledby="[^"]+"/);
+  assert.match(summary, /Check the form/);
+  assert.match(summary, /href="#employee%20name"/);
+  assert.match(summary, /Enter a name\./);
+  assert.match(summary, /Saving failed\. Your draft is preserved\./);
+  const emptySummary = await render(ui.ErrorSummary, { errors: [] });
+  assert.doesNotMatch(emptySummary, /role="region"|<h2\b|<ul\b/);
+
+  const attachments = await render(ui.AttachmentList, {
+    label: "Saved attachments",
+    items: [
+      { id: "guide", name: "Guide.pdf", size: 2048, href: "/files/guide.pdf" },
+      { id: "internal", name: "Internal.txt", size: 32 },
+    ],
+    [framework === "React" ? "onRemove" : "remove"]: async () => {},
+  });
+  assert.match(attachments, /role="group"/);
+  assert.match(attachments, /aria-label="Saved attachments 파일 목록"/);
+  assert.match(attachments, /data-attachment-id="guide"/);
+  assert.match(attachments, /data-attachment-id="internal"/);
+  assert.match(attachments, /href="\/files\/guide\.pdf"/);
+  assert.match(attachments, /download="Guide\.pdf"/);
+  assert.match(attachments, /aria-label="Guide\.pdf 삭제"/);
+  assert.match(attachments, /aria-label="Internal\.txt 삭제"/);
+  assert.doesNotMatch(attachments, /aria-label="Internal\.txt 다운로드"/);
+  assert.doesNotMatch(attachments, /삭제 중|삭제 재시도/);
+  const emptyAttachments = await render(ui.AttachmentList, {
+    label: "Saved attachments",
+    items: [],
+  });
+  assert.match(emptyAttachments, /첨부파일이 없습니다\./);
+  assert.doesNotMatch(emptyAttachments, /<ul\b|<button\b/);
+
+  const initialQuery = {
+    page: 2,
+    pageSize: 1,
+    search: "Staff",
+    sort: { key: "name", direction: "desc" },
+  };
+  for (const controlled of [false, true]) {
+    const table = await render(ui.DataTable, {
+      label: "Restored employees",
+      columns: [{ key: "name", label: "Employee" }],
+      rows: [
+        { id: "a", name: "Staff Alpha" },
+        { id: "b", name: "Staff Bravo" },
+        { id: "c", name: "Staff Charlie" },
+        { id: "other", name: "Unrelated" },
+      ],
+      getRowId: (row) => row.id,
+      defaultQuery: controlled
+        ? { page: 1, pageSize: 5, search: "Missing", sort: null }
+        : initialQuery,
+      ...(controlled ? { query: initialQuery } : {}),
+    });
+    const body = table.match(/<tbody\b[^>]*>([\s\S]*?)<\/tbody>/)?.[1];
+    assert.ok(
+      body,
+      `${framework} DataTable renders the restored page on the server`,
+    );
+    assert.match(body, /Staff Bravo/);
+    assert.doesNotMatch(body, /Staff Alpha|Staff Charlie|Unrelated/);
+    assert.match(table, /aria-sort="descending"/);
+    assert.match(table, /<input\b[^>]*value="Staff"/);
+    assert.doesNotMatch(table, /value="Missing"/);
+  }
+
   const scroll = await render(
     ui.ScrollArea,
     { label: "Activity history", orientation: "both", height: "12rem" },

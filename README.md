@@ -10,9 +10,10 @@ STARSHIP Entertainment 공식 제품이 아니며, 실제 직원·평가 데이�
 
 ## 현재 범위
 
-- React 실행 예제 **69개 / 카탈로그 69개**. 모든 예제는 빌드된 `@cheese/react`를 직접 import합니다.
+- React 실행 예제 **72개 / 카탈로그 72개**. 공개 export 개수가 아니라 실행 가능한 컴포넌트·조합 패턴의 수입니다. 모든 예제는 빌드된 `@cheese/react`를 직접 import합니다.
 - 미구현 17개와 커스텀 Select를 추가했습니다. 검색·태그·인증코드·평점·기간·메뉴·패널·캐러셀을 각 상세 페이지에서 실행할 수 있습니다.
 - 서버 검색, 다중 선택, 서버/로컬 Data Table, 업로드 큐와 HTTP 어댑터를 React/Vue 양쪽에 제공합니다. [업무 컴포넌트 연동](docs/BUSINESS-COMPONENTS.md)을 먼저 읽으세요. 공개 예제는 가상 데이터와 전송 시뮬레이션입니다.
+- SearchInput, ErrorSummary, AttachmentList와 DataTable의 외부 query 제어를 추가했습니다. 검색 조건 복원 → 수정 → 오류 이동 → 저장 실패·재시도 → 목록 복귀를 [React 업무 흐름](https://dhyun0226.github.io/cheese-design-system/#/workflows)과 [Vue 업무 흐름](https://dhyun0226.github.io/cheese-design-system/workflow-vue.html)에서 체험합니다. 계약과 남은 과제는 [업무 흐름 패턴](docs/WORKFLOW-PATTERNS.md)에 정리했습니다.
 - Vue도 신규 컴포넌트를 공유 CSS + Reka/v-model 기반으로 제공하며 별도 Vue 통합 페이지에서 직접 실행합니다. 기존 전체 카탈로그의 React/Vue 고수준 API가 완전히 동일하다는 의미는 아닙니다.
 - 강조색은 Cheese Gold 한 가지이며 나머지는 중립색입니다. 트리·달력·체크·메뉴 아이콘은 Lucide SVG로 통일하고 Pretendard를 적용합니다.
 - Calendar/DatePicker는 React DayPicker 9, Vue Calendar는 Reka + internationalized/date 기반입니다. 한국어·날짜 제한·키보드·기간 선택을 실제 예제로 확인합니다.
@@ -84,7 +85,8 @@ npm pack --workspace @cheese/tokens --pack-destination artifacts
 
 ## 검증 및 배포
 
-작업 재개는 [인수인계](docs/HANDOFF.md), 최신 수정·검증과 업무 화면의 다음 과제는
+작업 재개는 [인수인계](docs/HANDOFF.md), 최신 구현과 검증은
+[업무 흐름 패턴](docs/WORKFLOW-PATTERNS.md), 구현 전 근거는
 [전체 점검](docs/FULL-AUDIT-2026-09-22.md)을 확인하세요. React/Vue 지원 차이의
 상세 근거는 [업무 화면 도입 점검](docs/WORKPLACE-AUDIT-2026-09-22.md)에 있습니다.
 
@@ -94,6 +96,7 @@ npm pack --workspace @cheese/tokens --pack-destination artifacts
 - `tests/contracts.test.mjs`: SSR, 폼 연결, 공개 export, 토큰·폰트·타입 계약
 - `tests/browser.spec.ts`: 각 실행 예제의 접근성 자동검사 + 중요한 사용자 흐름
 - `tests/forms.spec.ts`: 날짜 필수값·초기화·취소된 reset·disabled/readOnly·FormData·ref
+- `tests/search-input.spec.ts`, `tests/error-summary.spec.ts`, `tests/attachment-list.spec.ts`, `tests/table-query.spec.ts`: 검색 입력·오류 이동·저장된 첨부·외부 목록 상태 계약
 - `tests/consumer/`: workspace 밖에서 React 18/19 + Vue 소비자의 타입·SSR·제품 번들 검증 (`npm run test:consumer`)
 - `npx playwright test --project=chromium`: 빠른 단일 브라우저 확인. CI는 Chromium/Firefox/WebKit 전체 실행
 - `artifacts/`: 데스크톱·모바일 스크린샷

@@ -3,6 +3,14 @@ export { default as AsyncCombobox } from "./AsyncCombobox.vue";
 export { default as MultiSelect } from "./MultiSelect.vue";
 export { default as DataTable } from "./DataTable.vue";
 export { default as FileUpload } from "./FileUpload.vue";
+export { default as ErrorSummary } from "./ErrorSummary.vue";
+export type { ErrorSummaryItem } from "./ErrorSummary.vue";
+export { default as AttachmentList } from "./AttachmentList.vue";
+export type {
+  AttachmentItem,
+  AttachmentRemoveHandler,
+} from "./AttachmentList.vue";
+export { default as SearchInput } from "./SearchInput.vue";
 export * from "./business";
 export { default as Select } from "./Select.vue";
 export { default as Combobox } from "./Combobox.vue";

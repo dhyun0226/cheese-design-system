@@ -7,7 +7,13 @@ export default defineConfig({
   build: {
     outDir: "dist",
     sourcemap: false,
-    rollupOptions: { input: { main: "index.html", vue: "vue.html" } },
+    rollupOptions: {
+      input: {
+        main: "index.html",
+        vue: "vue.html",
+        workflowVue: "workflow-vue.html",
+      },
+    },
   },
   server: { host: "127.0.0.1", port: 4173, strictPort: true },
 });
