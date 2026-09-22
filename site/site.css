@@ -324,9 +324,20 @@ a {
   border-radius: var(--cheese-radius-card);
   overflow: hidden;
 }
-.origin-illustration > svg {
+.origin-scene {
+  position: relative;
+  width: 100%;
+}
+.origin-scene > svg {
   display: block;
   width: 100%;
+}
+.origin-starship-logo {
+  position: absolute;
+  left: 10%;
+  top: 26%;
+  width: 41%;
+  height: auto;
 }
 .origin-coordinate,
 .origin-caption {
@@ -352,28 +363,6 @@ a {
 }
 .origin-crater {
   fill: var(--cheese-border-subtle);
-}
-.origin-ship {
-  fill: var(--cheese-bg);
-  stroke: var(--cheese-text);
-  stroke-width: 1.5;
-  stroke-linejoin: round;
-}
-.origin-window {
-  fill: var(--cheese-surface);
-  stroke: var(--cheese-text);
-  stroke-width: 1.5;
-}
-.origin-door {
-  fill: var(--cheese-text);
-  stroke: var(--cheese-text);
-  stroke-width: 1.5;
-  stroke-linejoin: round;
-}
-.origin-ground {
-  stroke: var(--cheese-text);
-  stroke-width: 1.5;
-  stroke-linecap: round;
 }
 .origin-cheese {
   fill: var(--cheese-brand);
@@ -416,6 +405,10 @@ a {
   font-size: 12px;
   line-height: 1.75;
   word-break: keep-all;
+}
+.origin-source {
+  margin-top: 12px;
+  font-size: 12px;
 }
 .home-paths {
   display: grid;
@@ -1368,10 +1361,6 @@ a {
   .origin-illustration {
     aspect-ratio: 0.92;
   }
-  .origin-illustration > svg {
-    width: 125%;
-    margin-left: -15%;
-  }
   .home-paths {
     gap: 12px;
   }
@@ -1463,11 +1452,11 @@ a {
     margin-top: 20px;
   }
   .origin-illustration {
-    aspect-ratio: 1.7;
+    aspect-ratio: 1.4;
   }
-  .origin-illustration > svg {
+  .origin-scene {
     width: 90%;
-    margin: -8% auto;
+    margin-inline: auto;
   }
   .origin-coordinate,
   .origin-caption {

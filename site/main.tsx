@@ -35,6 +35,7 @@ import "@cheese/css";
 import "./site.css";
 import { entries, groups, type Entry } from "./catalog";
 import VueDemoSource from "./VueDemo.vue?raw";
+import starshipLogo from "./assets/starship-logo.png";
 import { Tree, DateField } from "@cheese/react";
 const modules = import.meta.glob<{ default: React.ComponentType }>(
   "./examples/*.tsx",
@@ -333,34 +334,29 @@ function EvaluationPreview() {
 }
 function OriginIllustration() {
   return (
-    <div className="origin-illustration" aria-hidden="true">
+    <div className="origin-illustration">
       <span className="origin-coordinate">A SMALL DISCOVERY</span>
-      <svg viewBox="0 0 480 320" fill="none">
-        <path className="origin-orbit" d="M46 194C87 91 204 59 319 123" />
-        <circle className="origin-moon" cx="332" cy="178" r="83" />
-        <circle className="origin-crater" cx="300" cy="147" r="15" />
-        <circle className="origin-crater" cx="366" cy="173" r="22" />
-        <circle className="origin-crater" cx="316" cy="214" r="11" />
-        <circle className="origin-crater" cx="356" cy="123" r="7" />
-        <path
-          className="origin-ship"
-          d="M202 137c0-25 14-50 32-65 18 15 32 40 32 65v31h-64v-31Z"
+      <div className="origin-scene">
+        <img
+          className="origin-starship-logo"
+          src={starshipLogo}
+          alt="STARSHIP Entertainment 공식 로고"
+          width="400"
+          height="107"
         />
-        <path
-          className="origin-ship"
-          d="m202 137-17 18v27l17-14m64-31 17 18v27l-17-14M207 168l-8 19m62-19 8 19"
-        />
-        <circle className="origin-window" cx="234" cy="116" r="10" />
-        <path
-          className="origin-door"
-          d="M226 168v-23h16v23l15 16h-18l-13-16Z"
-        />
-        <path className="origin-ground" d="M165 188h128M153 188h4M301 188h7" />
-        <path className="origin-cheese" d="m252 227 25-9 16 11-41 6v-8Z" />
-        <path className="origin-cheese" d="M252 235v14h41v-20l-41 6Z" />
-        <circle className="origin-cheese-hole" cx="261" cy="241" r="2" />
-        <circle className="origin-cheese-hole" cx="283" cy="237" r="3" />
-      </svg>
+        <svg viewBox="0 0 480 320" fill="none" aria-hidden="true">
+          <path className="origin-orbit" d="M88 151C46 240 174 283 244 213" />
+          <circle className="origin-moon" cx="332" cy="178" r="83" />
+          <circle className="origin-crater" cx="300" cy="147" r="15" />
+          <circle className="origin-crater" cx="366" cy="173" r="22" />
+          <circle className="origin-crater" cx="316" cy="214" r="11" />
+          <circle className="origin-crater" cx="356" cy="123" r="7" />
+          <path className="origin-cheese" d="m252 227 25-9 16 11-41 6v-8Z" />
+          <path className="origin-cheese" d="M252 235v14h41v-20l-41 6Z" />
+          <circle className="origin-cheese-hole" cx="261" cy="241" r="2" />
+          <circle className="origin-cheese-hole" cx="283" cy="237" r="3" />
+        </svg>
+      </div>
       <span className="origin-caption">STARSHIP → MOON → CHEESE</span>
     </div>
   );
@@ -417,6 +413,16 @@ function Home() {
             제작자가 상상한 이름의 이야기입니다. STARSHIP의 공식 브랜드 설명이나
             승인된 제품은 아닙니다.
           </span>
+          <a
+            className="origin-source text-link"
+            href="https://www.starship-ent.com/about"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            로고 출처 · STARSHIP 공식 CI
+            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
+            <span className="cheese-sr-only"> (새 창)</span>
+          </a>
         </div>
       </section>
       <nav className="home-paths" aria-label="문서 시작점">

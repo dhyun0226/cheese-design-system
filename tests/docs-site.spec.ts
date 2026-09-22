@@ -1,5 +1,50 @@
 import { test, expect } from "@playwright/test";
 
+test("home credits the original STARSHIP logo without changing its proportions", async ({
+  page,
+}) => {
+  for (const width of [1440, 900, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const logo = page.getByRole("img", {
+      name: "STARSHIP Entertainment 공식 로고",
+    });
+    await expect(logo).toBeVisible();
+    await expect
+      .poll(() =>
+        logo.evaluate(
+          (img: HTMLImageElement) =>
+            img.complete &&
+            img.naturalWidth === 400 &&
+            img.naturalHeight === 107,
+        ),
+      )
+      .toBe(true);
+    const box = await logo.boundingBox();
+    expect(box!.width / box!.height).toBeCloseTo(400 / 107, 1);
+    const scene = await page.locator(".origin-scene").boundingBox();
+    expect(box!.x).toBeGreaterThanOrEqual(scene!.x);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(scene!.x + scene!.width);
+    const cheese = await page.locator(".origin-cheese").last().boundingBox();
+    const caption = await page.locator(".origin-caption").boundingBox();
+    expect(cheese!.y + cheese!.height).toBeLessThan(caption!.y);
+    await expect(page.getByRole("link", { name: /로고 출처/ })).toHaveAttribute(
+      "href",
+      "https://www.starship-ent.com/about",
+    );
+    await expect(page.locator(".origin-note")).toContainText(
+      "승인된 제품은 아닙니다",
+    );
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth,
+        ),
+      )
+      .toBe(true);
+  }
+});
+
 test("component navigation keeps the title, selection and section links in sync", async ({
   page,
 }) => {

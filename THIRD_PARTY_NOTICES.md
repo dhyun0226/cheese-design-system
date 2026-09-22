@@ -19,5 +19,7 @@ Pretendard copyright: Copyright (c) 2021 Kil Hyung-jin, with Reserved Font Name 
 [Lucide license](https://lucide.dev/license).
 
 사이트의 “달과 치즈” 이야기는 자체 설명이며 영화의 이미지·로고·캐릭터를 사용하지 않습니다.
-STARSHIP 로고와 공식 CI 자산도 포함하지 않습니다.
+소개 화면의 STARSHIP 로고는 공식 홈페이지 원본을 변형 없이 사용합니다.
+출처·원본 해시·사용 범위는 [브랜드 자산 출처](site/assets/README.md)에 기록합니다.
+이 자산은 CHEESE 패키지의 일부가 아니며, 회사의 승인이나 재사용 허가를 의미하지 않습니다.
 회사 내부 프로젝트 반입 및 공개 배포 권한은 별도 확인해야 합니다.

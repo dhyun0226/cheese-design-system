@@ -34,6 +34,9 @@ result +=
     new URL("../public/licenses/Pretendard-OFL.txt", import.meta.url),
     "utf8",
   );
+result +=
+  "\nSTARSHIP logo — documentation site only\n" +
+  readFileSync(new URL("../site/assets/README.md", import.meta.url), "utf8");
 writeFileSync(
   new URL("../dist/THIRD-PARTY-LICENSES.txt", import.meta.url),
   result,
