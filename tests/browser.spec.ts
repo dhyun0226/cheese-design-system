@@ -190,7 +190,9 @@ test("Vue package models, errors, switch, tabs, dialog and tree", async ({
     page.getByText("입력값: 치즈 / tech / Vue 메모", { exact: true }),
   ).toBeVisible();
   await page.getByRole("checkbox", { name: "결과 알림 받기" }).click();
-  await expect(page.getByRole("checkbox")).toBeChecked();
+  await expect(
+    page.getByRole("checkbox", { name: "결과 알림 받기" }),
+  ).toBeChecked();
   await page.getByRole("switch", { name: "이메일 알림" }).click();
   await expect(page.getByRole("switch")).toBeChecked();
   await page.getByRole("tab", { name: "보안", exact: true }).click();

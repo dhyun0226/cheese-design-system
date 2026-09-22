@@ -45,6 +45,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   Check,
+  ChevronLeft,
 } from "@cheese/vue";
 const name = ref(""),
   memo = ref(""),
@@ -79,7 +80,10 @@ function save() {
 <template>
   <div class="cheese-root vue-page">
     <header class="vue-header">
-      <a href="./index.html#/">← CHEESE 문서</a><Badge>Vue · Reka UI</Badge>
+      <a href="./index.html#/"
+        ><ChevronLeft class="cheese-inline-icon" aria-hidden="true" /> CHEESE
+        문서</a
+      ><Badge>Vue · Reka UI</Badge>
     </header>
     <main>
       <div class="page-heading">
