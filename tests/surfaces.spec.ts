@@ -26,7 +26,12 @@ test("the site search and package inputs share the same resting surface", async 
     );
   }
   await expect(input).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
-  await expect(input).toHaveCSS("background-color", "rgb(245, 245, 247)");
+  await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(input).toHaveCSS("box-shadow", "none");
+  await input.hover();
+  await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(input).toHaveCSS("box-shadow", "none");
+  await expect(input).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
   await expect(input).toHaveCSS("border-radius", "10px");
   await expect(page.getByRole("textbox", { name: "읽기 전용" })).toHaveCSS(
     "box-shadow",
@@ -37,6 +42,15 @@ test("the site search and package inputs share the same resting surface", async 
     "box-shadow",
     "none",
   );
+  for (const name of ["읽기 전용", "비활성"]) {
+    await expect(page.getByRole("textbox", { name })).toHaveCSS(
+      "background-color",
+      "rgb(255, 255, 255)",
+    );
+  }
+  await page.locator(".demo-stage").screenshot({
+    path: `artifacts/${test.info().project.name}/borderless-input.png`,
+  });
   await input.focus();
   await expect(input).toHaveCSS("outline-color", "rgb(255, 201, 40)");
   await expect(input).toHaveCSS(
@@ -46,6 +60,9 @@ test("the site search and package inputs share the same resting surface", async 
   await page.screenshot({
     path: `artifacts/${test.info().project.name}/surface-input-focus.png`,
   });
+  await page.keyboard.press("Tab");
+  await expect(input).toHaveCSS("box-shadow", "none");
+  await expect(input).toHaveCSS("outline-style", "none");
 });
 
 test("data table uses quiet row separators and a borderless outer surface", async ({
@@ -123,7 +140,8 @@ for (const framework of ["react", "vue"]) {
     async ({ page }) => {
       await page.goto("/tests/fixtures/business.html?framework=" + framework);
       const input = page.locator(".cheese-input").first();
-      await expect(input).toHaveCSS("background-color", "rgb(245, 245, 247)");
+      await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
+      await expect(input).toHaveCSS("box-shadow", "none");
       await expect(input).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
       await expect(input).toHaveCSS("border-radius", "10px");
       // Theme overrides flow through the token, without adding a component selector.
@@ -136,6 +154,34 @@ for (const framework of ["react", "vue"]) {
     },
   );
 }
+
+test("entry controls share white borderless rest and hover states", async ({
+  page,
+}) => {
+  const controls = [
+    ["textarea", ".cheese-textarea"],
+    ["select", ".cheese-select-trigger"],
+    ["native-select", ".cheese-select"],
+    ["combobox", ".cheese-input"],
+    ["async-combobox", ".cheese-input"],
+    ["multi-select", ".cheese-input"],
+    ["date-picker", ".cheese-date-trigger"],
+    ["tags-input", ".cheese-tags"],
+  ];
+  for (const [route, selector] of controls) {
+    await page.goto("/#/components/" + route);
+    const inputs = page.locator(".demo-stage").locator(selector);
+    await expect(inputs.first()).toBeVisible();
+    for (const input of await inputs.all()) {
+      await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
+      await expect(input).toHaveCSS("box-shadow", "none");
+      await expect(input).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
+      await input.hover();
+      await expect(input).toHaveCSS("box-shadow", "none");
+      await expect(input).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    }
+  }
+});
 
 test("stronger contrast and forced colors preserve entry and focus boundaries", async ({
   page,

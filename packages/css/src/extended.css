@@ -177,7 +177,7 @@
 }
 .cheese-tags[data-disabled] {
   opacity: 1;
-  background: var(--cheese-surface);
+  background: var(--cheese-control-bg);
   box-shadow: none;
 }
 .cheese-tags[data-disabled] .cheese-tag {

@@ -4,8 +4,9 @@
 
 기존 UI는 입력·컨테이너·테이블·선택 상태에 둘레선을 반복했고,
 같은 Input도 문서 사이트 검색에서는 별도 border 색을 사용했다.
-단순히 모든 선을 흐리게 하면 입력 위치와 포커스도 함께 사라진다.
-따라서 경계의 **역할**을 구분하고, React/Vue가 사용하는 패키지 자체를 변경했다.
+입력창은 흰색 바탕에 기본 테두리·하단선·그림자 없이 표현한다.
+라벨·안내 문구·충분한 간격으로 입력 위치를 설명하고, 포커스와 오류는 별도로 표시한다.
+React/Vue가 사용하는 패키지 자체에 적용하며 사이트만 다르게 꾸미지 않는다.
 
 Apple의 깊이·계층 원칙과 Radix의 배경/경계/텍스트 역할 구분을 참고한
 CHEESE의 자체 디자인이다. Apple 디자인의 복제나 공식 인증을 의미하지 않는다.
@@ -17,8 +18,8 @@ CHEESE의 자체 디자인이다. Apple 디자인의 복제나 공식 인증을 
 | --- | --- | --- |
 | 평면/약한 채움 | surface / muted / surfaceHover | 콘텐츠 바탕, 버튼, hover |
 | 장식 구분 | borderSubtle | 표의 가로선, 목록, 메뉴 내부 |
-| 입력 표면 | controlBg / controlBorder | 옅은 채움과 미세한 외곽선 |
-| 입력 위치 식별 | controlEdge / shadowControl | 네 면의 진한 선 대신 하단 1px 경계 |
+| 입력 표면 | controlBg / shadowControl | 흰색, 기본 테두리·하단선·그림자 없음 |
+| 상태 식별 | controlEdge | 비선택 Checkbox/Radio, thumb 등 작은 조작 요소 |
 | 낮은 면 | shadowCard | 카드, 독립 캘린더, 목록 선택 영역 |
 | 떠 있는 면 | shadow / shadowDialog | 메뉴·팝오버와 모달의 깊이를 분리 |
 | 선택 형태 | selectionIndicator | 골드 외에 체크, 밑줄, 이동한 thumb로 표시 |
@@ -30,14 +31,16 @@ radius: item 8 / control 10 / card 16 / overlay 20. 기존 token API는 보존�
 
 ## 상태와 접근성
 
-- 기본 입력: #F5F5F7 바탕, #8B8B90 하단 경계. 하단 경계는 흰색과 기본 바탕에서 3:1 이상이다.
+- 기본/hover 입력: 흰색 바탕, 보이는 테두리·하단선·그림자 없음. 레이아웃 변화 방지를 위한 투명 border만 유지한다.
+- Input/Textarea/Select/검색/날짜/Tags에 같은 토큰을 적용한다. 읽기 전용과 비활성도 회색으로 채우지 않는다.
+- 무테 입력은 명확한 라벨과 간격을 전제로 한다. 실제 업무 폼에서 입력 위치를 쉽게 인지하는지 사용성 검증이 필요하다.
 - 의미 없는 컨테이너 선은 낮은 대비여도 되지만, 비선택 Checkbox/Radio의 식별 경계는 유지한다.
 - 체크/라디오 선택: 진한 둘레선 대신 골드와 검은 체크/점을 사용한다.
 - 날짜/기간 선택: 진한 둘레선 대신 골드와 숫자 밑줄. 색만으로 상태를 전달하지 않는다.
 - 포커스: 골드 단독은 흰색에서 대비가 부족하다. 중립색 보조선을 함께 표시한다.
 - 오류: 안내 문구/ARIA 유지. 입력 하단을 두껍게 하고 알림은 시작 방향 표시선을 사용한다.
 - 읽기 전용: 값은 읽고 복사할 수 있으며 조작 가능한 입력과 구분한다. Tab 포커스는 유지한다.
-- 비활성: 입력 경계 제거, native disabled 유지. 낮은 대비가 기능 상태와 일치한다.
+- 비활성: 흰 바탕과 보조 텍스트 색, 조작 불가 커서, native disabled를 유지한다.
 - prefers-contrast: more: 토큰을 바꿔 강한 경계로 전환한다.
 - forced-colors: active: 사라지는 shadow 대신 시스템 border/outline을 사용한다.
 - 동작 감소 설정을 유지한다. 화면 전환이나 장식용 animation을 추가하지 않는다.
@@ -49,7 +52,7 @@ radius: item 8 / control 10 / card 16 / overlay 20. 기존 token API는 보존�
 
 - `tests/surfaces.spec.ts`: 사이트/컴포넌트 Input 일치, 상태, 토큰 재정의,
   무테 Table, 선택 표시, overlay, forced colors, React/Vue 공유 스타일.
-- `tests/contracts.test.mjs`: 입력 식별선·선택 표시·포커스 보조선의 대비 수치,
+- `tests/contracts.test.mjs`: 기본 입력의 흰색·무그림자 계약, 선택 표시·포커스 보조선의 대비 수치,
   사이트 검색의 시각 override 재도입 방지.
 - 기존 전 카탈로그 접근성/상호작용 테스트 유지.
 - 캡처 증거는 `artifacts/`. 캡처 생성 자체를 픽셀 회귀 승인으로 보지 않는다.

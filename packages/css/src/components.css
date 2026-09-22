@@ -844,20 +844,17 @@
   }
 }
 
-/* A quiet resting surface; contrast is concentrated at the entry edge. */
-.cheese-input:hover:not(:disabled):not([readonly]) {
-  --cheese-control-border: var(--cheese-control-hover-border);
-}
+/* White, borderless entry surfaces. Only focus and errors add a visible cue. */
 .cheese-input[readonly] {
   box-shadow: none;
-  background: var(--cheese-surface);
+  background: var(--cheese-control-bg);
   color: var(--cheese-text-secondary);
 }
 .cheese-input:disabled {
   box-shadow: none;
   opacity: 1;
   color: var(--cheese-text-secondary);
-  background: var(--cheese-muted);
+  background: var(--cheese-control-bg);
 }
 .cheese-input[readonly]:focus {
   box-shadow: inset 0 0 0 1px var(--cheese-focus-contrast);
