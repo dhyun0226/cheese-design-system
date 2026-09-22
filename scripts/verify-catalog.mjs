@@ -1,20 +1,65 @@
-import { readFileSync } from 'node:fs'
-
-const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
-const catalog = html.match(/<section id="catalog"[\s\S]*?<\/section>/)?.[0]
-
-if (!catalog) throw new Error('Full Catalog section is missing.')
-if (html.includes('id="component-lab"')) throw new Error('Component Lab must not be present.')
-
-const grids = [...catalog.matchAll(/<div class="catalog-grid">([\s\S]*?)<\/div>/g)].map((match) => match[1])
-const items = grids.flatMap((grid) => [...grid.matchAll(/<span([^>]*)>([^<]+)<\/span>/g)])
-const incomplete = items.filter(([, attributes]) => !attributes.includes('data-cheese="true"'))
-
-const requiredSections = ['form-selection', 'date-time', 'navigation-disclosure', 'overlay-feedback', 'data-layout']
-const missingSections = requiredSections.filter((id) => !html.includes(`id="${id}"`))
-
-if (items.length !== 63) throw new Error(`Expected 63 catalog items, found ${items.length}.`)
-if (incomplete.length) throw new Error(`Incomplete catalog items: ${incomplete.map((match) => match[2]).join(', ')}`)
-if (missingSections.length) throw new Error(`Missing demo sections: ${missingSections.join(', ')}`)
-
-console.log(`Catalog verified: ${items.length}/63 entries documented across ${requiredSections.length} interactive sections.`)
+import { readFileSync, readdirSync } from "node:fs";
+import ts from "typescript";
+import * as react from "../packages/react/dist/index.js";
+const source = readFileSync(
+  new URL("../site/catalog.ts", import.meta.url),
+  "utf8",
+);
+const js = ts.transpileModule(source, {
+  compilerOptions: {
+    module: ts.ModuleKind.ESNext,
+    target: ts.ScriptTarget.ES2022,
+  },
+}).outputText;
+const { entries } = await import(
+  "data:text/javascript;base64," + Buffer.from(js).toString("base64")
+);
+const ids = entries.map((e) => e.id);
+if (new Set(ids).size !== ids.length) throw Error("Duplicate catalog ID");
+const demos = readdirSync(new URL("../site/examples", import.meta.url)).filter(
+  (n) => n.endsWith(".tsx"),
+);
+for (const file of demos) {
+  const id = file.slice(0, -4),
+    entry = entries.find((e) => e.id === id);
+  if (!entry?.api || !entry?.accessibility)
+    throw Error("Missing API/accessibility documentation: " + id);
+  const text = readFileSync(
+    new URL("../site/examples/" + file, import.meta.url),
+    "utf8",
+  );
+  const ast = ts.createSourceFile(
+    file,
+    text,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
+  let imported = false;
+  for (const node of ast.statements) {
+    if (
+      ts.isImportDeclaration(node) &&
+      node.moduleSpecifier.text === "@cheese/react"
+    ) {
+      imported = true;
+      const bindings = node.importClause?.namedBindings;
+      if (bindings && ts.isNamedImports(bindings))
+        for (const item of bindings.elements) {
+          if (item.isTypeOnly || node.importClause?.isTypeOnly) continue;
+          const name = (item.propertyName || item.name).text;
+          if (!(name in react))
+            throw Error("Missing package export: " + name + " in " + file);
+        }
+    }
+  }
+  if (!imported) throw Error("Demo must import the actual package: " + file);
+}
+console.log(
+  "Catalog: " +
+    entries.length +
+    " entries; " +
+    demos.length +
+    " real-package demos; " +
+    (entries.length - demos.length) +
+    " explicitly planned.",
+);

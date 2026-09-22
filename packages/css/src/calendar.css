@@ -1,0 +1,140 @@
+.cheese-calendar {
+  width: fit-content;
+  max-width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--cheese-bg);
+  color: var(--cheese-text);
+  font-family: var(--cheese-font-family);
+  font-size: 13px;
+}
+.cheese-calendar .rdp-months {
+  position: relative;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.cheese-calendar .rdp-month {
+  width: 266px;
+  max-width: 100%;
+}
+.cheese-calendar .rdp-month_caption {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 64px 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.cheese-calendar .rdp-nav {
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  right: 0;
+  top: 4px;
+  z-index: 1;
+}
+.cheese-calendar :is(.rdp-button_next, .rdp-button_previous),
+.cheese-calendar-nav {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: 1px solid var(--cheese-border);
+  border-radius: 7px;
+  color: var(--cheese-text);
+  cursor: pointer;
+}
+.cheese-calendar .rdp-chevron {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+.cheese-calendar :is(table, .rdp-month_grid) {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+.cheese-calendar :is(.rdp-weekday, th) {
+  color: var(--cheese-text-secondary);
+  font-size: 11px;
+  font-weight: 400;
+  height: 28px;
+}
+.cheese-calendar .rdp-day {
+  padding: 0;
+  text-align: center;
+  width: 38px;
+  height: 38px;
+}
+.cheese-calendar :is(.rdp-day_button, .cheese-calendar-day) {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--cheese-text);
+  font-size: 13px;
+  font-family: var(--cheese-font-family);
+  background: none;
+  cursor: pointer;
+}
+.cheese-calendar
+  :is(.rdp-day_button, .cheese-calendar-day):hover:not(:disabled) {
+  background: var(--cheese-muted);
+}
+.cheese-calendar
+  :is(.rdp-selected .rdp-day_button, .cheese-calendar-day[data-selected]) {
+  background: var(--cheese-brand);
+  color: #111;
+  font-weight: 600;
+  border-color: #ad8000;
+}
+.cheese-calendar .rdp-range_middle {
+  background: var(--cheese-brand-soft);
+}
+.cheese-calendar .rdp-range_middle .rdp-day_button {
+  background: transparent;
+  border-color: transparent;
+}
+.cheese-calendar .rdp-today:not(.rdp-selected) .rdp-day_button {
+  border-color: var(--cheese-border-strong);
+}
+.cheese-calendar .rdp-outside:not(.rdp-selected) .rdp-day_button,
+.cheese-calendar-day[data-outside-view]:not([data-selected]) {
+  color: var(--cheese-text-secondary);
+}
+.cheese-calendar :disabled,
+.cheese-calendar-day[data-disabled] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.cheese-calendar .rdp-footer {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--cheese-text-secondary);
+}
+.cheese-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.cheese-calendar-heading {
+  font-size: 14px;
+  font-weight: 600;
+}
+.cheese-date-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.cheese-calendar button:focus-visible {
+  outline: 2px solid var(--cheese-focus);
+  outline-offset: 1px;
+}

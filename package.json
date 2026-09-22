@@ -1,17 +1,29 @@
 {
   "name": "cheese-design-system",
   "private": true,
-  "version": "0.3.0",
-  "workspaces": ["packages/*"],
+  "version": "0.4.0",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "tokens": "node scripts/generate-tokens.mjs",
+    "dev": "vite",
+    "build:packages": "npm run tokens && npm run build --workspaces --if-present",
+    "build": "npm run build:packages && vite build && node scripts/build-notices.mjs",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.site.json && vue-tsc -p tsconfig.vue-site.json",
+    "test": "playwright test",
+    "test:unit": "node --test tests/contracts.test.mjs",
+    "check": "npm run build && npm run typecheck && npm run verify:catalog && npm run test:unit && npm test",
     "clean": "npm run clean --workspaces --if-present",
     "verify:catalog": "node scripts/verify-catalog.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "prettier": "^3.9.8",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "vue-tsc": "^3.0.7"

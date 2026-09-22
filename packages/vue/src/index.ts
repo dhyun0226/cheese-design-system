@@ -1,6 +1,66 @@
-export { default as Button } from './Button.vue'
-export { default as Input } from './Input.vue'
-export { Badge, Card, NativeSelect, Textarea } from './styled'
-export { Tree, type TreeNode } from './Tree'
-export * from 'reka-ui'
-export { Search, Plus, X, Check, ChevronDown, ChevronLeft, ChevronRight, Calendar, Clock, User, Users, Settings, Bell, Upload, Download, Trash2, Pencil, MoreHorizontal, Info, CircleAlert, CircleCheck, Eye, EyeOff, Lock, LogOut, Menu } from '@lucide/vue'
+export { default as Button } from "./Button.vue";
+export { default as Calendar } from "./Calendar.vue";
+export { default as Input } from "./Input.vue";
+export * from "./styled";
+export { default as Textarea } from "./Textarea.vue";
+export { default as NativeSelect } from "./NativeSelect.vue";
+export { Tree, type TreeNode } from "./Tree";
+export * as Primitives from "reka-ui";
+export {
+  DialogRoot,
+  DialogTrigger,
+  DialogClose,
+  AlertDialogRoot,
+  AlertDialogTrigger,
+  AlertDialogAction,
+  AlertDialogCancel,
+  PopoverRoot,
+  PopoverTrigger,
+  PopoverClose,
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+  ContextMenuRoot,
+  ContextMenuTrigger,
+  AccordionRoot,
+  CollapsibleRoot,
+  CollapsibleTrigger,
+  CollapsibleContent,
+  AvatarImage,
+  AvatarFallback,
+  TooltipProvider,
+  TooltipRoot,
+  TooltipTrigger,
+  HoverCardRoot,
+  HoverCardTrigger,
+  ToastProvider,
+  ToastClose,
+  ToastAction,
+} from "reka-ui";
+export {
+  Search,
+  Plus,
+  X,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Calendar as CalendarIcon,
+  Clock,
+  User,
+  Users,
+  Settings,
+  Bell,
+  Upload,
+  Download,
+  Trash2,
+  Pencil,
+  MoreHorizontal,
+  Info,
+  CircleAlert,
+  CircleCheck,
+  Eye,
+  EyeOff,
+  Lock,
+  LogOut,
+  Menu,
+} from "@lucide/vue";

@@ -1,0 +1,11 @@
+import { Field, Input } from "@cheese/react";
+export default function Example() {
+  return (
+    <Field
+      label="평가 가중치"
+      description="0부터 100까지, 5 단위로 입력합니다."
+    >
+      <Input type="number" min={0} max={100} step={5} defaultValue={30} />
+    </Field>
+  );
+}

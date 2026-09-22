@@ -9,3 +9,7 @@ packages/*/dist/
 *.tsbuildinfo
 .edge-*/
 qa-*.png
+dist/
+test-results/
+playwright-report/
+artifacts/

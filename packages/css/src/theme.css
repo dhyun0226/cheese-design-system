@@ -1,0 +1,33 @@
+/* Semantic roles. Components never depend on site styles. */
+.cheese-root,
+[class^="cheese-"],
+[class*=" cheese-"] {
+  box-sizing: border-box;
+  font-family: var(--cheese-font-family);
+}
+.cheese-root {
+  color: var(--cheese-text);
+  font-size: var(--cheese-font-size-body);
+  line-height: var(--cheese-line-height-body);
+  -webkit-font-smoothing: antialiased;
+}
+.cheese-root :where(button, input, textarea, select) {
+  font: inherit;
+}
+:where([class^="cheese-"], [class*=" cheese-"]):focus-visible {
+  outline: 2px solid var(--cheese-focus);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cheese-root *,
+  [class^="cheese-"] {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (forced-colors: active) {
+  [class^="cheese-"] {
+    border-color: ButtonText;
+  }
+}
