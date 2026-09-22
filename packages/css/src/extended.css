@@ -43,8 +43,8 @@
   );
   overflow: hidden;
   padding: 6px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
+  border: 1px solid var(--cheese-border-subtle);
+  border-radius: var(--cheese-radius-card);
   background: var(--cheese-bg);
   box-shadow: var(--cheese-shadow);
 }
@@ -61,7 +61,7 @@
   gap: 16px;
   min-height: 42px;
   padding: 10px 12px;
-  border-radius: 7px;
+  border-radius: var(--cheese-radius-item);
   font-size: 14px;
   line-height: 1.4;
   cursor: pointer;
@@ -127,8 +127,8 @@
   inset-inline: 0;
   padding: 6px;
   background: var(--cheese-bg);
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
+  border: 1px solid var(--cheese-border-subtle);
+  border-radius: var(--cheese-radius-card);
   box-shadow: var(--cheese-shadow);
 }
 .cheese-option-list {
@@ -142,11 +142,12 @@
 }
 .cheese-listbox {
   padding: 6px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-card);
   background: var(--cheese-bg);
   max-height: 300px;
   overflow: auto;
+  box-shadow: var(--cheese-shadow-card);
 }
 .cheese-pin-input {
   font-size: 24px;
@@ -163,17 +164,21 @@
   flex-wrap: wrap;
   padding: 7px;
   min-height: 46px;
-  background: var(--cheese-bg);
-  border: 1px solid var(--cheese-border-strong);
+  background: var(--cheese-control-bg);
+  border: 1px solid transparent;
   border-radius: var(--cheese-radius-control);
+  box-shadow: var(--cheese-shadow-control);
 }
 .cheese-tags:focus-within {
   outline: 2px solid var(--cheese-focus);
   outline-offset: 2px;
+  background: var(--cheese-bg);
+  box-shadow: inset 0 0 0 1px var(--cheese-focus-contrast);
 }
 .cheese-tags[data-disabled] {
   opacity: 1;
   background: var(--cheese-surface);
+  box-shadow: none;
 }
 .cheese-tags[data-disabled] .cheese-tag {
   color: var(--cheese-text-secondary);
@@ -198,9 +203,9 @@
   align-items: center;
   gap: 6px;
   padding: 4px 6px 4px 10px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 6px;
-  background: var(--cheese-surface);
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-item);
+  background: var(--cheese-surface-hover);
   color: var(--cheese-text);
   font-size: 13px;
 }
@@ -229,7 +234,7 @@
   background: transparent;
   color: var(--cheese-text);
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--cheese-radius-item);
   cursor: pointer;
 }
 .cheese-icon-button:hover:not(:disabled) {
@@ -252,7 +257,7 @@
   min-height: 44px;
   padding: 10px 12px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--cheese-radius-item);
   background: var(--cheese-surface);
   text-align: start;
   color: var(--cheese-text);
@@ -276,7 +281,7 @@
   height: 40px;
   padding: 4px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--cheese-radius-item);
   background: transparent;
   color: var(--cheese-text-secondary);
   cursor: pointer;
@@ -335,9 +340,10 @@
   gap: 12px;
   width: min(100%, 320px);
   padding: 16px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 14px;
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-card);
   background: var(--cheese-bg);
+  box-shadow: var(--cheese-shadow-card);
 }
 .cheese-period-heading {
   display: flex;
@@ -357,7 +363,7 @@
   color: var(--cheese-text);
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: var(--cheese-radius-item);
   font-size: 14px;
   cursor: pointer;
 }
@@ -366,7 +372,11 @@
 }
 .cheese-period-item[data-state="checked"] {
   background: var(--cheese-brand);
-  border-color: var(--cheese-text-secondary);
+  border-color: transparent;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+  font-weight: 600;
 }
 .cheese-period-item:disabled {
   opacity: 0.4;
@@ -384,9 +394,9 @@
   padding: 5px;
   margin: 0;
   list-style: none;
-  border: 1px solid var(--cheese-border);
-  border-radius: 10px;
-  background: var(--cheese-bg);
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-control);
+  background: var(--cheese-muted);
 }
 .cheese-navigation-trigger {
   display: flex;
@@ -395,7 +405,7 @@
   min-height: 36px;
   padding: 8px 12px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--cheese-radius-item);
   background: transparent;
   color: var(--cheese-text);
   font-size: 14px;
@@ -418,8 +428,8 @@
   min-width: 240px;
   max-width: 100%;
   padding: 8px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
+  border: 1px solid var(--cheese-border-subtle);
+  border-radius: var(--cheese-radius-card);
   background: var(--cheese-bg);
   box-shadow: var(--cheese-shadow);
 }
@@ -429,7 +439,7 @@
 .cheese-navigation-link {
   display: block;
   padding: 10px 12px;
-  border-radius: 7px;
+  border-radius: var(--cheese-radius-item);
   font-size: 14px;
   color: var(--cheese-text);
   text-decoration: none;
@@ -440,16 +450,16 @@
 }
 .cheese-menu-separator {
   height: 1px;
-  background: var(--cheese-border);
+  background: var(--cheese-border-subtle);
   margin: 5px;
 }
 .cheese-toolbar {
   align-items: center;
   width: fit-content;
   padding: 6px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 10px;
-  background: var(--cheese-bg);
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-control);
+  background: var(--cheese-muted);
 }
 .cheese-toolbar [role="group"] {
   display: flex;
@@ -470,15 +480,17 @@
   width: 1px;
   height: 22px;
   margin: 0 6px;
-  background: var(--cheese-border);
+  background: var(--cheese-border-subtle);
 }
 .cheese-splitter {
   display: grid;
   grid-template-columns: minmax(0, var(--split)) 16px minmax(0, 1fr);
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
+  border: 0;
+  border-radius: var(--cheese-radius-card);
   overflow: hidden;
   min-height: 220px;
+  background: var(--cheese-bg);
+  box-shadow: var(--cheese-shadow-card);
 }
 .cheese-splitter-panel {
   min-width: 0;
@@ -494,7 +506,7 @@
   justify-content: center;
   background: var(--cheese-surface);
   color: var(--cheese-text-secondary);
-  border-inline: 1px solid var(--cheese-border);
+  border-inline: 1px solid transparent;
   cursor: col-resize;
   touch-action: none;
   outline-offset: -2px;
@@ -536,12 +548,12 @@
   width: 6px;
   height: 6px;
   background: var(--cheese-border-strong);
-  border-radius: 4px;
+  border-radius: var(--cheese-radius-pill);
 }
 .cheese-carousel-dot[aria-current="true"] span {
   width: 20px;
   background: var(--cheese-brand);
-  box-shadow: 0 0 0 1px var(--cheese-text-secondary);
+  box-shadow: inset 0 -2px 0 var(--cheese-selection-indicator);
 }
 @media (max-width: 480px) {
   .cheese-range-inputs {

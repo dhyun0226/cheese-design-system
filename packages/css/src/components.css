@@ -44,9 +44,9 @@
   color: #111;
 }
 .cheese-button[data-variant="weak"] {
-  background: var(--cheese-bg);
+  background: var(--cheese-muted);
   color: var(--cheese-text);
-  border-color: var(--cheese-border);
+  border-color: transparent;
 }
 .cheese-button[data-variant="ghost"] {
   background: transparent;
@@ -84,18 +84,21 @@
   min-height: 42px;
   padding: 10px 12px;
   color: var(--cheese-text);
-  background: var(--cheese-bg);
-  border: 1px solid var(--cheese-border-strong);
+  background: var(--cheese-control-bg);
+  border: 1px solid transparent;
   border-radius: var(--cheese-radius-control);
   font-size: 14px;
   line-height: 20px;
-  transition: border-color var(--cheese-duration);
+  transition:
+    background var(--cheese-duration),
+    box-shadow var(--cheese-duration);
+  box-shadow: var(--cheese-shadow-control);
 }
 .cheese-input::placeholder {
   color: var(--cheese-text-secondary);
 }
 .cheese-input[aria-invalid="true"] {
-  border-color: var(--cheese-danger);
+  box-shadow: inset 0 -2px 0 var(--cheese-selection-indicator);
 }
 .cheese-textarea {
   min-height: 112px;
@@ -123,9 +126,10 @@
 .cheese-card {
   margin: 0;
   padding: 24px;
-  border: 1px solid var(--cheese-border);
-  border-radius: var(--cheese-radius-overlay);
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-card);
   background: var(--cheese-bg);
+  box-shadow: var(--cheese-shadow-card);
 }
 .cheese-badge {
   display: inline-flex;
@@ -133,7 +137,7 @@
   width: fit-content;
   gap: 5px;
   padding: 4px 9px;
-  border-radius: 6px;
+  border-radius: var(--cheese-radius-item);
   font-size: 12px;
   line-height: 16px;
   font-weight: 550;
@@ -169,8 +173,8 @@
   height: 22px;
   padding: 0;
   flex: none;
-  border: 1px solid var(--cheese-border-strong);
-  border-radius: 7px;
+  border: 1px solid var(--cheese-control-edge);
+  border-radius: var(--cheese-radius-item);
   background: var(--cheese-bg);
   color: #111;
   cursor: pointer;
@@ -183,7 +187,7 @@
 .cheese-checkbox[data-state="indeterminate"],
 .cheese-radio[data-state="checked"] {
   background: var(--cheese-brand);
-  border-color: var(--cheese-text-secondary);
+  border-color: transparent;
 }
 .cheese-checkbox svg {
   width: 14px;
@@ -219,21 +223,21 @@
   width: 40px;
   height: 24px;
   padding: 2px;
-  border: 1px solid var(--cheese-border-strong);
-  border-radius: 99px;
+  border: 1px solid var(--cheese-control-edge);
+  border-radius: var(--cheese-radius-pill);
   background: var(--cheese-muted);
   cursor: pointer;
   flex: none;
 }
 .cheese-switch[data-state="checked"] {
   background: var(--cheese-brand);
-  border-color: var(--cheese-text-secondary);
+  border-color: transparent;
 }
 .cheese-switch-thumb {
   width: 18px;
   height: 18px;
   background: white;
-  box-shadow: 0 1px 3px #0003;
+  box-shadow: var(--cheese-shadow-thumb);
   border-radius: 50%;
   transition: transform var(--cheese-duration);
 }
@@ -245,12 +249,12 @@
   gap: 4px;
   padding: 4px;
   background: var(--cheese-muted);
-  border-radius: 10px;
+  border-radius: var(--cheese-radius-control);
 }
 .cheese-tabs-trigger {
   padding: 7px 14px;
   border: 0;
-  border-radius: 7px;
+  border-radius: var(--cheese-radius-item);
   background: transparent;
   color: var(--cheese-text-secondary);
   font-size: 13px;
@@ -260,7 +264,7 @@
 .cheese-tabs-trigger[data-state="active"] {
   background: var(--cheese-bg);
   color: var(--cheese-text);
-  box-shadow: 0 1px 4px #0001;
+  box-shadow: var(--cheese-shadow-card);
 }
 .cheese-tabs-content {
   padding-top: 20px;
@@ -286,9 +290,9 @@
   background: var(--cheese-bg);
   color: var(--cheese-text);
   padding: 28px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 20px;
-  box-shadow: var(--cheese-shadow);
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-overlay);
+  box-shadow: var(--cheese-shadow-dialog);
   font-size: 14px;
   animation: cheese-fade 0.16s ease-out;
 }
@@ -297,7 +301,7 @@
   right: 0;
   left: auto;
   transform: none;
-  border-radius: 20px 0 0 20px;
+  border-radius: var(--cheese-radius-overlay) 0 0 var(--cheese-radius-overlay);
   height: 100dvh;
   max-height: 100dvh;
 }
@@ -307,7 +311,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: min(640px, 100%);
-  border-radius: 20px 20px 0 0;
+  border-radius: var(--cheese-radius-overlay) var(--cheese-radius-overlay) 0 0;
 }
 .cheese-dialog-title {
   margin: 0 0 8px;
@@ -331,8 +335,8 @@
 .cheese-menu {
   z-index: 110;
   padding: 16px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
+  border: 1px solid var(--cheese-border-subtle);
+  border-radius: var(--cheese-radius-card);
   background: var(--cheese-bg);
   color: var(--cheese-text);
   box-shadow: var(--cheese-shadow);
@@ -348,7 +352,7 @@
   gap: 8px;
   align-items: center;
   padding: 9px 12px;
-  border-radius: 6px;
+  border-radius: var(--cheese-radius-item);
   font-size: 13px;
   outline: none;
   cursor: default;
@@ -362,7 +366,7 @@
 .cheese-tooltip {
   z-index: 120;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: var(--cheese-radius-item);
   background: var(--cheese-text);
   color: var(--cheese-bg);
   font-size: 12px;
@@ -370,7 +374,7 @@
   box-shadow: var(--cheese-shadow);
 }
 .cheese-accordion-item {
-  border-bottom: 1px solid var(--cheese-border);
+  border-bottom: 1px solid var(--cheese-border-subtle);
 }
 .cheese-accordion-header {
   margin: 0;
@@ -418,13 +422,13 @@
   flex: 1;
   height: 4px;
   background: var(--cheese-muted);
-  border-radius: 99px;
+  border-radius: var(--cheese-radius-pill);
 }
 .cheese-slider-range {
   position: absolute;
   background: var(--cheese-text);
   height: 100%;
-  border-radius: 99px;
+  border-radius: var(--cheese-radius-pill);
 }
 .cheese-slider-thumb {
   display: block;
@@ -432,14 +436,14 @@
   height: 20px;
   border-radius: 50%;
   background: var(--cheese-bg);
-  border: 1px solid var(--cheese-border-strong);
-  box-shadow: 0 2px 4px #0002;
+  border: 1px solid transparent;
+  box-shadow: var(--cheese-shadow-thumb);
 }
 .cheese-progress {
   width: 100%;
   height: 6px;
   background: var(--cheese-muted);
-  border-radius: 99px;
+  border-radius: var(--cheese-radius-pill);
   overflow: hidden;
 }
 .cheese-progress-indicator {
@@ -473,14 +477,15 @@
 .cheese-separator {
   height: 1px;
   border: 0;
-  background: var(--cheese-border);
+  background: var(--cheese-border-subtle);
   margin: 16px 0;
 }
 .cheese-table-wrap {
   width: 100%;
   overflow: auto;
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
+  border: 0;
+  border-radius: var(--cheese-radius-card);
+  background: var(--cheese-bg);
 }
 .cheese-table {
   width: 100%;
@@ -499,8 +504,8 @@
   font-weight: 500;
 }
 .cheese-table :is(th, td) {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--cheese-border);
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--cheese-border-subtle);
   white-space: nowrap;
 }
 .cheese-table tbody tr:last-child td {
@@ -511,7 +516,7 @@
 }
 .cheese-skeleton {
   height: 18px;
-  border-radius: 6px;
+  border-radius: var(--cheese-radius-item);
   background: var(--cheese-muted);
   animation: cheese-pulse 1.5s ease-in-out infinite;
 }
@@ -535,14 +540,14 @@
 }
 .cheese-alert {
   padding: 16px 18px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
-  background: var(--cheese-surface);
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-card);
+  background: var(--cheese-muted);
   font-size: 14px;
   line-height: 1.6;
 }
 .cheese-alert[data-tone="critical"] {
-  border-color: var(--cheese-border-strong);
+  border-inline-start: 3px solid var(--cheese-selection-indicator);
   color: var(--cheese-danger);
   background: var(--cheese-surface);
 }
@@ -619,15 +624,15 @@
 .cheese-toggle {
   min-height: 36px;
   padding: 8px 12px;
-  background: transparent;
-  border: 1px solid var(--cheese-border);
-  border-radius: 7px;
+  background: var(--cheese-muted);
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-item);
   color: var(--cheese-text-secondary);
   font-size: 13px;
 }
 .cheese-toggle[data-state="on"] {
   background: var(--cheese-brand-soft);
-  border-color: var(--cheese-text-secondary);
+  box-shadow: inset 0 -2px 0 var(--cheese-selection-indicator);
   color: var(--cheese-text);
 }
 .cheese-toggle-group,
@@ -654,7 +659,7 @@
   gap: 8px;
   min-height: 38px;
   padding: 8px 10px;
-  border-radius: 7px;
+  border-radius: var(--cheese-radius-item);
   cursor: pointer;
 }
 .cheese-tree-row:hover {
@@ -707,7 +712,8 @@
 .cheese-input:focus {
   outline: 2px solid var(--cheese-focus);
   outline-offset: 2px;
-  border-color: var(--cheese-text-secondary);
+  background: var(--cheese-bg);
+  box-shadow: inset 0 0 0 1px var(--cheese-focus-contrast);
 }
 .cheese-select {
   appearance: none;
@@ -729,8 +735,8 @@
 }
 .cheese-toast {
   padding: 18px 20px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 14px;
+  border: 1px solid var(--cheese-border-subtle);
+  border-radius: var(--cheese-radius-card);
   box-shadow: var(--cheese-shadow);
   background: var(--cheese-bg);
   color: var(--cheese-text);
@@ -746,8 +752,9 @@
 }
 .cheese-scroll-area {
   overflow: hidden;
-  border-radius: 10px;
-  border: 1px solid var(--cheese-border);
+  border-radius: var(--cheese-radius-card);
+  border: 0;
+  background: var(--cheese-surface);
 }
 .cheese-scroll-viewport {
   width: 100%;
@@ -763,7 +770,7 @@
 .cheese-scroll-thumb {
   flex: 1;
   background: var(--cheese-border-strong);
-  border-radius: 99px;
+  border-radius: var(--cheese-radius-pill);
 }
 .cheese-list {
   list-style: none;
@@ -775,7 +782,7 @@
   align-items: center;
   gap: 12px;
   padding: 14px 0;
-  border-bottom: 1px solid var(--cheese-border);
+  border-bottom: 1px solid var(--cheese-border-subtle);
   font-size: 14px;
 }
 .cheese-list > li:last-child {
@@ -835,4 +842,28 @@
   to {
     transform: translateX(230%);
   }
+}
+
+/* A quiet resting surface; contrast is concentrated at the entry edge. */
+.cheese-input:hover:not(:disabled):not([readonly]) {
+  --cheese-control-border: var(--cheese-control-hover-border);
+}
+.cheese-input[readonly] {
+  box-shadow: none;
+  background: var(--cheese-surface);
+  color: var(--cheese-text-secondary);
+}
+.cheese-input:disabled {
+  box-shadow: none;
+  opacity: 1;
+  color: var(--cheese-text-secondary);
+  background: var(--cheese-muted);
+}
+.cheese-input[readonly]:focus {
+  box-shadow: inset 0 0 0 1px var(--cheese-focus-contrast);
+}
+.cheese-button[data-variant="weak"]:hover:not(:disabled),
+.cheese-button[data-variant="ghost"]:hover:not(:disabled) {
+  background: var(--cheese-surface-hover);
+  filter: none;
 }

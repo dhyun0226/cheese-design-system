@@ -175,6 +175,44 @@ test("brand tokens remain explicit and orange is absent", () => {
   assert.equal(tokens.semantic.success, "{color.spaceBlack}");
 });
 
+test("meaningful entry edges and state indicators retain measurable contrast", () => {
+  const luminance = (hex) => {
+    const channels = hex
+      .slice(1)
+      .match(/../g)
+      .map((v) => parseInt(v, 16) / 255)
+      .map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+  };
+  const contrast = (a, b) => {
+    const x = luminance(a),
+      y = luminance(b);
+    return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+  };
+  for (const bg of [tokens.color.lunarWhite, tokens.semantic.controlBg])
+    assert.ok(contrast(tokens.semantic.controlEdge, bg) >= 3);
+  for (const bg of [tokens.color.lunarWhite, tokens.color.cheeseGold]) {
+    assert.ok(contrast(tokens.semantic.focusContrast, bg) >= 3);
+    assert.ok(contrast(tokens.semantic.selectionIndicator, bg) >= 3);
+  }
+  const siteCss = readFileSync(
+    new URL("../site/site.css", import.meta.url),
+    "utf8",
+  );
+  const searchRule = siteCss.match(
+    /\.nav-search \.cheese-input\s*\{([^}]+)\}/,
+  )[1];
+  assert.doesNotMatch(
+    searchRule,
+    /border|background|box-shadow|font-size|min-height/,
+  );
+  const cssEntry = readFileSync(
+    new URL("../packages/css/src/index.css", import.meta.url),
+    "utf8",
+  );
+  assert.ok(cssEntry.trim().endsWith('@import "./accessibility.css";'));
+});
+
 test("all new high-level controls and navigation components are exported", () => {
   for (const name of [
     "Select",

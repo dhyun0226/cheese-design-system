@@ -2,11 +2,12 @@
   width: fit-content;
   max-width: 100%;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: var(--cheese-radius-card);
   background: var(--cheese-bg);
   color: var(--cheese-text);
   font-family: var(--cheese-font-family);
   font-size: 13px;
+  box-shadow: var(--cheese-shadow-card);
 }
 .cheese-calendar .rdp-months {
   position: relative;
@@ -42,9 +43,9 @@
   align-items: center;
   width: 30px;
   height: 30px;
-  background: none;
-  border: 1px solid var(--cheese-border);
-  border-radius: 7px;
+  background: var(--cheese-muted);
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-item);
   color: var(--cheese-text);
   cursor: pointer;
 }
@@ -76,7 +77,7 @@
   height: 36px;
   padding: 0;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--cheese-radius-item);
   color: var(--cheese-text);
   font-size: 13px;
   font-family: var(--cheese-font-family);
@@ -92,7 +93,10 @@
   background: var(--cheese-brand);
   color: #111;
   font-weight: 600;
-  border-color: var(--cheese-text-secondary);
+  border-color: transparent;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
 }
 .cheese-calendar .rdp-range_middle {
   background: var(--cheese-brand-soft);
@@ -102,7 +106,8 @@
   border-color: transparent;
 }
 .cheese-calendar .rdp-today:not(.rdp-selected) .rdp-day_button {
-  border-color: var(--cheese-border-strong);
+  border-color: transparent;
+  box-shadow: inset 0 -2px 0 var(--cheese-selection-indicator);
 }
 .cheese-calendar .rdp-outside:not(.rdp-selected) .rdp-day_button,
 .cheese-calendar-day[data-outside-view]:not([data-selected]) {

@@ -2,6 +2,13 @@
 
 ## Unreleased — 운영 도입 전 보강
 
+### 시각 체계 — 면과 상태 중심
+
+- 입력·장식 구분선·카드·팝업·포커스 토큰 분리. 카드/표/툴바의 반복 외곽선을 줄이고 깊이와 간격으로 영역 구분.
+- Input/Select/Tags는 옅은 채움과 하단 식별 경계 사용. 사이트 검색의 별도 Input 외형 override 제거.
+- 체크박스·캘린더·기간 선택의 진한 둘레선을 제거하고 체크/밑줄로 상태 보완. 골드와 Pretendard 유지.
+- 대비 강화/강제 색상 지원, 포커스 보조선, 읽기 전용·비활성·오류 상태 보강. 상세 계약: `docs/VISUAL-FOUNDATION.md`.
+
 ### 카탈로그 · 골드 팔레트 · 아이콘
 
 - 업무 확장 4종: AsyncCombobox, MultiSelect, DataTable, FileUpload. React/Vue 대응 API, 서버 검색·표 요청 취소/응답 순서 보호, 업로드 진행·취소·재시도와 multipart XHR 어댑터. 총 69개 실행 예제.

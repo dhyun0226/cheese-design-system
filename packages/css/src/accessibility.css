@@ -1,0 +1,85 @@
+/* Loaded last: quiet resting surfaces never hide the active keyboard target. */
+[class^="cheese-"]:focus-visible,
+[class*=" cheese-"]:focus-visible {
+  outline: 2px solid var(--cheese-focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 1px var(--cheese-focus-contrast);
+}
+.cheese-tree-node:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.cheese-tree-node:focus-visible > .cheese-tree-row {
+  outline: 2px solid var(--cheese-focus);
+  outline-offset: 2px;
+  box-shadow: inset 0 0 0 1px var(--cheese-focus-contrast);
+}
+.cheese-tag button:focus-visible,
+.cheese-calendar button:focus-visible {
+  outline: 2px solid var(--cheese-focus);
+  outline-offset: 2px;
+  box-shadow: inset 0 0 0 1px var(--cheese-focus-contrast);
+}
+.cheese-tags:has(input:focus-visible) {
+  outline: 2px solid var(--cheese-focus);
+  outline-offset: 2px;
+}
+.cheese-tags > input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.cheese-input[aria-invalid="true"]:focus {
+  box-shadow:
+    inset 0 -2px 0 var(--cheese-selection-indicator),
+    inset 0 0 0 1px var(--cheese-focus-contrast);
+}
+@media (prefers-contrast: more) {
+  :root {
+    --cheese-border: #8b8b90;
+    --cheese-border-subtle: #8b8b90;
+    --cheese-control-border: #626269;
+    --cheese-control-edge: #626269;
+    --cheese-control-hover-border: #626269;
+    --cheese-shadow-card: 0 0 0 1px #8b8b90;
+    --cheese-shadow-control: inset 0 0 0 1px #626269;
+  }
+}
+@media (forced-colors: active) {
+  [class^="cheese-"],
+  [class*=" cheese-"] {
+    box-shadow: none !important;
+  }
+  .cheese-input,
+  .cheese-tags,
+  .cheese-checkbox,
+  .cheese-radio,
+  .cheese-switch,
+  .cheese-slider-thumb,
+  .cheese-dialog,
+  .cheese-menu,
+  .cheese-select-content,
+  .cheese-combobox-popup {
+    border: 1px solid ButtonText;
+  }
+  [class^="cheese-"]:focus-visible,
+  [class*=" cheese-"]:focus-visible,
+  .cheese-tags:focus-within,
+  .cheese-tree-node:focus-visible > .cheese-tree-row,
+  .cheese-calendar button:focus-visible {
+    outline-color: Highlight;
+  }
+  .cheese-checkbox[data-state="checked"],
+  .cheese-checkbox[data-state="indeterminate"],
+  .cheese-radio[data-state="checked"],
+  .cheese-switch[data-state="checked"],
+  .cheese-toggle[data-state="on"],
+  .cheese-period-item[data-state="checked"],
+  .cheese-calendar
+    :is(.rdp-selected .rdp-day_button, .cheese-calendar-day[data-selected]) {
+    border-color: Highlight;
+    color: Highlight;
+  }
+  .cheese-input[aria-invalid="true"] {
+    border-bottom: 2px solid ButtonText;
+  }
+}

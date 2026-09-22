@@ -23,7 +23,7 @@
   width: 100%;
   min-width: 0;
   display: grid;
-  gap: 16px;
+  gap: 20px;
 }
 .cheese-table-toolbar {
   display: flex;
@@ -55,8 +55,8 @@
   gap: 14px;
   padding: 20px;
   background: var(--cheese-bg);
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
+  border: 1px solid var(--cheese-border-subtle);
+  border-radius: var(--cheese-radius-card);
   box-shadow: var(--cheese-shadow);
 }
 .cheese-table-selection {
@@ -72,8 +72,8 @@
   width: 100%;
   overflow: auto;
   max-height: 480px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
+  border: 0;
+  border-radius: var(--cheese-radius-card);
   background: var(--cheese-bg);
 }
 .cheese-data-table .cheese-table {
@@ -83,7 +83,7 @@
 }
 .cheese-data-table .cheese-table caption {
   text-align: left;
-  padding: 16px;
+  padding: 20px;
   font-weight: 600;
   color: var(--cheese-text);
 }
@@ -95,6 +95,9 @@
 }
 .cheese-data-table .cheese-table td {
   background: var(--cheese-bg);
+}
+.cheese-data-table .cheese-table tbody tr:hover:not([data-selected="true"]) td {
+  background: var(--cheese-surface);
 }
 .cheese-data-table .cheese-table tr[data-selected="true"] td {
   background: var(--cheese-brand-soft);
@@ -150,10 +153,10 @@
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  padding: 32px 20px;
-  border: 1px dashed var(--cheese-border-strong);
-  border-radius: 16px;
-  background: var(--cheese-bg);
+  padding: 40px 24px;
+  border: 1px dashed var(--cheese-control-hover-border);
+  border-radius: var(--cheese-radius-card);
+  background: var(--cheese-muted);
   text-align: center;
 }
 .cheese-dropzone > p {
@@ -182,9 +185,9 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  border: 1px solid var(--cheese-border);
-  border-radius: 12px;
-  background: var(--cheese-bg);
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-card);
+  background: var(--cheese-surface);
 }
 .cheese-upload-item > svg {
   flex: none;
@@ -206,7 +209,7 @@
   height: 5px;
   appearance: none;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--cheese-radius-pill);
   background: var(--cheese-muted);
   overflow: hidden;
   accent-color: var(--cheese-brand);
@@ -222,10 +225,11 @@
 }
 .cheese-upload-errors {
   padding: 12px 16px;
-  border: 1px solid var(--cheese-border-strong);
-  border-radius: 10px;
-  background: var(--cheese-brand-soft);
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-control);
+  background: var(--cheese-muted);
   font-size: 13px;
+  border-inline-start: 3px solid var(--cheese-selection-indicator);
 }
 .cheese-upload-errors p {
   margin: 4px 0;

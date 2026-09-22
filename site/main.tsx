@@ -756,6 +756,40 @@ function Foundations() {
         </p>
       </section>
       <section className="doc-section">
+        <h2>Surfaces & boundaries</h2>
+        <p>
+          모든 요소를 선으로 감싸지 않습니다. 내용은 여백으로, 영역은 바탕으로,
+          떠 있는 창은 그림자로 구분합니다. 입력 위치와 선택 상태를 식별하는 데
+          필요한 경계만 남깁니다. 이 기준은 React와 Vue 공통 CSS에 들어
+          있습니다.
+        </p>
+        <Table
+          caption="경계와 깊이의 역할"
+          headers={["역할", "표현", "사용처"]}
+          rows={[
+            ["구분선", "옅은 separator · 넉넉한 간격", "표 · 목록 · 섹션"],
+            ["입력", "옅은 채움 · 하단의 식별 경계", "Input · Select · Tags"],
+            ["콘텐츠 면", "흰 바탕 · 낮은 그림자", "Card · Calendar"],
+            ["떠 있는 면", "깊이에 따른 그림자", "메뉴 · 팝오버 · Dialog"],
+            [
+              "선택",
+              "골드 · 체크/밑줄 등 형태 표시",
+              "Checkbox · Calendar · Toggle",
+            ],
+            [
+              "포커스",
+              "골드 링 + 중립색 대비선",
+              "키보드로 이동하는 모든 요소",
+            ],
+          ]}
+        />
+        <p>
+          읽기 전용은 내용처럼, 비활성은 조작할 수 없는 면처럼 표현합니다.
+          고대비 설정에서는 경계를 강화하고 시스템 강제 색상을 따릅니다. 오류는
+          검은 사각 테두리 대신 안내 문구와 하단 표시로 전달합니다.
+        </p>
+      </section>
+      <section className="doc-section">
         <h2>Typography</h2>
         <div className="type-specimen">
           <span className="type-display">
@@ -787,8 +821,8 @@ function Foundations() {
       <section className="doc-section">
         <h2>Space & shape</h2>
         <p>
-          4px 단위 간격, 절제된 모서리, 하나의 포커스 링. 화면 밀도는 콘텐츠의
-          관계로 결정합니다.
+          4px 단위 간격, 입력 10px·카드 16px·대화창 20px 모서리. 화면 밀도는
+          콘텐츠의 관계로 결정합니다.
         </p>
         <div className="space-bars">
           {[4, 8, 12, 16, 24, 32].map((n) => (
@@ -981,9 +1015,8 @@ function Readiness() {
             <h3>직원 검색부터 저장 실패까지</h3>
             <p>
               서버 검색·다중 선택·데이터 표·파일 업로드와 API 연결 지점을
-              제공합니다. 실제 사내 API에 연결해 평가 작성·검토·반려·승인
-              화면을 구성하고, 한글
-              입력·오류·중복 제출·네트워크 단절을 검증합니다.
+              제공합니다. 실제 사내 API에 연결해 평가 작성·검토·반려·승인 화면을
+              구성하고, 한글 입력·오류·중복 제출·네트워크 단절을 검증합니다.
             </p>
           </Card>
           <Card className="cheese-stack">

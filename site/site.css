@@ -3,7 +3,7 @@ html {
 }
 body {
   margin: 0;
-  background: #fff;
+  background: var(--cheese-bg);
 }
 body,
 h1,
@@ -46,7 +46,7 @@ input {
   align-items: center;
   justify-content: space-between;
   padding: 0 32px;
-  border-bottom: 1px solid #ebebee;
+  border-bottom: 1px solid var(--cheese-border-subtle);
   background: rgb(255 255 255 / 0.92);
   backdrop-filter: blur(20px);
 }
@@ -97,12 +97,12 @@ input {
   top: 72px;
   bottom: 0;
   width: 248px;
-  border-right: 1px solid #ebebee;
+  border-right: 1px solid var(--cheese-border-subtle);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: #ddd transparent;
-  background: #fcfcfd;
+  background: var(--cheese-surface);
 }
 .sidebar-content {
   padding: 28px 20px 24px;
@@ -122,9 +122,6 @@ input {
 }
 .nav-search .cheese-input {
   padding-left: 34px;
-  font-size: 12px;
-  border-color: var(--cheese-border);
-  min-height: 40px;
 }
 .nav-intro {
   display: grid;
@@ -139,20 +136,21 @@ input {
   font-size: 13px;
   text-decoration: none;
   border-radius: 7px;
-  color: #54545b;
+  color: var(--cheese-text-secondary);
 }
 .nav-intro a span {
   font-size: 11px;
   color: var(--cheese-text-secondary);
 }
 .sidebar-content a[aria-current="page"] {
-  background: #ededf0;
-  color: #111;
+  background: var(--cheese-bg);
+  color: var(--cheese-text);
   font-weight: 600;
+  box-shadow: var(--cheese-shadow-card);
 }
 .sidebar-content a:hover {
-  color: #111;
-  background: #f0f0f2;
+  color: var(--cheese-text);
+  background: var(--cheese-muted);
 }
 .nav-caption {
   padding: 0 12px;
@@ -172,7 +170,7 @@ input {
   align-items: center;
   border: 0;
   background: transparent;
-  color: #45454b;
+  color: var(--cheese-text-secondary);
   font-size: 12px;
   font-weight: 600;
   padding: 8px 12px;
@@ -186,7 +184,7 @@ input {
 .nav-group > button svg {
   width: 13px;
   height: 13px;
-  color: #85858b;
+  color: var(--cheese-text-secondary);
   transition: transform 0.15s;
 }
 .nav-group > button svg[data-open="true"] {
@@ -203,7 +201,7 @@ input {
   line-height: 19px;
   border-radius: 6px;
   text-decoration: none;
-  color: #686870;
+  color: var(--cheese-text-secondary);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -226,7 +224,7 @@ input {
 .status-dot {
   width: 5px;
   height: 5px;
-  background: #74747b;
+  background: var(--cheese-text-secondary);
   border-radius: 50%;
   display: inline-block;
   flex: none;
@@ -307,12 +305,10 @@ input {
 .product-preview {
   width: 100%;
   min-width: 0;
-  border: 1px solid #e5e5e9;
+  border: 0;
   border-radius: 16px;
-  background: #fff;
-  box-shadow:
-    0 16px 50px #10102008,
-    0 2px 5px #10102003;
+  background: var(--cheese-bg);
+  box-shadow: var(--cheese-shadow);
   overflow: hidden;
 }
 .product-top {
@@ -320,7 +316,7 @@ input {
   align-items: center;
   justify-content: space-between;
   padding: 16px 22px;
-  border-bottom: 1px solid #ededf0;
+  border-bottom: 1px solid var(--cheese-border-subtle);
 }
 .product-name {
   display: flex;
@@ -403,7 +399,7 @@ input {
   gap: 10px;
   margin-top: 26px;
   padding-top: 20px;
-  border-top: 1px solid #ededf0;
+  border-top: 1px solid var(--cheese-border-subtle);
 }
 .product-task > div {
   flex: 1;
@@ -420,8 +416,8 @@ input {
 }
 .product-bottom {
   padding: 12px 20px;
-  background: #fafafb;
-  border-top: 1px solid #ededf0;
+  background: var(--cheese-surface);
+  border-top: 1px solid var(--cheese-border-subtle);
   font-size: 9px;
   color: var(--cheese-text-secondary);
   display: flex;
@@ -432,8 +428,8 @@ input {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 40px;
-  border-top: 1px solid #ebebee;
-  border-bottom: 1px solid #ebebee;
+  border-top: 1px solid var(--cheese-border-subtle);
+  border-bottom: 1px solid var(--cheese-border-subtle);
   padding: 36px 0;
 }
 .principle-strip > div > span {
@@ -492,13 +488,13 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e9e9ed;
-  background: #fafafb;
-  border-radius: 12px;
+  border: 0;
+  background: var(--cheese-surface);
+  border-radius: var(--cheese-radius-card);
   transition: background 0.2s;
 }
 .explore-card:hover .explore-number {
-  background: #f2f2f5;
+  background: var(--cheese-muted);
 }
 .explore-card h3 {
   display: flex;
@@ -510,7 +506,7 @@ input {
 }
 .explore-card h3 > span {
   font-weight: 400;
-  color: #777;
+  color: var(--cheese-text-secondary);
 }
 .explore-card p {
   font-size: 11px;
@@ -520,7 +516,7 @@ input {
 }
 .home-note {
   padding: 44px 0 48px;
-  border-top: 1px solid #ebebee;
+  border-top: 1px solid var(--cheese-border-subtle);
 }
 .home-note h2 {
   font-size: 26px;
@@ -535,7 +531,7 @@ input {
   margin-bottom: 24px;
 }
 .site-footer {
-  border-top: 1px solid #ebebee;
+  border-top: 1px solid var(--cheese-border-subtle);
   padding: 26px 0;
   display: flex;
   align-items: center;
@@ -606,9 +602,9 @@ input {
   align-items: center;
   justify-content: center;
   padding: 56px 40px 70px;
-  background: #fafafb;
-  border: 1px solid #e5e5e9;
-  border-radius: 16px;
+  background: var(--cheese-surface);
+  border: 0;
+  border-radius: var(--cheese-radius-card);
 }
 .demo-content {
   width: 100%;
@@ -633,7 +629,7 @@ input {
   grid-template-columns: 1.1fr 1fr;
   gap: 60px;
   padding: 48px 0;
-  border-bottom: 1px solid #ebebee;
+  border-bottom: 1px solid var(--cheese-border-subtle);
 }
 .doc-details h2,
 .doc-section > h2 {
@@ -655,8 +651,8 @@ input {
   margin-bottom: 20px;
 }
 .api-list code {
-  background: #f4f4f6;
-  border: 1px solid #e9e9ec;
+  background: var(--cheese-muted);
+  border: 0;
   padding: 5px 8px;
   border-radius: 5px;
   font-size: 11px;
@@ -673,17 +669,17 @@ input {
   color: var(--cheese-text-secondary);
 }
 .code-block {
-  border: 1px solid #e2e2e7;
-  border-radius: 12px;
+  border: 0;
+  border-radius: var(--cheese-radius-card);
   overflow: hidden;
-  background: #fbfbfc;
+  background: var(--cheese-surface);
 }
 .code-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
-  border-bottom: 1px solid #e9e9ed;
+  border-bottom: 1px solid var(--cheese-border-subtle);
   color: var(--cheese-text-secondary);
   font-size: 11px;
 }
@@ -695,7 +691,7 @@ input {
   line-height: 1.9;
   overflow: auto;
   max-height: 540px;
-  color: #333340;
+  color: var(--cheese-text-secondary);
   tab-size: 2;
 }
 .code-block code {
@@ -717,7 +713,7 @@ input {
   padding: 22px 0 30px;
   font-size: 12px;
   color: var(--cheese-text-secondary);
-  border-bottom: 1px solid #ebebee;
+  border-bottom: 1px solid var(--cheese-border-subtle);
 }
 .catalog-section {
   margin: 42px 0 52px;
@@ -734,7 +730,7 @@ input {
 .catalog-section > h2 > span {
   font-size: 11px;
   font-weight: 400;
-  color: #74747b;
+  color: var(--cheese-text-secondary);
   letter-spacing: 0;
 }
 .catalog-cards {
@@ -745,16 +741,17 @@ input {
 .catalog-card {
   position: relative;
   padding: 22px 20px 28px;
-  border: 1px solid #e4e4e9;
-  border-radius: 12px;
+  border: 1px solid transparent;
+  border-radius: var(--cheese-radius-card);
   text-decoration: none;
   transition:
     border-color 0.15s,
     background 0.15s;
+  background: var(--cheese-surface);
 }
 .catalog-card:hover {
-  border-color: #aaaab4;
-  background: #fcfcfd;
+  border-color: transparent;
+  background: var(--cheese-muted);
 }
 .catalog-card > div {
   display: flex;
@@ -778,14 +775,14 @@ input {
   right: 14px;
   bottom: 8px;
   font-size: 12px;
-  color: #777;
+  color: var(--cheese-text-secondary);
 }
 .planned-panel {
   padding: 36px;
   border: 1px solid var(--cheese-border);
   border-radius: 16px;
   margin: 20px 0 48px;
-  background: #fafafb;
+  background: var(--cheese-surface);
 }
 .planned-panel h2 {
   font-size: 22px;
@@ -806,7 +803,7 @@ input {
 }
 .swatch {
   height: 140px;
-  border: 1px solid #dedee3;
+  border: 1px solid var(--cheese-border-subtle);
   border-radius: 12px;
   margin-bottom: 16px;
 }
@@ -944,7 +941,7 @@ input {
   text-decoration: none;
   font-size: 12px;
   padding: 8px 12px;
-  background: #f4f4f6;
+  background: var(--cheese-muted);
   border-radius: 6px;
   color: var(--cheese-text-secondary);
 }
