@@ -43,6 +43,9 @@
     --cheese-shadow-card: 0 0 0 1px #8b8b90;
     --cheese-shadow-control: inset 0 0 0 1px #626269;
   }
+  .cheese-switch {
+    border-color: var(--cheese-focus-contrast);
+  }
 }
 @media (forced-colors: active) {
   [class^="cheese-"],

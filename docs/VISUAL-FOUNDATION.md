@@ -22,7 +22,7 @@ CHEESE의 자체 디자인이다. Apple 디자인의 복제나 공식 인증을 
 | 상태 식별 | controlEdge | 비선택 Checkbox/Radio, thumb 등 작은 조작 요소 |
 | 낮은 면 | shadowCard | 카드, 독립 캘린더, 목록 선택 영역 |
 | 떠 있는 면 | shadow / shadowDialog | 메뉴·팝오버와 모달의 깊이를 분리 |
-| 선택 형태 | selectionIndicator | 골드 외에 체크, 밑줄, 이동한 thumb로 표시 |
+| 선택 형태 | selectionIndicator | 골드 외에 체크, 날짜 밑줄, 글자 굵기, 이동한 thumb로 표시 |
 | 키보드 포커스 | focus / focusContrast | 골드 링과 중립색 대비선을 함께 사용 |
 
 radius: item 8 / control 10 / card 16 / overlay 20. 기존 token API는 보존한다.
@@ -36,6 +36,8 @@ radius: item 8 / control 10 / card 16 / overlay 20. 기존 token API는 보존�
 - 무테 입력은 명확한 라벨과 간격을 전제로 한다. 실제 업무 폼에서 입력 위치를 쉽게 인지하는지 사용성 검증이 필요하다.
 - 의미 없는 컨테이너 선은 낮은 대비여도 되지만, 비선택 Checkbox/Radio의 식별 경계는 유지한다.
 - 체크/라디오 선택: 진한 둘레선 대신 골드와 검은 체크/점을 사용한다.
+- Switch: 기본 둘레선과 thumb의 그림자 없음. thumb 위치로 켜짐/꺼짐을 구분한다. 고대비 설정에서만 식별 경계를 강화한다.
+- Toggle/ToggleGroup/Toolbar: 선택 하단선 없음. 골드 배경, 글자 굵기와 ARIA 상태를 사용한다. 키보드 포커스는 별도 표시한다.
 - 날짜/기간 선택: 진한 둘레선 대신 골드와 숫자 밑줄. 색만으로 상태를 전달하지 않는다.
 - 포커스: 골드 단독은 흰색에서 대비가 부족하다. 중립색 보조선을 함께 표시한다.
 - 오류: 안내 문구/ARIA 유지. 입력 하단을 두껍게 하고 알림은 시작 방향 표시선을 사용한다.

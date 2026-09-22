@@ -223,7 +223,7 @@
   width: 40px;
   height: 24px;
   padding: 2px;
-  border: 1px solid var(--cheese-control-edge);
+  border: 1px solid transparent;
   border-radius: var(--cheese-radius-pill);
   background: var(--cheese-muted);
   cursor: pointer;
@@ -237,7 +237,7 @@
   width: 18px;
   height: 18px;
   background: white;
-  box-shadow: var(--cheese-shadow-thumb);
+  box-shadow: none;
   border-radius: 50%;
   transition: transform var(--cheese-duration);
 }
@@ -629,11 +629,13 @@
   border-radius: var(--cheese-radius-item);
   color: var(--cheese-text-secondary);
   font-size: 13px;
+  font-weight: 500;
 }
 .cheese-toggle[data-state="on"] {
   background: var(--cheese-brand-soft);
-  box-shadow: inset 0 -2px 0 var(--cheese-selection-indicator);
+  box-shadow: none;
   color: var(--cheese-text);
+  font-weight: 600;
 }
 .cheese-toggle-group,
 .cheese-toolbar {
