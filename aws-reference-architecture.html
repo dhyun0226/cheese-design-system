@@ -73,14 +73,14 @@
 <button class="node service" id="n-website" data-node="website" aria-pressed="false"><span class="node-title"><span data-icon="browser"></span><strong>공식 홈페이지</strong></span><span class="domain">www.starship-ent.com</span><span class="service-tag">아티스트 · 소식 · 일정</span></button>
 <button class="node service" id="n-audition" data-node="audition" aria-pressed="false"><span class="node-title"><span data-icon="application"></span><strong>오디션</strong></span><span class="domain">audition.starship-ent.com</span><span class="service-tag">공고 · 지원 · 접수 확인</span></button>
 <button class="node service" id="n-people" data-node="people" aria-pressed="false"><span class="node-title"><span data-icon="building"></span><strong>STARSHIP People</strong></span><span class="domain">people.starship-ent.com</span><span class="service-tag">인사평가 → 관리 · 포털</span></button>
-<button class="node aws" id="n-dns" data-node="dns" aria-pressed="false"><span class="node-title"><span data-icon="dns"></span><strong>주소 안내</strong></span><small>Route 53 · DNS</small><span class="micro">세 도메인의 목적지 연결</span></button>
-<button class="node aws" id="n-edge" data-node="edge" aria-pressed="false"><span class="node-title"><span data-icon="shield"></span><strong>전송·보안 관문</strong></span><small>CloudFront + WAF</small><span class="micro">공개 콘텐츠 캐시 · 접근 정책</span></button>
+<button class="node aws" id="n-dns" data-node="dns" aria-pressed="false"><span class="node-title"><span data-icon="dns"></span><strong>Amazon Route 53</strong></span><small>DNS · 도메인 목적지 연결</small><span class="micro">www · audition · people</span></button>
+<button class="node aws" id="n-edge" data-node="edge" aria-pressed="false"><span class="node-title"><span data-icon="shield"></span><strong>CloudFront + AWS WAF</strong></span><small>CDN · 캐시 · 웹 접근 보호</small><span class="micro">서비스별 전송·접근 정책</span></button>
 <div class="access-note" id="access-note"><strong>사내 서비스: 해외 직접 접근 차단</strong>국내 접근 기본안 · SSO + MFA<br>업무 권한은 서버에서 다시 확인</div>
 <div class="scope-note"><span class="desktop-scope">AWS VPC<br>가운데 점선 안: 전용 네트워크</span><span class="mobile-scope">AWS VPC · 앱·DB를 보호하는 전용 네트워크</span></div>
-<button class="node aws" id="n-alb" data-node="alb" aria-pressed="false"><span class="node-title"><span data-icon="route"></span><strong>요청 분배</strong></span><small>ALB · 허용된 진입점</small></button>
-<button class="node runtime" id="n-app" data-node="app" aria-pressed="false"><span class="node-title"><span data-icon="server"></span><strong>업무 처리</strong></span><small>ECS / Fargate · Spring Boot</small><span class="micro">공개 API · 오디션 · 사내 업무</span><span class="pill">Private · 직접 접근 없음</span></button>
-<button class="node database" id="n-db" data-node="db" aria-pressed="false"><span class="node-title"><span data-icon="database"></span><strong>업무 데이터</strong></span><small>RDS PostgreSQL · Private</small><span class="micro">콘텐츠 · 지원서 · 평가 · 이력</span></button>
-<button class="node storage" id="n-files" data-node="files" aria-pressed="false"><span data-icon="bucket"></span><strong>파일 저장소</strong><small>Amazon S3</small><span class="storage-note">홈페이지 이미지<br>오디션 사진·영상<br>사내 첨부파일</span><span class="pill">용도별 Private Bucket</span><span class="micro">VPC 밖의 AWS 서비스<br>공개 파일도 CloudFront로 전달</span></button>
+<button class="node aws" id="n-alb" data-node="alb" aria-pressed="false"><span class="node-title"><span data-icon="route"></span><strong>Application Load Balancer</strong></span><small>ALB · 요청 분배와 Health Check</small></button>
+<button class="node runtime" id="n-app" data-node="app" aria-pressed="false"><span class="node-title"><span data-icon="server"></span><strong>Amazon ECS on Fargate</strong></span><small>Spring Boot · 애플리케이션 실행</small><span class="micro">공개 API · 오디션 · 사내 업무</span><span class="pill">Private · 직접 접근 없음</span></button>
+<button class="node database" id="n-db" data-node="db" aria-pressed="false"><span class="node-title"><span data-icon="database"></span><strong>Amazon RDS for PostgreSQL</strong></span><small>관계형 업무 데이터 · Private</small><span class="micro">콘텐츠 · 지원서 · 평가 · 이력</span></button>
+<button class="node storage" id="n-files" data-node="files" aria-pressed="false"><span data-icon="bucket"></span><strong>Amazon S3</strong><small>Object Storage · 파일 저장소</small><span class="storage-note">홈페이지 이미지<br>오디션 사진·영상<br>사내 첨부파일</span><span class="pill">용도별 Private Bucket</span><span class="micro">VPC 밖의 AWS 서비스<br>공개 파일도 CloudFront로 전달</span></button>
 <button class="node integration" id="n-hr" data-node="hr" aria-pressed="false"><span data-icon="sync"></span><strong>기존 HR·그룹웨어</strong><small>직원·조직 원천 연동</small><span class="storage-note">입사 · 이동 · 퇴사 반영<br>기존 시스템 확인 후 연결</span><span class="pill">외부 원천 시스템</span></button>
 </div>
 <div class="graph-caption"><strong>공통 기반 ≠ 데이터 공개.</strong> 구성요소는 논리 계층으로 한 번씩 표시했습니다. 도메인별 CloudFront 배포·정책, 공개/사내 업무의 실행·권한은 구분합니다. CDN 캐시가 맞으면 앱·DB 호출 없이 콘텐츠를 전달합니다.</div>
@@ -183,6 +183,10 @@ details.hr=D('기존 HR·그룹웨어','새 시스템의 직원·조직 정보�
 details.platform=D('다음 제품이 재사용할 기반','인증·권한·직원/조직 기준·파일·알림·감사와 CHEESE UI를 필요한 범위부터 재사용합니다.','“두 번째 시스템에서는 로그인과 버튼부터 다시 만들지 않게 하겠습니다.”',[['애플리케이션','기존 IdP 연동, 역할/데이터 권한, 파일, 알림, 감사·오류 규칙'],['데이터와 UI','식별자·공통코드·개인정보/보존 기준, CHEESE 토큰·폼·표·상태 패턴']],[['원천 준수','직원·조직은 기존 책임 시스템을 기준으로 하고 제품에 필요한 이력을 관리합니다.']],[['단계적 추출','첫 인사평가에서 실제 사용한 기능을 공통화합니다. 별도 플랫폼 서비스나 MSA를 먼저 만들지 않습니다.']],'People 내부 모듈·공통 라이브러리\nCHEESE 패키지·문서');
 details.operations=D('운영 · 감지하고 복구하기','보안 설정·장애 감지·백업·복구·비용을 하나의 운영 기준으로 관리합니다.','“장애를 감지하고 복구할 수 있는 체계를 갖추겠습니다.”',[['감지','CloudWatch 오류·지연·리소스·DB 알림, 담당자 통보와 Runbook'],['복구','RDS PITR, 필요한 S3 버전 보호, 실제 Restore Test와 RTO/RPO']],[['운영 정보','접근/변경 감사·앱 로그·지표·백업. 비밀번호·토큰·평가 원문이 로그에 남지 않도록 합니다.']],[['책임과 비용','장애 연락·대체 담당자·외부 지원을 합의하고 Budgets·태그로 비용을 확인합니다.'],['보안 도구','IAM·Secrets·KMS·CloudTrail·GuardDuty를 범위와 비용에 맞게 구성합니다.']],'운영 알림: 회사 메일/협업 도구\n실제 제품은 회사 환경 확인 후 연결');
 details.delivery=D('검증 · 배포 · 환경 분리','테스트와 보안 검사를 통과한 동일 이미지를 검증 환경에서 운영으로 승격합니다.','“어떤 버전인지 확인하고 되돌릴 수 있게 배포하겠습니다.”',[['Pipeline','Git → Test / SAST / Secret Scan → Build → ECR → DEV → STAGE → 승인 → PROD'],['IaC','Terraform 변경 검토, 상태 파일 보호, 변경 이력과 재현 절차']],[['격리','운영·비운영 계정, 환경별 DB·파일·Secret·권한 분리. 테스트는 가상 데이터 기본']],[['Rollback','이전 이미지와 배포 기록 유지. DB 변경은 호환/복구 전략을 별도로 검증합니다.'],['승인 책임','배포 실행자와 업무 확인·승인 담당자를 합의해 기록합니다.']],'환경별 주소는 구축 시 확정\n운영 데이터는 개발로 복사하지 않음');
+Object.assign(details.alb,{title:'Application Load Balancer',say:'“ALB가 요청을 분배하고 정상 상태의 애플리케이션으로 전달합니다.”'});
+Object.assign(details.app,{title:'Amazon ECS on AWS Fargate',say:'“ECS와 Fargate로 컨테이너를 실행해 서버 관리 부담을 줄이고 업무 기능과 운영 품질에 집중하겠습니다.”'});
+Object.assign(details.db,{title:'Amazon RDS for PostgreSQL',say:'“평가와 지원서 내용은 RDS에, 사진·영상 파일은 S3에 저장합니다.”'});
+Object.assign(details.files,{title:'Amazon S3',say:'“S3에서 공개 이미지와 지원자 자료를 용도별 버킷과 권한으로 구분합니다.”'});
 
 const journeys={
 all:details.all,
@@ -262,4 +266,3 @@ selectPersona('all');
 </script>
 </body>
 </html>
-
