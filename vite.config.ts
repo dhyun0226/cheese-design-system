@@ -10,6 +10,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: "index.html",
+        architecture: "aws-reference-architecture.html",
         vue: "vue.html",
         workflowVue: "workflow-vue.html",
       },
