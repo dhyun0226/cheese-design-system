@@ -9,6 +9,7 @@ import {
   FileText,
   Home,
   LockKeyhole,
+  RotateCcw,
   ShieldCheck,
   Users,
 } from "lucide-react";
@@ -27,6 +28,46 @@ import "./evaluation-product-demo.css";
 
 type Screen = "login" | "home" | "draft" | "review";
 
+export function EvaluationShowcase() {
+  return (
+    <section className="evaluation-showcase" aria-labelledby="showcase-title">
+      <header>
+        <span className="eyebrow">
+          <span className="gold-dash" /> APPLIED EXAMPLE
+        </span>
+        <h1 id="showcase-title">CHEESE를 제품에 적용하면.</h1>
+        <p>
+          공통 토큰과 컴포넌트를 조합한 독립형 제품 예제입니다. 문서 화면을
+          벗어나 실제 사용 흐름을 짧게 체험할 수 있습니다.
+        </p>
+      </header>
+      <Card className="evaluation-showcase-card">
+        <div className="evaluation-showcase-visual" aria-hidden="true">
+          <span className="evaluation-product-brand">
+            <Logo /> CHEESE PEOPLE
+          </span>
+          <div>
+            <Badge tone="brand">PRODUCT EXAMPLE</Badge>
+            <strong>평가보다 성장에 집중할 수 있도록.</strong>
+            <span>로그인부터 자기평가 검토까지 이어지는 최소 흐름</span>
+          </div>
+        </div>
+        <div className="evaluation-showcase-copy">
+          <span className="eyebrow">PEOPLE &amp; GROWTH</span>
+          <h2>인사평가 제품 예제</h2>
+          <p>
+            가상 데이터로 구성된 인터랙티브 예제입니다. 실제 평가 정책이나 내부
+            시스템을 재현하지 않습니다.
+          </p>
+          <a className="cheese-button" href="#/examples/evaluation">
+            독립 데모 열기
+          </a>
+        </div>
+      </Card>
+    </section>
+  );
+}
+
 export default function EvaluationProductDemo() {
   const [screen, setScreen] = useState<Screen>("login");
   const [title, setTitle] = useState("하반기 주요 업무와 기여");
@@ -40,86 +81,79 @@ export default function EvaluationProductDemo() {
     setScreen("draft");
   };
 
-  return (
-    <section className="evaluation-concept" aria-labelledby="evaluation-title">
-      <header className="evaluation-concept-heading">
-        <div>
-          <span className="eyebrow">
-            <span className="gold-dash" /> PRODUCT CONCEPT
-          </span>
-          <h1 id="evaluation-title">인사평가가 제품이 된다면.</h1>
-          <p>
-            CHEESE 컴포넌트로 구성한 최소 제품 예제입니다. 로그인부터 오늘 할 일
-            확인, 평가 초안 작성까지 한 흐름만 연결했습니다.
-          </p>
-        </div>
-        <Badge tone="brand">Interview prototype</Badge>
-      </header>
+  const resetDemo = () => {
+    setScreen("login");
+    setTitle("하반기 주요 업무와 기여");
+    setSummary("");
+    setFocus("delivery");
+    setError("");
+    setSaved("예시 초안 · 저장 전");
+  };
 
-      <div className="evaluation-assumption" role="note">
-        <ShieldCheck aria-hidden="true" />
-        <div>
-          <strong>화면과 상호작용을 검토하기 위한 가상 데이터입니다.</strong>
-          <span>
-            실제 평가 항목·등급·승인 단계·SSO·권한 정책은 현행 프로세스 확인 후
-            정의합니다.
-          </span>
-        </div>
-      </div>
-
-      <div className="evaluation-product-frame">
-        {screen === "login" ? (
-          <LoginScreen onContinue={() => setScreen("home")} />
-        ) : (
-          <ProductShell
-            screen={screen}
+  const product =
+    screen === "login" ? (
+      <LoginScreen onContinue={() => setScreen("home")} />
+    ) : (
+      <ProductShell
+        screen={screen}
+        saved={saved}
+        onHome={() => setScreen("home")}
+        onDraft={openDraft}
+        onLogout={() => setScreen("login")}
+      >
+        {screen === "home" ? (
+          <EmployeeHome onDraft={openDraft} />
+        ) : screen === "draft" ? (
+          <DraftScreen
+            title={title}
+            summary={summary}
+            focus={focus}
+            error={error}
             saved={saved}
-            onHome={() => setScreen("home")}
-            onDraft={openDraft}
-            onLogout={() => setScreen("login")}
-          >
-            {screen === "home" ? (
-              <EmployeeHome onDraft={openDraft} />
-            ) : screen === "draft" ? (
-              <DraftScreen
-                title={title}
-                summary={summary}
-                focus={focus}
-                error={error}
-                saved={saved}
-                onTitle={setTitle}
-                onSummary={(value) => {
-                  setSummary(value);
-                  if (value.trim()) setError("");
-                }}
-                onFocus={setFocus}
-                onBack={() => setScreen("home")}
-                onSave={() => setSaved("방금 이 브라우저에 임시 저장됨")}
-                onReview={() => {
-                  if (!summary.trim()) {
-                    setError("이번 기간의 업무와 기여를 간단히 작성해 주세요.");
-                    return;
-                  }
-                  setScreen("review");
-                }}
-              />
-            ) : (
-              <ReviewScreen
-                title={title}
-                summary={summary}
-                focus={focus}
-                onBack={() => setScreen("draft")}
-              />
-            )}
-          </ProductShell>
+            onTitle={setTitle}
+            onSummary={(value) => {
+              setSummary(value);
+              if (value.trim()) setError("");
+            }}
+            onFocus={setFocus}
+            onBack={() => setScreen("home")}
+            onSave={() => setSaved("방금 이 브라우저에 임시 저장됨")}
+            onReview={() => {
+              if (!summary.trim()) {
+                setError("이번 기간의 업무와 기여를 간단히 작성해 주세요.");
+                return;
+              }
+              setScreen("review");
+            }}
+          />
+        ) : (
+          <ReviewScreen
+            title={title}
+            summary={summary}
+            focus={focus}
+            onBack={() => setScreen("draft")}
+          />
         )}
-      </div>
+      </ProductShell>
+    );
 
-      <footer className="evaluation-concept-footnote">
-        이 예제는 특정 회사의 실제 평가 정책이나 내부 시스템을 재현하지
-        않습니다. 제품 구조와 공통 컴포넌트의 적용 가능성만 보여줍니다.
-      </footer>
-    </section>
+  return (
+    <div className="evaluation-standalone">
+      <header className="evaluation-demo-toolbar">
+        <a href="#/examples" className="evaluation-demo-back">
+          <ArrowLeft aria-hidden="true" /> CHEESE 적용 예제
+        </a>
+        <div>
+          <Badge tone="brand">가상 데이터</Badge>
+          <Button variant="weak" size="sm" onClick={resetDemo}>
+            <RotateCcw aria-hidden="true" /> 데모 초기화
+          </Button>
+        </div>
+      </header>
+      <main className="evaluation-standalone-main">
+        <div className="evaluation-product-frame">{product}</div>
+      </main>
+    </div>
   );
 }
 

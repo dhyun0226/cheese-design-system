@@ -36,7 +36,9 @@ import VueDemoSource from "./VueDemo.vue?raw";
 import Home, { EvaluationPreview } from "./Home";
 import Logo from "./Logo";
 import WorkflowDemo from "./WorkflowDemo";
-import EvaluationProductDemo from "./EvaluationProductDemo";
+import EvaluationProductDemo, {
+  EvaluationShowcase,
+} from "./EvaluationProductDemo";
 import { canLeaveWorkflow } from "./workflow-navigation";
 import { DateField } from "@cheese/react";
 const modules = import.meta.glob<{ default: React.ComponentType }>(
@@ -161,7 +163,7 @@ function Sidebar({
           ["foundations", "디자인 원칙"],
           ["patterns", "업무 화면 예제"],
           ["workflows", "저장과 복구"],
-          ["evaluation-demo", "인사평가 제품 예제"],
+          ["examples", "적용 예제"],
           ["components", "전체 컴포넌트"],
           ["readiness", "도입 체크리스트"],
         ].map(([id, label]) => (
@@ -1032,7 +1034,8 @@ function App() {
             foundations: "디자인 원칙",
             patterns: "업무 화면 예제",
             workflows: "저장과 복구",
-            "evaluation-demo": "인사평가 제품 예제",
+            examples: "적용 예제",
+            "examples/evaluation": "CHEESE People",
             readiness: "도입 체크리스트",
           } as Record<string, string>
         )[route] ||
@@ -1043,6 +1046,13 @@ function App() {
     }
     main.current?.focus();
   }, [route, entry]);
+  if (route === "examples/evaluation") {
+    return (
+      <div className="cheese-root">
+        <EvaluationProductDemo />
+      </div>
+    );
+  }
   return (
     <div className="cheese-root site-app">
       <a
@@ -1148,8 +1158,8 @@ function App() {
               />
               <WorkflowDemo />
             </>
-          ) : route === "evaluation-demo" ? (
-            <EvaluationProductDemo />
+          ) : route === "examples" ? (
+            <EvaluationShowcase />
           ) : route === "readiness" ? (
             <Readiness />
           ) : (

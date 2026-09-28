@@ -3,11 +3,11 @@ import { expect, test } from "@playwright/test";
 test("evaluation concept connects sign-in, employee home, draft validation and review", async ({
   page,
 }) => {
-  await page.goto("/#/evaluation-demo");
+  await page.goto("/#/examples/evaluation");
   await expect(
-    page.getByRole("heading", { name: "인사평가가 제품이 된다면." }),
+    page.getByRole("link", { name: "CHEESE 적용 예제" }),
   ).toBeVisible();
-  await expect(page.getByRole("note")).toContainText("가상 데이터");
+  await expect(page.getByText("CHEESE PEOPLE")).toBeVisible();
 
   await page.getByRole("button", { name: "직원 데모로 계속하기" }).click();
   await expect(
@@ -43,10 +43,23 @@ test("evaluation concept remains usable on a narrow screen", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 760 });
-  await page.goto("/#/evaluation-demo");
+  await page.goto("/#/examples/evaluation");
   await page.getByRole("button", { name: "직원 데모로 계속하기" }).click();
   await expect(page.getByRole("button", { name: "내 평가" })).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(320);
+});
+
+test("applied examples page links to the standalone product", async ({
+  page,
+}) => {
+  await page.goto("/#/examples");
+  await expect(
+    page.getByRole("heading", { name: "CHEESE를 제품에 적용하면." }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "독립 데모 열기" }).click();
+  await expect(page).toHaveURL(/#\/examples\/evaluation$/);
+  await expect(page.getByRole("button", { name: "데모 초기화" })).toBeVisible();
+  await expect(page.locator(".site-sidebar")).toHaveCount(0);
 });
