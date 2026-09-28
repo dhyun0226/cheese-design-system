@@ -129,6 +129,9 @@
 .cheese-table-state .cheese-button {
   margin-top: 12px;
 }
+.cheese-table-state [role="alert"] {
+  color: var(--cheese-danger);
+}
 .cheese-table-footer {
   display: flex;
   align-items: center;
@@ -229,7 +232,8 @@
   border-radius: var(--cheese-radius-control);
   background: var(--cheese-muted);
   font-size: 13px;
-  border-inline-start: 3px solid var(--cheese-selection-indicator);
+  border-inline-start: 3px solid var(--cheese-danger);
+  color: var(--cheese-danger);
 }
 .cheese-upload-errors p {
   margin: 4px 0;

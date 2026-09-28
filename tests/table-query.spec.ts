@@ -70,6 +70,20 @@ for (const framework of ["react", "vue"]) {
       page,
     }) => {
       await page.goto(url);
+      const pageSize = page.getByRole("combobox", { name: "페이지 크기" });
+      await expect(pageSize).toBeVisible();
+      await expect(page.locator(".cheese-table-footer label")).toHaveClass(
+        /cheese-sr-only/,
+      );
+      await expect(page.locator(".cheese-table-footer")).toHaveCSS(
+        "align-items",
+        "center",
+      );
+      expect(
+        await page
+          .locator(".cheese-table-footer")
+          .evaluate((node) => node.getBoundingClientRect().height),
+      ).toBeLessThanOrEqual(44);
       await page
         .getByRole("button", { name: "외부 복원", exact: true })
         .click();
@@ -78,7 +92,7 @@ for (const framework of ["react", "vue"]) {
       await page
         .getByRole("button", { name: "외부 복원", exact: true })
         .click();
-      await page.getByRole("combobox", { name: "페이지 크기" }).click();
+      await pageSize.click();
       await page.getByRole("option", { name: "10개씩", exact: true }).click();
       await expect(page.getByText("총 30개 · 1 / 3페이지")).toBeVisible();
       await page

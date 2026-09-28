@@ -98,7 +98,7 @@
   color: var(--cheese-text-secondary);
 }
 .cheese-input[aria-invalid="true"] {
-  border-color: var(--cheese-selection-indicator);
+  border-color: var(--cheese-danger);
 }
 .cheese-input:where(
   :hover:not(
@@ -135,6 +135,9 @@
 .cheese-help[data-error="true"] {
   color: var(--cheese-danger);
 }
+.cheese-help[role="alert"] {
+  color: var(--cheese-danger);
+}
 .cheese-card {
   margin: 0;
   padding: 24px;
@@ -168,7 +171,7 @@
   color: var(--cheese-success);
 }
 .cheese-badge[data-tone="critical"] {
-  background: var(--cheese-brand-soft);
+  background: var(--cheese-danger-soft);
   color: var(--cheese-danger);
 }
 .cheese-check-label {
@@ -569,9 +572,9 @@
   line-height: 1.6;
 }
 .cheese-alert[data-tone="critical"] {
-  border-inline-start: 3px solid var(--cheese-selection-indicator);
+  border-inline-start: 3px solid var(--cheese-danger);
   color: var(--cheese-danger);
-  background: var(--cheese-surface);
+  background: var(--cheese-danger-soft);
 }
 .cheese-breadcrumb {
   display: flex;
@@ -629,7 +632,9 @@
 }
 .cheese-pagination-item {
   cursor: pointer;
-  transition: background var(--cheese-duration), color var(--cheese-duration);
+  transition:
+    background var(--cheese-duration),
+    color var(--cheese-duration);
 }
 .cheese-pagination-item:hover:not(:disabled) {
   background: var(--cheese-muted);

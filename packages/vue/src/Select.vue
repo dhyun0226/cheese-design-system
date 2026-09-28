@@ -25,6 +25,8 @@ const props = defineProps<{
   required?: boolean;
   error?: string;
   description?: string;
+  /** Keeps the accessible label while visually hiding it in compact layouts. */
+  labelVisible?: boolean;
   id?: string;
 }>();
 const emit = defineEmits<{ "update:modelValue": [value: string] }>();
@@ -97,7 +99,9 @@ function invalid(event: Event) {
 </script>
 <template>
   <div ref="root" class="cheese-field" @invalid.capture="invalid">
-    <label class="cheese-label" :for="id || auto"
+    <label
+      :class="labelVisible === false ? 'cheese-sr-only' : 'cheese-label'"
+      :for="id || auto"
       >{{ label }}<span v-if="required" aria-hidden="true"> *</span></label
     >
     <P.SelectRoot
@@ -174,6 +178,7 @@ function invalid(event: Event) {
       v-if="error || validation || description"
       :id="auto + '-hint'"
       class="cheese-help"
+      :data-error="!!(error || validation)"
       :role="error || validation ? 'alert' : undefined"
     >
       {{ error || validation || description }}

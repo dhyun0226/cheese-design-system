@@ -141,6 +141,9 @@
   font-size: 13px;
   color: var(--cheese-text-secondary);
 }
+.cheese-collection-empty [role="alert"] {
+  color: var(--cheese-danger);
+}
 .cheese-listbox {
   padding: 6px;
   border: 1px solid transparent;
@@ -223,12 +226,17 @@
   border-color: var(--cheese-control-hover-border);
 }
 .cheese-pin-input[aria-invalid="true"] + .cheese-pin-slots .cheese-pin-slot {
-  border-color: var(--cheese-selection-indicator);
+  border-color: var(--cheese-danger);
 }
 .cheese-pin-input:focus + .cheese-pin-slots .cheese-pin-slot[data-active] {
-  border-color: var(--cheese-focus-contrast);
+  border-color: var(--cheese-control-edge);
   outline: 2px solid var(--cheese-focus);
   outline-offset: 0;
+}
+.cheese-pin-input[aria-invalid="true"]:focus
+  + .cheese-pin-slots
+  .cheese-pin-slot[data-active] {
+  border-color: var(--cheese-danger);
 }
 .cheese-pin-input:focus + .cheese-pin-slots .cheese-pin-slot[data-selected] {
   background: var(--cheese-brand-soft);

@@ -466,6 +466,7 @@ function toggleRow(row: DataRow) {
         >총 {{ result.total }}개 · {{ query.page }} / {{ pages }}페이지</span
       ><Select
         label="페이지 크기"
+        :label-visible="false"
         :model-value="String(query.pageSize)"
         :options="
           [...new Set([5, 10, 20, 50, query.pageSize])]

@@ -270,7 +270,9 @@ test("brand tokens remain explicit and orange is absent", () => {
   );
   assert.ok(css.includes(tokens.color.cheeseGold));
   assert.equal(tokens.semantic.focus, "{color.cheeseGold}");
-  assert.equal(tokens.semantic.danger, "{color.spaceBlack}");
+  assert.equal(tokens.color.critical, "#B42318");
+  assert.equal(tokens.semantic.danger, "{color.critical}");
+  assert.equal(tokens.semantic.dangerSoft, "#FEF3F2");
   assert.equal(tokens.semantic.success, "{color.spaceBlack}");
 });
 
@@ -310,6 +312,7 @@ test("quiet white inputs preserve contrast for focus and selection cues", () => 
   assert.equal(tokens.semantic.shadowControl, "none");
   assert.equal(tokens.semantic.controlBorder, "#CECECE");
   assert.equal(tokens.semantic.controlHoverBorder, "#BBBBBB");
+  assert.ok(contrast(tokens.color.critical, tokens.color.lunarWhite) >= 4.5);
   assert.ok(
     contrast(tokens.semantic.controlEdge, tokens.color.lunarWhite) >= 3,
   );
@@ -364,7 +367,7 @@ test("all new high-level controls and navigation components are exported", () =>
     assert.ok(R[name], `Missing React export ${name}`);
 });
 
-test("legacy brown and semantic chromatic colors do not return", () => {
+test("legacy brown and unapproved semantic colors do not return", () => {
   const files = [
     "tokens.css",
     "components.css",

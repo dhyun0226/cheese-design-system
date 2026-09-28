@@ -429,6 +429,7 @@ export function DataTable<T extends DataRow>({
         </span>
         <Select
           label="페이지 크기"
+          labelVisible={false}
           value={String(query.pageSize)}
           options={[...new Set([5, 10, 20, 50, query.pageSize])]
             .sort((a, b) => a - b)

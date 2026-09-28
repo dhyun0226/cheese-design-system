@@ -136,6 +136,14 @@ test("form connects errors and clears errors on input", async ({ page }) => {
   await expect(page.locator('[id="' + id + '"]')).toContainText(
     "올바른 이메일",
   );
+  await expect(email).toHaveCSS("border-color", "rgb(180, 35, 24)");
+  await expect(page.locator('[id="' + id + '"]')).toHaveCSS(
+    "color",
+    "rgb(180, 35, 24)",
+  );
+  await email.focus();
+  await expect(email).toHaveCSS("border-color", "rgb(180, 35, 24)");
+  await expect(email).toHaveCSS("outline-color", "rgb(255, 201, 40)");
   await email.fill("cheese@example.test");
   await expect(email).not.toHaveAttribute("aria-invalid", "true");
   await page.getByRole("button", { name: "입력값 검증" }).click();

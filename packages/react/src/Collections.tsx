@@ -19,6 +19,8 @@ export interface SelectProps extends React.ComponentPropsWithoutRef<
   id?: string;
   error?: string;
   description?: string;
+  /** Keeps the accessible label while visually hiding it in compact layouts. */
+  labelVisible?: boolean;
 }
 export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
   function Select(
@@ -29,6 +31,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       id: provided,
       error,
       description,
+      labelVisible = true,
       ...props
     },
     ref,
@@ -108,7 +111,10 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
               ?.focus();
         }}
       >
-        <label className="cheese-label" htmlFor={id}>
+        <label
+          className={labelVisible ? "cheese-label" : "cheese-sr-only"}
+          htmlFor={id}
+        >
           {label}
           {props.required && <span aria-hidden="true"> *</span>}
         </label>
@@ -199,6 +205,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
           <p
             id={id + "-hint"}
             className="cheese-help"
+            data-error={!!invalid}
             role={invalid ? "alert" : undefined}
           >
             {hint}
