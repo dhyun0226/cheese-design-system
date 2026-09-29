@@ -11,4 +11,12 @@
 @import "./error-summary.css";
 @import "./attachment-list.css";
 @import "./search-input.css";
+@import "./patterns.css";
+@import "./templates.css";
+@import "./organization.css";
+@import "./collaboration.css";
+@import "./media-states.css";
+@import "./data-actions.css";
+@import "./workspace.css";
+@import "./record-collection.css";
 @import "./accessibility.css";

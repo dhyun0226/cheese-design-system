@@ -70,6 +70,7 @@ function submit(event: Event) {
         :default-value="['기본']"
         :model-value="controlled ? tags : undefined"
         @update:model-value="tags = $event"
+        :disabled="disabled"
       />
       <Editable
         label="업무 제목"

@@ -1,0 +1,84 @@
+/* One flat collection surface assembled from the public pattern primitives. */
+.cheese-record-collection {
+  display: grid;
+  min-width: 0;
+  color: var(--cheese-text);
+  font-size: var(--cheese-font-size-body);
+  line-height: var(--cheese-line-height-body);
+}
+
+.cheese-record-collection > .cheese-filter-bar {
+  padding: var(--cheese-space-4) 0;
+  border: 0;
+  border-bottom: 1px solid var(--cheese-border-subtle);
+  border-radius: 0;
+  background: transparent;
+}
+
+.cheese-record-collection-toolbar,
+.cheese-record-collection-selection,
+.cheese-record-collection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cheese-space-3);
+  min-width: 0;
+}
+
+.cheese-record-collection-toolbar,
+.cheese-record-collection-selection {
+  justify-content: space-between;
+  padding-block: var(--cheese-space-3);
+  border-bottom: 1px solid var(--cheese-border-subtle);
+}
+
+.cheese-record-collection-selection {
+  padding-inline: var(--cheese-space-3);
+  background: var(--cheese-brand-soft);
+}
+
+.cheese-record-collection-selection > .cheese-bulk-action-bar {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.cheese-record-collection-actions {
+  margin-inline-start: auto;
+}
+
+.cheese-record-collection-actions > .cheese-button,
+.cheese-record-collection-toolbar > .cheese-button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.cheese-record-collection > .cheese-data-table {
+  gap: 0;
+}
+
+.cheese-record-collection .cheese-table-toolbar {
+  justify-content: flex-end;
+  padding-block: var(--cheese-space-3);
+}
+
+.cheese-record-collection .cheese-table-scroll {
+  border-radius: 0;
+  border-top: 1px solid var(--cheese-border-subtle);
+  border-bottom: 1px solid var(--cheese-border-subtle);
+}
+
+.cheese-record-collection .cheese-table caption {
+  padding: var(--cheese-space-3) var(--cheese-space-4);
+  font-size: var(--cheese-font-size-label);
+  font-weight: var(--cheese-font-weight-semibold);
+}
+
+.cheese-record-collection .cheese-table-footer {
+  gap: var(--cheese-space-4);
+  padding-block: var(--cheese-space-4);
+}

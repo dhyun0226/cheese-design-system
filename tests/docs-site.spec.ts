@@ -178,7 +178,9 @@ test("component navigation keeps the title, selection and section links in sync"
   await expect(sidebar.locator('a[aria-current="page"]')).toHaveText(
     "Select Form",
   );
-  await sidebar.getByRole("textbox", { name: "컴포넌트 검색" }).fill("Toolbar");
+  await sidebar
+    .getByRole("textbox", { name: "라이브러리 검색" })
+    .fill("Toolbar");
   await sidebar.getByRole("link", { name: "Toolbar", exact: true }).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Toolbar");
   await expect(sidebar.locator('a[aria-current="page"]')).toHaveText("Toolbar");
@@ -214,7 +216,7 @@ test("mobile documentation search navigates and closes the drawer", async ({
   await page.getByRole("button", { name: "메뉴 열기" }).click();
   const drawer = page.getByRole("dialog", { name: "문서 탐색" });
   await drawer
-    .getByRole("textbox", { name: "컴포넌트 검색" })
+    .getByRole("textbox", { name: "라이브러리 검색" })
     .fill("Pagination");
   await drawer.getByRole("link", { name: "Pagination", exact: true }).click();
   await expect(drawer).not.toBeVisible();
@@ -231,7 +233,43 @@ test("mobile documentation search navigates and closes the drawer", async ({
     .toBe(true);
 });
 
-test("the active component scrolls inside the desktop sidebar without moving the page", async ({
+test("desktop sidebar keeps every documentation area available", async ({
+  page,
+}) => {
+  await page.goto("/#/components");
+  const sidebar = page.getByRole("complementary", { name: "문서 사이드바" });
+  await expect(sidebar.locator(".nav-caption")).toContainText([
+    "가이드",
+    "컴포넌트",
+    "패턴과 템플릿",
+    "업무 화면",
+  ]);
+  await expect(
+    sidebar.getByRole("link", { name: "소개", exact: true }),
+  ).toBeVisible();
+  await expect(
+    sidebar.getByRole("textbox", { name: "라이브러리 검색" }),
+  ).toBeVisible();
+
+  await page.goto("/#/business-patterns");
+  await expect(sidebar.locator(".nav-caption")).toContainText([
+    "가이드",
+    "컴포넌트",
+    "패턴과 템플릿",
+    "업무 화면",
+  ]);
+  await expect(sidebar.getByRole("textbox", { name: "패턴 검색" })).toHaveCount(
+    0,
+  );
+  await expect(
+    page.getByRole("main").getByRole("searchbox", { name: "패턴 검색" }),
+  ).toBeVisible();
+  await expect(
+    sidebar.getByRole("textbox", { name: "라이브러리 검색" }),
+  ).toBeVisible();
+});
+
+test("the active component stays visible inside the compact desktop sidebar without moving the page", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 800 });
@@ -246,11 +284,7 @@ test("the active component scrolls inside the desktop sidebar without moving the
         if (!selected) return false;
         const viewport = element.getBoundingClientRect();
         const item = selected.getBoundingClientRect();
-        return (
-          element.scrollTop > 0 &&
-          item.top >= viewport.top &&
-          item.bottom <= viewport.bottom
-        );
+        return item.top >= viewport.top && item.bottom <= viewport.bottom;
       }),
     )
     .toBe(true);

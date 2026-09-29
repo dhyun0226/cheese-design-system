@@ -1,0 +1,96 @@
+/* Documentation layout only. All component appearance belongs to @cheese/css. */
+.foundation-patterns {
+  min-width: 0;
+  padding-bottom: 48px;
+}
+.foundation-doc-section {
+  min-width: 0;
+  margin-bottom: 48px;
+}
+.foundation-doc-section > h2 {
+  margin: 0 0 18px;
+  font-size: 20px;
+  font-weight: var(--cheese-font-weight-semibold);
+}
+.foundation-demo-stage {
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--cheese-border-subtle);
+  border-radius: var(--cheese-radius-card);
+}
+.foundation-stack {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.foundation-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.foundation-stack > p,
+.foundation-stack > h3 {
+  margin: 0;
+}
+.foundation-prose {
+  max-width: 780px;
+  color: var(--cheese-text-secondary);
+  font-size: 14px;
+  line-height: 1.85;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.foundation-props {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0;
+}
+.foundation-disclaimer {
+  margin-top: 16px;
+}
+.foundation-product-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+.foundation-product-links > a {
+  text-decoration: none;
+  min-width: 0;
+}
+.foundation-product-links article {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  height: 100%;
+}
+.foundation-product-links svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.foundation-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.foundation-demo-stage .foundation-note {
+  margin: 0;
+  color: var(--cheese-text-secondary);
+  font-size: 13px;
+  line-height: var(--cheese-line-height-body);
+}
+@media (max-width: 640px) {
+  .foundation-demo-stage {
+    padding: 16px;
+  }
+  .foundation-product-links {
+    grid-template-columns: 1fr;
+  }
+}

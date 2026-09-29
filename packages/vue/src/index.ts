@@ -1,4 +1,12 @@
 export { default as Button } from "./Button.vue";
+export * from "./patterns";
+export * from "./templates";
+export * from "./organization";
+export * from "./collaboration";
+export * from "./media-states";
+export * from "./data-actions";
+export * from "./workspace";
+export { default as RecordCollection } from "./RecordCollection.vue";
 export { default as AsyncCombobox } from "./AsyncCombobox.vue";
 export { default as MultiSelect } from "./MultiSelect.vue";
 export { default as DataTable } from "./DataTable.vue";

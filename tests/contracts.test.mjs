@@ -7,6 +7,158 @@ import * as R from "../packages/react/dist/index.js";
 import { tokens } from "../packages/tokens/dist/index.js";
 import * as V from "../packages/vue/dist/cheese-vue.js";
 
+test("the composition catalog names 35 distinct public React and Vue components", () => {
+  const catalog = readFileSync(
+    new URL("../site/composition-catalog.ts", import.meta.url),
+    "utf8",
+  );
+  const names = [...catalog.matchAll(/component:\s*"([^"]+)"/g)].map(
+    (match) => match[1],
+  );
+  assert.equal(names.length, 35);
+  assert.equal(new Set(names).size, names.length);
+  for (const name of names) {
+    assert.ok(R[name], `Catalog entry ${name} must be exported by React`);
+    assert.ok(V[name], `Catalog entry ${name} must be exported by Vue`);
+  }
+  for (const name of [
+    "NavigationList",
+    "UserIdentity",
+    "SectionHeader",
+    "StatCard",
+    "StatGroup",
+    "RecordCollection",
+  ]) {
+    assert.ok(
+      names.includes(name),
+      `Missing composition catalog entry ${name}`,
+    );
+  }
+});
+
+test("composition packages do not depend on product routes, fixtures or business persistence", () => {
+  for (const path of [
+    "react/src/workspace.tsx",
+    "react/src/RecordCollection.tsx",
+    "vue/src/RecordCollection.vue",
+    "vue/src/workspace/NavigationList.vue",
+    "vue/src/workspace/UserIdentity.vue",
+    "vue/src/workspace/SectionHeader.vue",
+    "vue/src/workspace/StatCard.vue",
+    "vue/src/workspace/StatGroup.vue",
+  ]) {
+    const source = readFileSync(
+      new URL(`../packages/${path}`, import.meta.url),
+      "utf8",
+    );
+    assert.doesNotMatch(
+      source,
+      /(?:from\s*["'][^"']*\bsite\/|#\/examples\/|management-demo-data)/,
+      path,
+    );
+    assert.doesNotMatch(
+      source,
+      /\b(?:localStorage|sessionStorage|fetch)\s*(?:\.|\()/,
+      path,
+    );
+    assert.doesNotMatch(
+      source,
+      /\b(?:createEmployees|createApplicants|employeeStatusOptions|auditionStageOptions)\b/,
+      path,
+    );
+  }
+});
+
+test("display compositions preserve caller content, zero values and consumer classes", () => {
+  const html = renderToStaticMarkup(
+    h(
+      "div",
+      null,
+      h(R.UserIdentity, {
+        name: "Alex Reviewer",
+        description: "External organization",
+        fallback: "AR",
+        className: "consumer-identity",
+      }),
+      h(R.SectionHeader, {
+        title: "A caller-defined section",
+        description: "Context from the application",
+        headingLevel: 3,
+        className: "consumer-section",
+        actions: h(R.Button, null, "Refresh"),
+      }),
+      h(
+        R.StatGroup,
+        { columns: 2, className: "consumer-stat-group" },
+        h(R.StatCard, {
+          label: "Pending",
+          value: 0,
+          className: "consumer-stat",
+        }),
+        h(R.StatCard, {
+          label: "Pressure",
+          value: "12.75 kPa",
+          description: "Unformatted caller value",
+        }),
+      ),
+    ),
+  );
+  assertClasses(html, [
+    ["cheese-user-identity", "consumer-identity"],
+    ["cheese-section-header", "consumer-section"],
+    ["cheese-stat-group", "consumer-stat-group"],
+    ["cheese-card", "cheese-stat-card", "consumer-stat"],
+  ]);
+  assert.match(html, /<h3\b[^>]*>A caller-defined section<\/h3>/);
+  assert.match(html, /class="cheese-stat-value">0<\/p>/);
+  assert.match(html, /12\.75 kPa/);
+  assert.match(html, /External organization/);
+  assert.match(html, /data-columns="2"/);
+  assert.match(html, /<button\b[^>]*type="button"[^>]*>Refresh<\/button>/);
+});
+
+test("both public framework packages export business patterns and all 22 foundation components", () => {
+  for (const [framework, api] of [
+    ["React", R],
+    ["Vue", V],
+  ]) {
+    for (const name of [
+      "AppShell",
+      "PageHeader",
+      "PeoplePicker",
+      "FilterBar",
+      "BulkActionBar",
+      "DescriptionList",
+      "ActivityTimeline",
+      "SaveStatus",
+      "ListPage",
+      "DetailPage",
+      "FormPage",
+      "MasterDetailLayout",
+      "FormSection",
+      "FormGrid",
+      "FormActions",
+      "ReadOnlyField",
+      "OrganizationTreeSelect",
+      "PermissionMatrix",
+      "SortableList",
+      "NotificationCenter",
+      "CommentComposer",
+      "CommentThread",
+      "FilePreview",
+      "AttachmentGallery",
+      "AccessDenied",
+      "SessionExpired",
+      "PageError",
+      "SavedViews",
+      "ImportWizard",
+      "ExportDialog",
+    ]) {
+      assert.ok(api[name], `Missing ${framework} business pattern ${name}`);
+    }
+  }
+});
+
 test("business modules export typed framework APIs and identical transport logic", () => {
   for (const api of [R, V])
     for (const key of [

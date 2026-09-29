@@ -17,7 +17,7 @@ a {
 }
 .site-app {
   --docs-header-height: 68px;
-  --docs-sidebar-width: 244px;
+  --docs-sidebar-width: 232px;
   --docs-content-width: 1160px;
   font-family: var(--cheese-font-family);
 }
@@ -28,7 +28,7 @@ a {
   height: var(--docs-header-height);
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 34px;
   padding: 0 28px;
   background: var(--cheese-bg);
   border-bottom: 1px solid var(--cheese-border-subtle);
@@ -65,8 +65,8 @@ a {
   display: flex;
   align-items: stretch;
   align-self: stretch;
-  gap: 28px;
-  margin-left: 20px;
+  gap: 26px;
+  margin-left: 12px;
 }
 .header-nav a {
   display: inline-flex;
@@ -121,10 +121,18 @@ a {
   border-right: 1px solid var(--cheese-border-subtle);
 }
 .sidebar-content {
-  padding: 28px 18px 24px;
+  padding: 26px 16px 24px;
 }
 .nav-search {
-  margin: 0 4px 28px;
+  margin: 0 2px 22px;
+}
+.nav-section {
+  min-width: 0;
+}
+.nav-section + .nav-section {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--cheese-border-subtle);
 }
 .nav-caption {
   display: flex;
@@ -136,9 +144,8 @@ a {
   font-weight: 600;
   color: var(--cheese-text);
 }
-.nav-caption-components {
-  padding-top: 24px;
-  border-top: 1px solid var(--cheese-border-subtle);
+.nav-overview-link {
+  margin-bottom: 8px;
 }
 .nav-caption > span {
   font-size: 11px;
@@ -148,7 +155,7 @@ a {
 .nav-intro {
   display: grid;
   gap: 3px;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
 }
 .nav-intro a {
   display: flex;
@@ -173,7 +180,7 @@ a {
   background: var(--cheese-surface);
 }
 .nav-group {
-  margin-bottom: 14px;
+  margin-bottom: 4px;
 }
 .nav-group > button {
   display: flex;
@@ -187,6 +194,14 @@ a {
   padding: 9px 12px;
   cursor: pointer;
   border-radius: 6px;
+}
+.nav-group-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cheese-text-secondary);
+  font-size: 11px;
+  font-weight: var(--cheese-font-weight-regular);
 }
 .nav-group > button svg {
   width: 13px;
@@ -219,16 +234,6 @@ a {
 }
 .search-empty {
   padding-inline: 12px;
-}
-.nav-footer {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin: 30px 12px 0;
-  padding-top: 16px;
-  border-top: 1px solid var(--cheese-border-subtle);
-  font-size: 11px;
-  color: var(--cheese-text-secondary);
 }
 .status-dot {
   display: inline-block;
@@ -1448,7 +1453,7 @@ a {
 }
 @media (max-width: 1080px) {
   .site-app {
-    --docs-sidebar-width: 216px;
+    --docs-sidebar-width: 208px;
   }
   .site-header {
     gap: 28px;

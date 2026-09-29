@@ -1,0 +1,164 @@
+/* Framework-neutral data workflows. Persistence and file codecs belong to apps. */
+.cheese-data-actions {
+  min-width: 0;
+  color: var(--cheese-text);
+  font-family: var(--cheese-font-family);
+  font-size: var(--cheese-font-size-body);
+  line-height: var(--cheese-line-height-body);
+}
+.cheese-data-actions-stack {
+  display: grid;
+  gap: var(--cheese-space-4);
+  min-width: 0;
+}
+.cheese-data-actions-title {
+  margin: 0;
+  font-size: var(--cheese-font-size-heading);
+  font-weight: var(--cheese-font-weight-semibold);
+  line-height: var(--cheese-line-height-heading);
+}
+.cheese-data-actions-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--cheese-space-3);
+  min-width: 0;
+}
+.cheese-data-actions-toolbar > .cheese-field {
+  flex: 1 1 13rem;
+  min-width: 0;
+}
+.cheese-data-actions-muted {
+  margin: 0;
+  color: var(--cheese-text-secondary);
+  font-size: var(--cheese-font-size-label);
+  overflow-wrap: anywhere;
+}
+.cheese-data-actions-error {
+  margin: 0;
+  color: var(--cheese-danger);
+  overflow-wrap: anywhere;
+}
+.cheese-data-actions-status {
+  margin: 0;
+  color: var(--cheese-text);
+  font-weight: var(--cheese-font-weight-medium);
+  overflow-wrap: anywhere;
+}
+.cheese-data-actions-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  max-height: 20rem;
+  overflow: auto;
+  list-style: none;
+}
+.cheese-data-actions-row {
+  display: grid;
+  grid-template-columns: minmax(5rem, 1fr) minmax(0, 3fr);
+  gap: var(--cheese-space-3);
+  padding: var(--cheese-space-3) 0;
+  border-bottom: 1px solid var(--cheese-border-subtle);
+  overflow-wrap: anywhere;
+}
+.cheese-data-actions-file {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cheese-space-4);
+  padding: var(--cheese-space-6);
+  border: 1px solid var(--cheese-border-subtle);
+  border-radius: var(--cheese-radius-card);
+  background: var(--cheese-bg);
+}
+.cheese-data-actions-file > div {
+  flex: 1 1 14rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.cheese-data-actions-map {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: var(--cheese-space-4);
+  min-width: 0;
+}
+.cheese-data-actions-dialog {
+  width: min(38rem, calc(100vw - var(--cheese-space-8)));
+}
+.cheese-data-actions-fieldset {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--cheese-space-3);
+  min-width: 0;
+  margin: 0;
+  padding: var(--cheese-space-3) 0 0;
+  border: 0;
+}
+.cheese-data-actions-fieldset legend {
+  padding: 0;
+}
+.cheese-data-actions-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cheese-space-2) var(--cheese-space-4);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: var(--cheese-font-size-label);
+  color: var(--cheese-text-secondary);
+}
+.cheese-data-actions-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cheese-space-2);
+}
+.cheese-data-actions-steps li > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--cheese-space-6);
+  height: var(--cheese-space-6);
+  flex: none;
+  border-radius: var(--cheese-radius-pill);
+  background: var(--cheese-surface);
+  font-variant-numeric: tabular-nums;
+}
+.cheese-data-actions-steps li[aria-current="step"] {
+  color: var(--cheese-text);
+  font-weight: var(--cheese-font-weight-semibold);
+}
+.cheese-data-actions-steps li[aria-current="step"] > span {
+  background: var(--cheese-brand);
+  color: var(--cheese-text);
+}
+.cheese-data-actions-result,
+.cheese-data-actions-summary {
+  display: grid;
+  gap: var(--cheese-space-3);
+  padding: var(--cheese-space-4);
+  border: 1px solid var(--cheese-border-subtle);
+  border-radius: var(--cheese-radius-card);
+  overflow-wrap: anywhere;
+}
+.cheese-data-actions-summary > p {
+  margin: 0;
+}
+@media (max-width: 480px) {
+  .cheese-data-actions-toolbar > .cheese-field {
+    flex-basis: 100%;
+  }
+  .cheese-data-actions-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--cheese-space-1);
+  }
+}
+@media (forced-colors: active) {
+  .cheese-data-actions-file,
+  .cheese-data-actions-result,
+  .cheese-data-actions-summary {
+    border-color: CanvasText;
+  }
+  .cheese-data-actions-steps li[aria-current="step"] > span {
+    border: 1px solid Highlight;
+  }
+}

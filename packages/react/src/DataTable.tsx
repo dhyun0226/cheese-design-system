@@ -37,6 +37,10 @@ export interface DataTableProps<T extends DataRow = DataRow> {
   defaultQuery?: TableQuery;
   onQueryChange?: (query: TableQuery) => void;
   debounceMs?: number;
+  /** Hide the built-in search when a surrounding FilterBar owns it. */
+  showSearch?: boolean;
+  /** Hide only when a parent composition provides the selection summary and clear action. */
+  showSelectionSummary?: boolean;
   renderCell?: (row: T, column: TableColumn) => React.ReactNode;
 }
 function copyQuery(query: TableQuery): TableQuery {
@@ -72,6 +76,8 @@ export function DataTable<T extends DataRow>({
   defaultQuery,
   onQueryChange,
   debounceMs = 250,
+  showSearch = true,
+  showSelectionSummary = true,
   renderCell,
 }: DataTableProps<T>) {
   const [localQuery, setLocalQuery] = React.useState<TableQuery>(() =>
@@ -235,39 +241,41 @@ export function DataTable<T extends DataRow>({
   return (
     <section className="cheese-data-table" aria-label={label}>
       <div className="cheese-table-toolbar">
-        <SearchInput
-          id={id + "-search"}
-          label={label + " 검색"}
-          value={search}
-          placeholder="이름, 부서 등으로 검색"
-          onValueChange={(value) =>
-            setSearch(
-              canceledComposition.current && value !== ""
-                ? query.search
-                : value,
-            )
-          }
-          onCompositionStart={() => {
-            composingRef.current = true;
-            canceledComposition.current = false;
-            setComposing(true);
-          }}
-          onCompositionEnd={(event) => {
-            setSearch(
-              canceledComposition.current
-                ? query.search
-                : event.currentTarget.value,
-            );
-            composingRef.current = false;
-            setComposing(false);
-          }}
-          onKeyDownCapture={() => {
-            if (!composingRef.current) canceledComposition.current = false;
-          }}
-          onPointerDownCapture={() => {
-            if (!composingRef.current) canceledComposition.current = false;
-          }}
-        />
+        {showSearch && (
+          <SearchInput
+            id={id + "-search"}
+            label={label + " 검색"}
+            value={search}
+            placeholder="이름, 부서 등으로 검색"
+            onValueChange={(value) =>
+              setSearch(
+                canceledComposition.current && value !== ""
+                  ? query.search
+                  : value,
+              )
+            }
+            onCompositionStart={() => {
+              composingRef.current = true;
+              canceledComposition.current = false;
+              setComposing(true);
+            }}
+            onCompositionEnd={(event) => {
+              setSearch(
+                canceledComposition.current
+                  ? query.search
+                  : event.currentTarget.value,
+              );
+              composingRef.current = false;
+              setComposing(false);
+            }}
+            onKeyDownCapture={() => {
+              if (!composingRef.current) canceledComposition.current = false;
+            }}
+            onPointerDownCapture={() => {
+              if (!composingRef.current) canceledComposition.current = false;
+            }}
+          />
+        )}
         <Popover.Root>
           <Popover.Trigger asChild>
             <Button variant="weak" className="cheese-column-menu">
@@ -305,14 +313,20 @@ export function DataTable<T extends DataRow>({
           </Popover.Portal>
         </Popover.Root>
       </div>
-      <div className="cheese-table-selection">
-        <span role="status">{selected.length}개 행 선택</span>
-        {selected.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={() => changeSelection([])}>
-            전체 선택 해제
-          </Button>
-        )}
-      </div>
+      {showSelectionSummary && (
+        <div className="cheese-table-selection">
+          <span role="status">{selected.length}개 행 선택</span>
+          {selected.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => changeSelection([])}
+            >
+              전체 선택 해제
+            </Button>
+          )}
+        </div>
+      )}
       <div
         className="cheese-table-scroll"
         tabIndex={0}

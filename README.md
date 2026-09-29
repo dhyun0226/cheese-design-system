@@ -7,6 +7,8 @@ STARSHIP Entertainment 공식 제품이 아니며, 실제 직원·평가 데이�
 
 변경 근거와 남은 범위: [0.2 기술 점검](docs/REVIEW.md).
 운영 투입까지의 우선순위와 완료 기준: [상용화 과제](docs/PRODUCTION-READINESS.md).
+패턴·템플릿 재정비의 변경·검증 범위: [검증 기록](docs/COMPOSITION-VALIDATION.md).
+업무 홈 레이아웃과 후속 결함 수정·검증 결과: [2026-09-29 전체 점검](docs/GROUPWARE-AUDIT-2026-09-29.md).
 
 ## 현재 범위
 
@@ -15,7 +17,9 @@ STARSHIP Entertainment 공식 제품이 아니며, 실제 직원·평가 데이�
 - 서버 검색, 다중 선택, 서버/로컬 Data Table, 업로드 큐와 HTTP 어댑터를 React/Vue 양쪽에 제공합니다. [업무 컴포넌트 연동](docs/BUSINESS-COMPONENTS.md)을 먼저 읽으세요. 공개 예제는 가상 데이터와 전송 시뮬레이션입니다.
 - SearchInput, ErrorSummary, AttachmentList와 DataTable의 외부 query 제어를 추가했습니다. 검색 조건 복원 → 수정 → 오류 이동 → 저장 실패·재시도 → 목록 복귀를 [React 업무 흐름](https://dhyun0226.github.io/cheese-design-system/#/workflows)과 [Vue 업무 흐름](https://dhyun0226.github.io/cheese-design-system/workflow-vue.html)에서 체험합니다. 계약과 남은 과제는 [업무 흐름 패턴](docs/WORKFLOW-PATTERNS.md)에 정리했습니다.
 - Vue도 신규 컴포넌트를 공유 CSS + Reka/v-model 기반으로 제공하며 별도 Vue 통합 페이지에서 직접 실행합니다. 기존 전체 카탈로그의 React/Vue 고수준 API가 완전히 동일하다는 의미는 아닙니다.
-- 강조색은 Cheese Gold 한 가지이며 나머지는 중립색입니다. 트리·달력·체크·메뉴 아이콘은 Lucide SVG로 통일하고 Pretendard를 적용합니다.
+- **패턴·템플릿 카탈로그 35종(공개 구성요소 36개)**을 제공합니다. 구현 관점에서는 여러 기본 요소를 합친 composite component지만, 문서에서는 반복되는 업무 동작을 `패턴`, 페이지 뼈대를 `템플릿`으로 구분합니다. NavigationList, UserIdentity, SectionHeader, StatCard, StatGroup, RecordCollection을 포함하며 React/Vue 패키지에서 직접 import합니다. [조합 기준과 재사용 경로](docs/COMPOSITION-MODEL.md), [기존 API](docs/GROUPWARE-PATTERNS.md), [그룹웨어 연결 계약](docs/GROUPWARE-FOUNDATION.md)을 참고하세요.
+- 제품 적용 예제는 `#/examples`에서 인사평가·직원 관리·오디션 지원자 관리로 구분합니다. 직원/지원자 데이터와 처리 규칙은 가상이며, 실제 인증·API·DB를 연결한 서비스는 아닙니다.
+- 브랜드 강조색은 Cheese Gold이며 기본 표면과 텍스트는 중립색입니다. 오류·성공 상태에는 의미별 색상을 제한적으로 사용합니다. 트리·달력·체크·메뉴 아이콘은 Lucide SVG로 통일하고 Pretendard를 적용합니다.
 - Calendar/DatePicker는 React DayPicker 9, Vue Calendar는 Reka + internationalized/date 기반입니다. 한국어·날짜 제한·키보드·기간 선택을 실제 예제로 확인합니다.
 - 입력, 에러 연결, 포커스 관리, 트리 키보드 탐색, 상태 전환, 접근성 자동검사, 모바일 레이아웃을 테스트합니다.
 - DateField/TimeField/NumberField는 React/Vue 공통 업무 입력입니다. 직접 입력과 디자인된 달력·시간 선택·증감 버튼, 인라인 검증, 폼 제출·초기화를 지원합니다. NativeSelect는 제거했으며 Select를 사용합니다.
@@ -85,6 +89,8 @@ npm pack --workspace @cheese/tokens --pack-destination artifacts
 
 ## 검증 및 배포
 
+휴대폰 확인은 [모바일 미리보기 안내](docs/MOBILE-PREVIEW.md)를 참고하세요. PC 기기 모드와 같은 Wi-Fi의 실제 휴대폰 접속 방법을 구분해 설명합니다.
+
 작업 재개는 [인수인계](docs/HANDOFF.md), 최신 구현과 검증은
 [업무 흐름 패턴](docs/WORKFLOW-PATTERNS.md), 구현 전 근거는
 [전체 점검](docs/FULL-AUDIT-2026-09-22.md)을 확인하세요. React/Vue 지원 차이의
@@ -98,7 +104,10 @@ npm pack --workspace @cheese/tokens --pack-destination artifacts
 - `tests/forms.spec.ts`: 날짜 필수값·초기화·취소된 reset·disabled/readOnly·FormData·ref
 - `tests/search-input.spec.ts`, `tests/error-summary.spec.ts`, `tests/attachment-list.spec.ts`, `tests/table-query.spec.ts`: 검색 입력·오류 이동·저장된 첨부·외부 목록 상태 계약
 - `tests/consumer/`: workspace 밖에서 React 18/19 + Vue 소비자의 타입·SSR·제품 번들 검증 (`npm run test:consumer`)
-- `npx playwright test --project=chromium`: 빠른 단일 브라우저 확인. CI는 Chromium/Firefox/WebKit 전체 실행
+- `tests/groupware-patterns.spec.ts`, `tests/groupware-products.spec.ts`: React/Vue 업무 패턴, 직원 수정, 지원서 부분 실패·복구, 접근성 및 모바일 화면
+- `tests/groupware-foundation.spec.ts`: 추가 22종의 공개 페이지와 React/Vue 조작, 비동기 실패·재시도, 모바일·접근성 검증
+- `tests/groupware-foundation-edges.spec.ts`: 처리 중 설정 변경·중복 등록 방지·부모 폼 잠금 등 경계 조건. 실행 범위와 결과는 [그룹웨어 검증 기록](docs/GROUPWARE-FOUNDATION-VALIDATION.md)을 확인합니다.
+- `npx playwright test --project=chromium`: 단일 브라우저 확인. 전체 브라우저 검사는 수동 워크플로로 별도 실행합니다.
 - `artifacts/`: 데스크톱·모바일 스크린샷
 - PR은 검증만, main은 검증 통과 후 `dist/`만 Pages에 배포합니다.
 
@@ -115,7 +124,7 @@ Tree는 클릭 선택과 caret 펼침을 구분합니다. 제어 상태는 React
 ## 디자인과 출처
 
 Space Black #111111 · Lunar White #FFFFFF · Moon Gray #F4F4F0 · Cheese Gold #FFC928.
-공식 STARSHIP CI 색상이라는 의미는 아닙니다. 오류·성공은 문구·아이콘·ARIA로 구별하며 색상은 중립색을 사용합니다.
+공식 STARSHIP CI 색상이라는 의미는 아닙니다. 오류·성공은 문구·아이콘·ARIA로 구별하며, 필요한 상태에만 의미별 오류·성공 색상을 제한적으로 사용합니다.
 
 CHEESE의 이름은 창작한 이야기에서 출발합니다. STARSHIP 로고의 우주선이 달에 착륙하고 문을 열었더니, 그곳은 치즈 달이었습니다. 그 첫 발견처럼 다음 제품의 출발점이 되는 첫 디자인 시스템을 CHEESE라고 이름 지었습니다. 회사의 공식 브랜드 서사나 승인된 제품이라는 뜻은 아닙니다.
 

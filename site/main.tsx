@@ -36,10 +36,18 @@ import VueDemoSource from "./VueDemo.vue?raw";
 import Home, { EvaluationPreview } from "./Home";
 import Logo from "./Logo";
 import WorkflowDemo from "./WorkflowDemo";
-import EvaluationProductDemo, {
-  EvaluationShowcase,
-} from "./EvaluationProductDemo";
-import { canLeaveWorkflow } from "./workflow-navigation";
+import EvaluationProductDemo from "./EvaluationProductDemo";
+import ProductExamples from "./ProductExamples";
+import BusinessPatterns, { businessPatterns } from "./BusinessPatterns";
+import { foundationPatterns } from "./foundation-catalog";
+import CompositionCatalog from "./CompositionCatalog";
+import { compositeEntries, compositionCategories } from "./composition-catalog";
+const CompositionDetails = React.lazy(() => import("./CompositionDetails"));
+const FoundationPatterns = React.lazy(() => import("./FoundationPatterns"));
+const ManagementProductDemo = React.lazy(
+  () => import("./ManagementProductDemo"),
+);
+import { useRoute } from "./use-route";
 import { DateField } from "@cheese/react";
 const modules = import.meta.glob<{ default: React.ComponentType }>(
   "./examples/*.tsx",
@@ -57,27 +65,6 @@ const sources = import.meta.glob<string>("./examples/*.tsx", {
 const implemented = (id: string) => !!modules["./examples/" + id + ".tsx"];
 const count = entries.filter((e) => implemented(e.id)).length;
 const github = "https://github.com/dhyun0226/cheese-design-system";
-function useRoute() {
-  const readRoute = () =>
-    (location.hash.slice(2) || "").replace(
-      /^components\/native-select$/,
-      "components/select-form",
-    );
-  const [route, setRoute] = useState(readRoute);
-  useEffect(() => {
-    const listener = (event: HashChangeEvent) => {
-      if (!canLeaveWorkflow(event.newURL)) {
-        history.replaceState(history.state, "", event.oldURL);
-        return;
-      }
-      setRoute(readRoute());
-      window.scrollTo(0, 0);
-    };
-    window.addEventListener("hashchange", listener);
-    return () => window.removeEventListener("hashchange", listener);
-  }, []);
-  return route;
-}
 function CopyCode({ code }: { code: string }) {
   const [status, setStatus] = useState("복사");
   return (
@@ -120,11 +107,27 @@ function Sidebar({
   const navId = React.useId();
   const navigation = useRef<HTMLElement>(null);
   const active = entries.find((e) => route === "components/" + e.id);
-  const [open, setOpen] = useState<Record<string, boolean>>({ 입력: true });
-  const activeGroupOpen = active ? !!open[active.group] : true;
+  const activeFoundation = compositeEntries.find(
+    (item) => route === "business-patterns/" + item.id,
+  );
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const activeGroupOpen = active
+    ? !!open[active.group]
+    : activeFoundation
+      ? !!open["composition-" + activeFoundation.category]
+      : true;
   useEffect(() => {
     if (active) setOpen((previous) => ({ ...previous, [active.group]: true }));
   }, [active]);
+  useEffect(() => {
+    if (activeFoundation)
+      setOpen((previous) => ({
+        ...previous,
+        ["composition-" + activeFoundation.category]: true,
+      }));
+    else if (route.startsWith("business-patterns"))
+      setOpen((previous) => ({ ...previous, business: true }));
+  }, [route, activeFoundation]);
   useEffect(() => {
     if (onNavigate) return;
     const frame = requestAnimationFrame(() => {
@@ -149,92 +152,218 @@ function Sidebar({
     <nav ref={navigation} className="sidebar-content" aria-label="문서 탐색">
       <div className="nav-search">
         <Input
-          aria-label="컴포넌트 검색"
-          placeholder="컴포넌트 검색"
+          aria-label="라이브러리 검색"
+          placeholder="컴포넌트·패턴 검색"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(event) => setQuery(event.target.value)}
         />
       </div>
-      <div className="nav-caption">시작하기</div>
-      <div className="nav-intro">
-        {[
-          ["", "소개"],
-          ["getting-started", "시작하기"],
-          ["foundations", "디자인 원칙"],
-          ["patterns", "업무 화면 예제"],
-          ["workflows", "저장과 복구"],
-          ["examples", "적용 예제"],
-          ["components", "전체 컴포넌트"],
-          ["readiness", "도입 체크리스트"],
-        ].map(([id, label]) => (
-          <a
-            key={id}
-            href={"#/" + id}
-            aria-current={route === id ? "page" : undefined}
-            onClick={onNavigate}
+      {!query && (
+        <>
+          <section className="nav-section" aria-labelledby={`${navId}-guides`}>
+            <div className="nav-caption" id={`${navId}-guides`}>
+              가이드
+            </div>
+            <div className="nav-intro">
+              {[
+                ["", "소개"],
+                ["getting-started", "시작하기"],
+                ["foundations", "디자인 원칙"],
+                ["patterns", "업무 화면 설계"],
+                ["workflows", "저장과 복구"],
+                ["readiness", "도입 체크리스트"],
+              ].map(([id, label]) => (
+                <a
+                  key={id}
+                  href={"#/" + id}
+                  aria-current={route === id ? "page" : undefined}
+                  onClick={onNavigate}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+      <section className="nav-section" aria-labelledby={`${navId}-components`}>
+        <div className="nav-caption" id={`${navId}-components`}>
+          컴포넌트 <span>{entries.length}</span>
+        </div>
+        {!query && (
+          <div className="nav-intro nav-overview-link">
+            <a
+              href="#/components"
+              aria-current={route === "components" ? "page" : undefined}
+              onClick={onNavigate}
+            >
+              전체 보기
+            </a>
+          </div>
+        )}
+        {groups.map(([label, english, items]) => {
+          const filtered = items.filter((item) =>
+            (item[1] + " " + item[2])
+              .toLocaleLowerCase()
+              .includes(query.toLocaleLowerCase()),
+          );
+          if (!filtered.length) return null;
+          return (
+            <div key={label} className="nav-group">
+              <button
+                type="button"
+                aria-expanded={!!query || !!open[label]}
+                aria-controls={navId + "-" + english.replace(/\W/g, "")}
+                onClick={() =>
+                  setOpen((previous) => ({
+                    ...previous,
+                    [label]: !previous[label],
+                  }))
+                }
+              >
+                <span>{label}</span>
+                <span className="nav-group-meta" aria-hidden="true">
+                  {filtered.length}
+                  <ChevronRight
+                    aria-hidden="true"
+                    data-open={!!query || !!open[label]}
+                  />
+                </span>
+              </button>
+              {(query || open[label]) && (
+                <div id={navId + "-" + english.replace(/\W/g, "")}>
+                  {filtered.map((item) => (
+                    <a
+                      href={"#/components/" + item[0]}
+                      key={item[0]}
+                      aria-current={
+                        route === "components/" + item[0] ? "page" : undefined
+                      }
+                      onClick={onNavigate}
+                    >
+                      {item[1]}
+                      {!implemented(item[0]) && (
+                        <span className="nav-planned" aria-label="설계 중">
+                          ·
+                        </span>
+                      )}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </section>
+      <section className="nav-section" aria-labelledby={`${navId}-patterns`}>
+        <div className="nav-caption" id={`${navId}-patterns`}>
+          패턴과 템플릿 <span>{compositeEntries.length}</span>
+        </div>
+        {!query && (
+          <div className="nav-intro nav-overview-link">
+            <a
+              href="#/business-patterns"
+              aria-current={route === "business-patterns" ? "page" : undefined}
+              onClick={onNavigate}
+            >
+              전체 보기
+            </a>
+          </div>
+        )}
+        {compositionCategories.map((group, groupIndex) => {
+          const filtered = compositeEntries.filter(
+            (item) =>
+              item.category === group.id &&
+              (item.name + item.description)
+                .toLocaleLowerCase()
+                .includes(query.toLocaleLowerCase()),
+          );
+          if (!filtered.length) return null;
+          const key = "composition-" + group.id;
+          return (
+            <div className="nav-group" key={key}>
+              <button
+                type="button"
+                aria-expanded={!!query || !!open[key]}
+                aria-controls={`${navId}-foundation-${groupIndex}`}
+                onClick={() =>
+                  setOpen((previous) => ({
+                    ...previous,
+                    [key]: !previous[key],
+                  }))
+                }
+              >
+                <span>{group.name}</span>
+                <span className="nav-group-meta" aria-hidden="true">
+                  {filtered.length}
+                  <ChevronRight
+                    aria-hidden="true"
+                    data-open={!!query || !!open[key]}
+                  />
+                </span>
+              </button>
+              {(query || open[key]) && (
+                <div id={`${navId}-foundation-${groupIndex}`}>
+                  {filtered.map((item) => (
+                    <a
+                      key={item.id}
+                      href={`#/business-patterns/${item.id}`}
+                      aria-current={
+                        route === `business-patterns/${item.id}`
+                          ? "page"
+                          : undefined
+                      }
+                      onClick={onNavigate}
+                    >
+                      {item.name}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </section>
+      {!query && (
+        <>
+          <section
+            className="nav-section"
+            aria-labelledby={`${navId}-examples`}
           >
-            {label}
-            {id === "components" && <span>{entries.length}</span>}
-          </a>
-        ))}
-      </div>
-      <div className="nav-caption nav-caption-components">
-        컴포넌트 <span>{entries.length}</span>
-      </div>
-      {groups.map(([label, english, items]) => {
-        const filtered = items.filter((i) =>
-          (i[1] + " " + i[2])
+            <div className="nav-caption" id={`${navId}-examples`}>
+              업무 화면
+            </div>
+            <div className="nav-intro">
+              {[
+                ["examples", "업무 홈"],
+                ["examples/evaluation", "인사평가"],
+                ["examples/employees", "조직·구성원"],
+                ["examples/auditions", "오디션 운영"],
+              ].map(([id, label]) => (
+                <a
+                  key={id}
+                  href={"#/" + id}
+                  aria-current={route === id ? "page" : undefined}
+                  onClick={onNavigate}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+      {query &&
+        !entries.some((entry) =>
+          (entry.name + " " + entry.description)
             .toLocaleLowerCase()
             .includes(query.toLocaleLowerCase()),
-        );
-        if (!filtered.length) return null;
-        return (
-          <div key={label} className="nav-group">
-            <button
-              type="button"
-              aria-expanded={!!query || !!open[label]}
-              aria-controls={navId + "-" + english.replace(/\W/g, "")}
-              onClick={() => setOpen((v) => ({ ...v, [label]: !v[label] }))}
-            >
-              {label}
-              <ChevronRight
-                aria-hidden="true"
-                data-open={!!query || !!open[label]}
-              />
-            </button>
-            {(query || open[label]) && (
-              <div id={navId + "-" + english.replace(/\W/g, "")}>
-                {filtered.map((i) => (
-                  <a
-                    href={"#/components/" + i[0]}
-                    key={i[0]}
-                    aria-current={
-                      route === "components/" + i[0] ? "page" : undefined
-                    }
-                    onClick={onNavigate}
-                  >
-                    {i[1]}
-                    {!implemented(i[0]) && (
-                      <span className="nav-planned" aria-label="설계 중">
-                        ·
-                      </span>
-                    )}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
-      {!entries.some((e) =>
-        (e.name + " " + e.description)
-          .toLocaleLowerCase()
-          .includes(query.toLocaleLowerCase()),
-      ) && <p className="cheese-help search-empty">검색 결과가 없습니다.</p>}
-      <div className="nav-footer">
-        <span className="status-dot" />
-        개인 제작 · 도입 검증 단계
-      </div>
+        ) &&
+        !compositeEntries.some((pattern) =>
+          (pattern.name + " " + pattern.description)
+            .toLocaleLowerCase()
+            .includes(query.toLocaleLowerCase()),
+        ) && <p className="cheese-help search-empty">검색 결과가 없습니다.</p>}
     </nav>
   );
 }
@@ -1026,6 +1155,9 @@ function App() {
   useEffect(() => {
     document.title =
       (entry?.name ||
+        compositeEntries.find(
+          (pattern) => route === "business-patterns/" + pattern.id,
+        )?.name ||
         (
           {
             "": "Design System",
@@ -1034,8 +1166,11 @@ function App() {
             foundations: "디자인 원칙",
             patterns: "업무 화면 예제",
             workflows: "저장과 복구",
-            examples: "적용 예제",
-            "examples/evaluation": "CHEESE People",
+            examples: "업무 홈",
+            "examples/evaluation": "인사평가",
+            "examples/employees": "조직·구성원",
+            "examples/auditions": "오디션 운영",
+            "business-patterns": "패턴과 템플릿",
             readiness: "도입 체크리스트",
           } as Record<string, string>
         )[route] ||
@@ -1046,10 +1181,31 @@ function App() {
     }
     main.current?.focus();
   }, [route, entry]);
+  if (route === "examples") {
+    return (
+      <div className="cheese-root">
+        <ProductExamples />
+      </div>
+    );
+  }
   if (route === "examples/evaluation") {
     return (
       <div className="cheese-root">
         <EvaluationProductDemo />
+      </div>
+    );
+  }
+  if (route === "examples/employees" || route === "examples/auditions") {
+    return (
+      <div className="cheese-root">
+        <React.Suspense
+          fallback={<p role="status">업무 화면을 불러오고 있습니다.</p>}
+        >
+          <ManagementProductDemo
+            key={route}
+            kind={route === "examples/employees" ? "employees" : "auditions"}
+          />
+        </React.Suspense>
       </div>
     );
   }
@@ -1073,16 +1229,28 @@ function App() {
         </a>
         <nav className="header-nav" aria-label="주요 문서">
           {[
-            ["getting-started", "시작하기"],
-            ["foundations", "디자인 원칙"],
+            ["getting-started", "가이드"],
             ["components", "컴포넌트"],
-            ["patterns", "패턴"],
+            ["business-patterns", "패턴"],
+            ["examples", "예제"],
           ].map(([path, label]) => (
             <a
               key={path}
               href={"#/" + path}
               aria-current={
-                route === path || (path === "components" && !!entry)
+                route === path ||
+                (path === "getting-started" &&
+                  [
+                    "",
+                    "foundations",
+                    "patterns",
+                    "workflows",
+                    "readiness",
+                  ].includes(route)) ||
+                (path === "components" && !!entry) ||
+                (path === "business-patterns" &&
+                  route.startsWith("business-patterns/")) ||
+                (path === "examples" && route.startsWith("examples/"))
                   ? "page"
                   : undefined
               }
@@ -1092,9 +1260,6 @@ function App() {
           ))}
         </nav>
         <div className="header-actions">
-          <a className="header-link" href="./vue.html">
-            Vue 예제
-          </a>
           <a
             className="header-link"
             href={github}
@@ -1149,6 +1314,29 @@ function App() {
             <Foundations />
           ) : route === "patterns" ? (
             <Patterns />
+          ) : route === "business-patterns" ? (
+            <CompositionCatalog />
+          ) : compositeEntries.some(
+              (item) =>
+                item.kind === "new" && route === "business-patterns/" + item.id,
+            ) ? (
+            <React.Suspense
+              fallback={<p role="status">컴포넌트를 불러오는 중입니다.</p>}
+            >
+              <CompositionDetails id={route.split("/")[1]} key={route} />
+            </React.Suspense>
+          ) : foundationPatterns.some(
+              (pattern) => route === "business-patterns/" + pattern.id,
+            ) ? (
+            <React.Suspense
+              fallback={<p role="status">구성요소를 불러오는 중입니다.</p>}
+            >
+              <FoundationPatterns id={route.split("/")[1]} key={route} />
+            </React.Suspense>
+          ) : businessPatterns.some(
+              (pattern) => route === "business-patterns/" + pattern.id,
+            ) ? (
+            <BusinessPatterns id={route.split("/")[1]} key={route} />
           ) : route === "workflows" ? (
             <>
               <PageHeading
@@ -1158,8 +1346,6 @@ function App() {
               />
               <WorkflowDemo />
             </>
-          ) : route === "examples" ? (
-            <EvaluationShowcase />
           ) : route === "readiness" ? (
             <Readiness />
           ) : (

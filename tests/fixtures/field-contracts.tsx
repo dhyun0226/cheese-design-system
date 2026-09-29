@@ -104,6 +104,7 @@ function ReactFixture() {
           defaultValue={["기본"]}
           value={controlled ? tags : undefined}
           onValueChange={setTags}
+          disabled={disabled}
         />
         <Editable
           label="업무 제목"

@@ -8,6 +8,14 @@ export * from "./FileUpload.js";
 export * from "./ErrorSummary.js";
 export * from "./AttachmentList.js";
 export * from "./SearchInput.js";
+export * from "./patterns.js";
+export * from "./templates.js";
+export * from "./organization.js";
+export * from "./collaboration.js";
+export * from "./media-states.js";
+export * from "./data-actions.js";
+export * from "./workspace.js";
+export * from "./RecordCollection.js";
 export {
   Select,
   Combobox,

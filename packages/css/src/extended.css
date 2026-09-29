@@ -28,7 +28,8 @@
   color: var(--cheese-text-secondary);
 }
 .cheese-select-content {
-  z-index: 80;
+  /* Select menus may be portaled from a dialog (overlay 100, dialog 101). */
+  z-index: 110;
   min-width: var(
     --radix-select-trigger-width,
     var(--reka-select-trigger-width)
@@ -152,6 +153,13 @@
   max-height: 300px;
   overflow: auto;
   box-shadow: var(--cheese-shadow-card);
+}
+:where(.cheese-listbox) button.cheese-option {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: start;
 }
 .cheese-pin-control {
   --cheese-pin-gap: var(--cheese-space-2);
@@ -287,7 +295,8 @@
 .cheese-tags:where(:hover:not([data-disabled])) {
   border-color: var(--cheese-control-hover-border);
 }
-.cheese-tags[data-disabled] {
+/* Keep retained tag values readable above the shared disabled opacity rule. */
+.cheese-tags[data-disabled]:not([data-disabled="false"]) {
   opacity: 1;
   background-color: var(--cheese-control-bg);
   border-color: var(--cheese-border);
@@ -296,7 +305,7 @@
 .cheese-tags[data-disabled] .cheese-tag {
   color: var(--cheese-text-secondary);
 }
-.cheese-tags input:disabled {
+.cheese-tags :is(input, button):disabled {
   cursor: not-allowed;
 }
 .cheese-tags > input {

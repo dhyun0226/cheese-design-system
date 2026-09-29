@@ -75,7 +75,7 @@ test("navigation, search, history and executable source", async ({ page }) => {
   await expect(page.locator("h1")).toHaveText("컴포넌트");
   await page
     .locator(".site-sidebar")
-    .getByRole("textbox", { name: "컴포넌트 검색" })
+    .getByRole("textbox", { name: "라이브러리 검색" })
     .fill("Dialog");
   await page
     .locator(".site-sidebar")
@@ -308,9 +308,9 @@ test("responsive visual checks and local fonts", async ({ page }) => {
   await page.getByRole("button", { name: "메뉴 열기" }).click();
   const menu = page.getByRole("dialog");
   await expect(menu).toBeVisible();
-  await menu.getByRole("link", { name: "업무 화면 예제", exact: true }).click();
+  await menu.locator('a[href="#/business-patterns"]').click();
   await expect(menu).not.toBeVisible();
-  await expect(page.locator("h1")).toContainText("작은 부품에서");
+  await expect(page.locator("h1")).toContainText("패턴과 템플릿");
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,

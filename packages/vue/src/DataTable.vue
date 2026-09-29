@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends DataRow = DataRow">
 import { ref, shallowRef, computed, watch, useId, nextTick } from "vue";
 import {
   PopoverRoot,
@@ -32,19 +32,26 @@ const props = withDefaults(
   defineProps<{
     label: string;
     columns: TableColumn[];
-    rows?: DataRow[];
-    loadRows?: RowsLoader;
-    getRowId: (row: DataRow) => string;
-    rowLabel?: (row: DataRow) => string;
-    isRowSelectable?: (row: DataRow) => boolean;
+    rows?: T[];
+    loadRows?: RowsLoader<T>;
+    getRowId: (row: T) => string;
+    rowLabel?: (row: T) => string;
+    isRowSelectable?: (row: T) => boolean;
     selected?: string[];
     defaultSelected?: string[];
     defaultPageSize?: number;
     query?: TableQuery;
     defaultQuery?: TableQuery;
     debounceMs?: number;
+    showSearch?: boolean;
+    showSelectionSummary?: boolean;
   }>(),
-  { defaultPageSize: 5, debounceMs: 250 },
+  {
+    defaultPageSize: 5,
+    debounceMs: 250,
+    showSearch: true,
+    showSelectionSummary: true,
+  },
 );
 const emit = defineEmits<{
   "update:selected": [keys: string[]];
@@ -87,10 +94,10 @@ const search = ref(query.value.search),
   composing = ref(false);
 const remote = shallowRef<{
     key: string;
-    loader: RowsLoader;
+    loader: RowsLoader<T>;
     retry: number;
     status: "loading" | "success" | "error";
-    result: TableResult;
+    result: TableResult<T>;
   } | null>(null),
   id = useId();
 let ticket = 0;
@@ -278,7 +285,7 @@ function compositionEnd(event: CompositionEvent) {
 function resumeInput() {
   if (!composing.value) canceledComposition = false;
 }
-function toggleRow(row: DataRow) {
+function toggleRow(row: T) {
   const key = props.getRowId(row);
   changeSelection(
     selected.value.includes(key)
@@ -291,6 +298,7 @@ function toggleRow(row: DataRow) {
   <section class="cheese-data-table" :aria-label="label">
     <div class="cheese-table-toolbar">
       <SearchInput
+        v-if="showSearch"
         :id="id + '-search'"
         :label="label + ' 검색'"
         :model-value="search"
@@ -349,7 +357,7 @@ function toggleRow(row: DataRow) {
         </PopoverPortal>
       </PopoverRoot>
     </div>
-    <div class="cheese-table-selection">
+    <div v-if="showSelectionSummary" class="cheese-table-selection">
       <span role="status">{{ selected.length }}개 행 선택</span
       ><Button
         v-if="selected.length"

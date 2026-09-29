@@ -25,6 +25,7 @@ import {
   type AttachmentItem,
   type AttachmentRemoveHandler,
   type ErrorSummaryItem,
+  type DataRow,
   type TableQuery,
 } from "@cheese/vue";
 import {
@@ -329,7 +330,7 @@ function restoreDialogFocus(event: Event) {
               {{ row.name }}
             </button>
             <Badge v-else-if="column.key === 'status'">{{ row.status }}</Badge>
-            <template v-else>{{ String(row[column.key] ?? "—") }}</template>
+            <template v-else>{{ String((row as DataRow)[column.key] ?? "—") }}</template>
           </template>
         </DataTable>
         <p class="workflow-note">

@@ -49,6 +49,99 @@ for (const [framework, ui, render] of [
       ),
   ],
 ]) {
+  const navigation = await render(ui.NavigationList, {
+    label: "Consumer workspace",
+    activeId: "records",
+    items: [
+      { id: "records", label: "Records", href: "#records", group: "Workspace" },
+      { id: "archive", label: "Archive", disabled: true, group: "Workspace" },
+      { id: "unsafe", label: "Unavailable link", href: "javascript:void(0)" },
+    ],
+  });
+  assert.match(navigation, /<nav\b[^>]*aria-label="Consumer workspace"/);
+  assert.match(navigation, /cheese-workspace-navigation/);
+  assert.match(navigation, /aria-current="page"/);
+  assert.match(navigation, /href="#records"/);
+  assert.match(navigation, /<ul\b[^>]*aria-labelledby="[^"]+"/);
+  assert.match(navigation, /<button\b[^>]*disabled[^>]*>[\s\S]*?Archive/);
+  assert.doesNotMatch(navigation, /href="javascript:/);
+
+  const identity = await render(ui.UserIdentity, {
+    name: "Alex Reviewer",
+    description: "Consumer organization",
+    fallback: "AR",
+    size: "sm",
+  });
+  assert.match(identity, /cheese-user-identity/);
+  assert.match(identity, /data-size="sm"/);
+  assert.match(identity, /Alex Reviewer/);
+  assert.match(identity, /Consumer organization/);
+
+  const section = await render(ui.SectionHeader, {
+    title: "Consumer metrics",
+    description: "Values from the application",
+    headingLevel: 3,
+  });
+  assert.match(section, /cheese-section-header/);
+  assert.match(
+    section.replace(/<!--[\s\S]*?-->/g, ""),
+    /<h3\b[^>]*>Consumer metrics<\/h3>/,
+  );
+  assert.match(section, /Values from the application/);
+
+  const stat = await render(ui.StatCard, {
+    label: "Pending records",
+    value: 0,
+    description: "Nothing pending",
+  });
+  assert.match(stat, /cheese-stat-card/);
+  assert.match(stat, /Pending records/);
+  assert.match(
+    stat.replace(/<!--[\s\S]*?-->/g, ""),
+    /class="cheese-stat-value"[^>]*>0<\/p>/,
+  );
+  assert.match(stat, /Nothing pending/);
+  const stats = await render(
+    ui.StatGroup,
+    { columns: 2, "aria-label": "Consumer statistics" },
+    framework === "React"
+      ? createElement(ui.StatCard, { label: "Completion", value: "50%" })
+      : h(ui.StatCard, { label: "Completion", value: "50%" }),
+  );
+  assert.match(stats, /cheese-stat-group/);
+  assert.match(stats, /data-columns="2"/);
+  assert.match(stats, /cheese-stat-card/);
+  assert.match(stats, /50%/);
+
+  const records = await render(ui.RecordCollection, {
+    label: "Consumer records",
+    columns: [{ key: "name", label: "Name" }],
+    rows: [
+      { id: "record-1", name: "Consumer record one" },
+      { id: "record-2", name: "Consumer record two" },
+    ],
+    getRowId: (row) => row.id,
+    query: { page: 1, pageSize: 5, search: "Consumer", sort: null },
+    onQueryChange: () => {},
+    selected: ["record-1"],
+    onSelectedChange: () => {},
+    "onUpdate:query": () => {},
+    "onUpdate:selected": () => {},
+    resultCount: 2,
+    searchLabel: "Search consumer records",
+  });
+  assert.match(records, /cheese-record-collection/);
+  assert.match(records, /cheese-filter-bar/);
+  assert.match(records, /cheese-bulk-action-bar/);
+  assert.match(records, /Consumer record one/);
+  assert.match(records, /Consumer record two/);
+  assert.equal(
+    (records.match(/<input\b[^>]*type="search"/g) ?? []).length,
+    1,
+    `${framework} collection renders one shared search control`,
+  );
+  assert.match(records.replace(/<!--[\s\S]*?-->/g, ""), /1건 선택/);
+
   for (const [component, value, type, extra] of [
     ["DateField", "2026-10-01", "text", { step: "any" }],
     ["TimeField", "09:00", "text", { step: 900 }],

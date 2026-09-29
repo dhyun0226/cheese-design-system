@@ -67,7 +67,7 @@
 }
 .cheese-button:disabled,
 .cheese-input:disabled,
-[class^="cheese-"][data-disabled] {
+[class^="cheese-"][data-disabled]:not([data-disabled="false"]) {
   cursor: not-allowed;
   opacity: 0.45;
 }

@@ -128,23 +128,32 @@ for (const framework of ["react", "vue"]) {
     test("same-value renders do not refetch and explicit reset cancels pending search", async ({
       page,
     }) => {
+      const now = new Date("2026-09-29T00:00:00Z");
+      await page.clock.install({ time: now });
       await page.goto(url + "&remote=true");
       await waitForTable(page);
       await page.getByRole("button", { name: "동일 값 재렌더" }).click();
       await page.getByRole("button", { name: "동일 값 재렌더" }).click();
+      await page.clock.pauseAt(new Date(now.getTime() + 60_000));
       await page.getByRole("searchbox", { name: "직원 검색" }).fill("디자인");
-      await page.getByRole("button", { name: "전체 초기화" }).click();
+      const reset = page.getByRole("button", { name: "전체 초기화" });
+      await reset.focus();
+      await reset.press("Enter");
       await expect(
         page.getByRole("searchbox", { name: "직원 검색" }),
       ).toBeEmpty();
-      await page.waitForTimeout(300);
+      await page.clock.runFor(300);
       await expect(page.getByTestId("proposal-count")).toHaveText("0");
       await expect(page.getByTestId("request-count")).toHaveText("1");
       await page.getByRole("searchbox", { name: "직원 검색" }).fill("개발");
-      await page
-        .getByRole("button", { name: "외부 복원", exact: true })
-        .click();
-      await page.waitForTimeout(300);
+      const restore = page.getByRole("button", {
+        name: "외부 복원",
+        exact: true,
+      });
+      await restore.focus();
+      await restore.press("Enter");
+      await expect(page.getByTestId("request-count")).toHaveText("2");
+      await page.clock.runFor(300);
       await expect(
         page.getByRole("searchbox", { name: "직원 검색" }),
       ).toHaveValue("구성원");
@@ -193,10 +202,19 @@ for (const framework of ["react", "vue"]) {
     test("sorting before debounce commits the pending search exactly once", async ({
       page,
     }) => {
+      const now = new Date("2026-09-29T00:00:00Z");
+      await page.clock.install({ time: now });
       await page.goto(url + "&remote=true");
       await waitForTable(page);
+      // Own the 200ms debounce window: browser actionability checks can take
+      // longer than that on a busy runner, legitimately issuing two queries.
+      await page.clock.pauseAt(new Date(now.getTime() + 60_000));
       await page.getByRole("searchbox", { name: "직원 검색" }).fill("디자인");
-      await page.getByRole("button", { name: "이름 정렬" }).click();
+      const sort = page.getByRole("button", { name: "이름 정렬" });
+      await sort.focus();
+      await sort.press("Enter");
+      await expect(page.getByTestId("request-count")).toHaveText("2");
+      await page.clock.runFor(400);
       await expect(page.getByText("총 15개 · 1 / 3페이지")).toBeVisible();
       await expect(
         page.getByRole("searchbox", { name: "직원 검색" }),
@@ -204,7 +222,6 @@ for (const framework of ["react", "vue"]) {
       await expect(
         page.getByRole("columnheader", { name: "이름 정렬" }),
       ).toHaveAttribute("aria-sort", "ascending");
-      await page.waitForTimeout(300);
       await expect(page.getByTestId("request-count")).toHaveText("2");
       await expect(page.getByTestId("proposal-count")).toHaveText("1");
     });

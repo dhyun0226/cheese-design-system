@@ -27,22 +27,29 @@ const id = useId();
       :name="name"
       :disabled="disabled"
       class="cheese-listbox"
-      ><P.ListboxContent :aria-labelledby="id"
-        ><P.ListboxItem
-          v-for="option in options"
-          :key="option.value"
-          :value="option.value"
-          :disabled="option.disabled"
-          class="cheese-option"
-          ><span class="cheese-option-copy"
-            >{{ option.label
-            }}<small v-if="option.description">{{
-              option.description
-            }}</small></span
-          ><P.ListboxItemIndicator
-            ><Check
-              :size="17"
-              aria-hidden="true" /></P.ListboxItemIndicator></P.ListboxItem></P.ListboxContent
+      @entry-focus="disabled && $event.preventDefault()"
+      ><P.ListboxContent
+        :aria-labelledby="id"
+        :aria-disabled="disabled || undefined"
+        as-child
+        ><div v-bind="disabled ? { tabindex: -1 } : {}">
+          <P.ListboxItem
+            v-for="option in options"
+            :key="option.value"
+            as="button"
+            type="button"
+            :value="option.value"
+            :disabled="option.disabled"
+            :aria-disabled="disabled || option.disabled || undefined"
+            class="cheese-option"
+            ><span class="cheese-option-copy"
+              >{{ option.label
+              }}<small v-if="option.description">{{
+                option.description
+              }}</small></span
+            ><P.ListboxItemIndicator
+              ><Check :size="17" aria-hidden="true" /></P.ListboxItemIndicator
+          ></P.ListboxItem></div></P.ListboxContent
     ></P.ListboxRoot>
   </div>
 </template>

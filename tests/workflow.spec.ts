@@ -109,7 +109,10 @@ for (const framework of ["react", "vue"] as const) {
   const discardAction = "변경 사항 버리기";
 
   test.describe(`${framework} connected workflow`, () => {
-    test.beforeEach(async ({ page }) => {
+    test.beforeEach(async ({ page }, testInfo) => {
+      if (testInfo.title.startsWith("filtered second-page edits")) {
+        await page.clock.install();
+      }
       await page.goto(url);
       await expect(
         page.getByRole("heading", { name: listTitle, exact: true }),
@@ -132,10 +135,17 @@ for (const framework of ["react", "vue"] as const) {
       await name.fill(newName);
       await choose(page, "담당 조직", "디자인팀");
       await deadline.fill("2026-11-15");
-      await form
-        .getByRole("button", { name: "변경 내용 저장", exact: true })
-        .click();
-      await assertSaveLocked(form);
+      // Hold the in-memory service's 650 ms timer while checking every locked
+      // control. Cross-browser assertion round trips must not race the response.
+      await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+      try {
+        await form
+          .getByRole("button", { name: "변경 내용 저장", exact: true })
+          .click();
+        await assertSaveLocked(form);
+      } finally {
+        await page.clock.resume();
+      }
       const summary = page.getByRole("region", {
         name: summaryTitle,
         exact: true,
@@ -394,7 +404,8 @@ for (const framework of ["react", "vue"] as const) {
       for await (const chunk of stream!)
         contents += decoder.decode(chunk, { stream: true });
       contents += decoder.decode();
-      expect(contents).toBe(
+      // Git may check out this text fixture as CRLF on Windows.
+      expect(contents.replace(/\r\n/g, "\n")).toBe(
         "CHEESE 평가 안내\n평가 항목과 마감일을 확인하고 작성 내용을 저장해 주세요.\n이 파일은 업무 흐름 체험을 위한 예제 자료입니다.\n",
       );
       await attachments
@@ -441,14 +452,14 @@ for (const framework of ["react", "vue"] as const) {
       ).toBeVisible();
     });
 
-    test("list, edit and errors fit 320px and 390px screens with accessible controls", async ({
-      page,
-    }) => {
-      for (const width of [320, 390]) {
+    for (const width of [320, 390]) {
+      test(`list, edit and errors fit ${width}px screens with accessible controls`, async ({
+        page,
+      }) => {
         await page.setViewportSize({ width, height: 900 });
-        // A same-hash goto can retain the previous viewport's in-memory edit.
-        await page.goto("about:blank");
-        await page.goto(url);
+        // Each viewport gets an isolated document/context from beforeEach.
+        // Reusing a repeatedly axe-audited document across navigations can hang
+        // Firefox teardown and makes failures difficult to attribute.
         await expect(
           page.getByRole("heading", { name: listTitle, exact: true }),
         ).toBeVisible();
@@ -465,7 +476,18 @@ for (const framework of ["react", "vue"] as const) {
           page.getByRole("region", { name: summaryTitle, exact: true }),
         ).toBeFocused();
         await auditWorkflow(page);
-      }
-    });
+        // Finish through the real discard flow before navigating away.
+        await page
+          .getByRole("button", { name: "수정 취소", exact: true })
+          .click();
+        await page
+          .getByRole("dialog", { name: discardTitle, exact: true })
+          .getByRole("button", { name: discardAction, exact: true })
+          .click();
+        await expect(
+          page.getByRole("heading", { name: listTitle, exact: true }),
+        ).toBeVisible();
+      });
+    }
   });
 }
