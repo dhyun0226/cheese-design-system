@@ -344,6 +344,11 @@ for (const framework of ["react", "vue"]) {
               : ".cheese-calendar-day[data-today]",
           );
           await expect(today).toHaveCount(1);
+          expect(
+            await today.evaluate(
+              (node) => getComputedStyle(node, "::after").backgroundColor,
+            ),
+          ).toBe("rgb(255, 201, 40)");
           const expectedDay =
             timezoneId === "America/Los_Angeles" ? "21" : "22";
           await expect(today).toHaveText(expectedDay);

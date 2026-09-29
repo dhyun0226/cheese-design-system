@@ -20,6 +20,8 @@ const { root, value } = useFieldModel(
 );
 const year = ref(Number(value.value.slice(0, 4)) || new Date().getFullYear()),
   id = useId();
+const now = new Date();
+const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 watch(value, (v) => {
   if (v) year.value = Number(v.slice(0, 4));
 });
@@ -60,6 +62,7 @@ function month(n: number) {
         v-for="n in 12"
         :key="month(n)"
         :value="month(n)"
+        :data-current="month(n) === currentMonth ? '' : undefined"
         class="cheese-period-item"
         :aria-label="year + '년 ' + n + '월'"
         :disabled="(!!min && month(n) < min) || (!!max && month(n) > max)"

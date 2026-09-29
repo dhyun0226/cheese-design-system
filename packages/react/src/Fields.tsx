@@ -883,6 +883,8 @@ export function MonthPicker({
     () =>
       Number((value || defaultValue).slice(0, 4)) || new Date().getFullYear(),
   );
+  const now = new Date();
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   const id = React.useId();
   React.useEffect(() => {
     if (month) setYear(Number(month.slice(0, 4)));
@@ -927,6 +929,7 @@ export function MonthPicker({
               className="cheese-period-item"
               key={key}
               value={key}
+              data-current={key === currentMonth ? "" : undefined}
               aria-label={`${year}년 ${i + 1}월`}
               disabled={(!!min && key < min) || (!!max && key > max)}
             >
@@ -961,6 +964,7 @@ export function YearPicker({
   disabled,
   name,
 }: YearPickerProps) {
+  const currentYear = new Date().getFullYear();
   const [year, setYear, root] = useFieldValue(
       value,
       defaultValue,
@@ -1011,6 +1015,7 @@ export function YearPicker({
             key={start + i}
             className="cheese-period-item"
             value={String(start + i)}
+            data-current={start + i === currentYear ? "" : undefined}
             disabled={start + i < min || start + i > max}
           >
             {start + i}

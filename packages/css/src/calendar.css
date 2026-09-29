@@ -73,6 +73,7 @@
   height: 38px;
 }
 .cheese-calendar :is(.rdp-day_button, .cheese-calendar-day) {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -109,9 +110,24 @@
   background: transparent;
   border-color: transparent;
 }
-.cheese-calendar .rdp-today:not(.rdp-selected) .rdp-day_button {
-  border-color: transparent;
-  box-shadow: inset 0 -2px 0 var(--cheese-selection-indicator);
+.cheese-calendar
+  .rdp-today:not(.rdp-selected, .rdp-outside, .rdp-disabled)
+  .rdp-day_button::after,
+.cheese-calendar
+  .cheese-calendar-day[data-today]:not(
+    [data-selected],
+    [data-outside-view],
+    [data-disabled]
+  )::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--cheese-brand);
+  transform: translateX(-50%);
 }
 .cheese-calendar .rdp-outside:not(.rdp-selected) .rdp-day_button,
 .cheese-calendar-day[data-outside-view]:not([data-selected]) {

@@ -23,6 +23,7 @@ const { root, value } = useFieldModel(
 );
 const start = ref(Math.floor(value.value / 12) * 12),
   id = useId();
+const currentYear = new Date().getFullYear();
 watch(value, (v) => {
   start.value = Math.floor(v / 12) * 12;
 });
@@ -61,6 +62,7 @@ watch(value, (v) => {
         v-for="n in 12"
         :key="start + n - 1"
         :value="String(start + n - 1)"
+        :data-current="start + n - 1 === currentYear ? '' : undefined"
         class="cheese-period-item"
         :disabled="start + n - 1 < min || start + n - 1 > max"
         >{{ start + n - 1 }}</RadioGroupItem

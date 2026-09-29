@@ -245,16 +245,42 @@ test("range fields reject reversed intervals, submit both values and reset", asy
 });
 
 test("month and year pickers navigate within bounds", async ({ page }) => {
+  await page.clock.install({ time: new Date("2026-09-29T03:00:00Z") });
   await page.goto("/#/components/month-picker");
-  await page.getByRole("radio", { name: "2026년 11월" }).click();
+  const selectedMonth = page.getByRole("radio", { name: "2026년 11월" });
+  await selectedMonth.click();
+  await expect(selectedMonth).toHaveCSS(
+    "background-color",
+    "rgb(255, 201, 40)",
+  );
   await expect(page.getByRole("status")).toHaveText("선택한 월: 2026-11");
+  const currentMonth = page.locator(
+    '.cheese-period-item[data-current]:not([data-state="checked"])',
+  );
+  await expect(currentMonth).toHaveCount(1);
+  expect(
+    await currentMonth.evaluate(
+      (node) => getComputedStyle(node, "::after").backgroundColor,
+    ),
+  ).toBe("rgb(255, 201, 40)");
   await page.getByRole("button", { name: "이전 연도", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "이전 연도", exact: true }),
   ).toBeDisabled();
   await page.goto("/#/components/year-picker");
-  await page.getByRole("radio", { name: "2027", exact: true }).click();
+  const selectedYear = page.getByRole("radio", { name: "2027", exact: true });
+  await selectedYear.click();
+  await expect(selectedYear).toHaveCSS("background-color", "rgb(255, 201, 40)");
   await expect(page.getByRole("status")).toHaveText("선택한 연도: 2027");
+  const currentYear = page.locator(
+    '.cheese-period-item[data-current]:not([data-state="checked"])',
+  );
+  await expect(currentYear).toHaveCount(1);
+  expect(
+    await currentYear.evaluate(
+      (node) => getComputedStyle(node, "::after").backgroundColor,
+    ),
+  ).toBe("rgb(255, 201, 40)");
   await page.getByRole("button", { name: "다음 연도 범위" }).click();
   await page.getByRole("button", { name: "다음 연도 범위" }).click();
   await expect(
@@ -267,7 +293,10 @@ test("navigation, menubar, toolbar and hover card interactions", async ({
 }) => {
   await page.goto("/#/components/navigation-menu");
   const navigationTrigger = page.getByRole("button", { name: "평가 관리" });
-  const scheduleLink = page.getByRole("link", { name: "평가 일정", exact: true });
+  const scheduleLink = page.getByRole("link", {
+    name: "평가 일정",
+    exact: true,
+  });
   // Hover reveals the menu; verify its real keyboard entry and dismissal path.
   await navigationTrigger.hover();
   await expect(scheduleLink).toBeVisible();

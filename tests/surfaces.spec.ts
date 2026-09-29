@@ -53,7 +53,7 @@ test("the site search and package inputs share the same resting surface", async 
   });
   await input.focus();
   await expect(input).toHaveCSS("outline-color", "rgb(255, 201, 40)");
-  await expect(input).toHaveCSS("border-color", "rgb(98, 98, 105)");
+  await expect(input).toHaveCSS("border-color", "rgb(139, 139, 144)");
   await expect(input).toHaveCSS("outline-offset", "0px");
   await expect(input).toHaveCSS("box-shadow", "none");
   await page.screenshot({
@@ -99,6 +99,15 @@ test("selected checkbox and date retain shape cues without dark perimeter border
   const selected = page.locator(".rdp-selected .rdp-day_button");
   await expect(selected).toHaveCSS("border-color", "rgba(0, 0, 0, 0)");
   await expect(selected).toHaveCSS("text-decoration-line", "underline");
+  const disabledOutsideToday = page.locator(
+    ".rdp-today.rdp-outside.rdp-disabled .rdp-day_button",
+  );
+  await expect(disabledOutsideToday).toHaveCount(1);
+  expect(
+    await disabledOutsideToday.evaluate(
+      (node) => getComputedStyle(node, "::after").content,
+    ),
+  ).toBe("none");
   await page.keyboard.press("Tab");
   await page.locator(".demo-stage").screenshot({
     path: `artifacts/${test.info().project.name}/surface-calendar.png`,
@@ -212,7 +221,7 @@ for (const framework of ["react", "vue"]) {
     await select.focus();
     await select.hover();
     await expect(select.locator("svg")).toBeVisible();
-    await expect(select).toHaveCSS("border-color", "rgb(98, 98, 105)");
+    await expect(select).toHaveCSS("border-color", "rgb(139, 139, 144)");
     await expect(select).toHaveCSS("box-shadow", "none");
     await expect(select).toHaveCSS("outline-offset", "0px");
     await select.click();
@@ -233,14 +242,14 @@ test("input focus and hover do not resize fields; tags use one outer focus edge"
   await input.hover();
   await input.focus();
   expect(await input.boundingBox()).toEqual(rest);
-  await expect(input).toHaveCSS("border-color", "rgb(98, 98, 105)");
+  await expect(input).toHaveCSS("border-color", "rgb(139, 139, 144)");
   await page.goto("/#/components/tags-input");
   const tags = page.locator(".cheese-tags:not([data-disabled])");
   const entry = tags.getByRole("textbox", { name: "프로젝트 태그" });
   await entry.focus();
   await tags.hover();
   await expect(tags).toHaveCSS("outline-color", "rgb(255, 201, 40)");
-  await expect(tags).toHaveCSS("border-color", "rgb(98, 98, 105)");
+  await expect(tags).toHaveCSS("border-color", "rgb(139, 139, 144)");
   await expect(tags).toHaveCSS("box-shadow", "none");
   await expect(entry).toHaveCSS("outline-style", "none");
   await expect(entry).toHaveCSS("box-shadow", "none");
@@ -299,7 +308,7 @@ test("error text and aria survive focus without stacked shadows or bottom stroke
   const input = page.getByRole("textbox", { name: "회사 이메일" });
   await expect(input).toHaveAttribute("aria-invalid", "true");
   await input.focus();
-  await expect(input).toHaveCSS("border-color", "rgb(98, 98, 105)");
+  await expect(input).toHaveCSS("border-color", "rgb(180, 35, 24)");
   await expect(input).toHaveCSS("box-shadow", "none");
   await expect(input).toHaveCSS("border-width", "1px");
   await expect(input).toHaveCSS("outline-color", "rgb(255, 201, 40)");
