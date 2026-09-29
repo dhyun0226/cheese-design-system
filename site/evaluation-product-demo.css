@@ -44,7 +44,7 @@
   letter-spacing: -0.04em;
 }
 .evaluation-showcase-visual > div > span:last-child {
-  color: #d4d4d8;
+  color: var(--cheese-text-inverse-secondary);
 }
 .evaluation-showcase-copy {
   display: flex;
@@ -149,11 +149,11 @@
 }
 .evaluation-login-story p {
   margin: 0;
-  color: #d4d4d8;
+  color: var(--cheese-text-inverse-secondary);
   line-height: 1.75;
 }
 .evaluation-login-story small {
-  color: #a1a1a8;
+  color: var(--cheese-text-inverse-muted);
 }
 .evaluation-login-panel {
   display: grid;

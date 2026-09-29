@@ -14,6 +14,9 @@
   --cheese-surface-hover: #EEEEF1;
   --cheese-text: var(--cheese-color-space-black);
   --cheese-text-secondary: #626269;
+  --cheese-text-inverse: var(--cheese-color-lunar-white);
+  --cheese-text-inverse-secondary: #D4D4D8;
+  --cheese-text-inverse-muted: #A1A1A8;
   --cheese-border: #E5E5EA;
   --cheese-border-subtle: #EEEEF1;
   --cheese-border-strong: #8B8B90;

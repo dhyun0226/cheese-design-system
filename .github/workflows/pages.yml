@@ -1,4 +1,4 @@
-name: Verify and deploy documentation
+name: Build and deploy documentation
 on:
   push:
     branches: [main]
@@ -19,17 +19,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium firefox webkit
       - run: node scripts/generate-tokens.mjs --check
-      - run: npm run check
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: browser-evidence
-          path: |
-            playwright-report/
-            test-results/
-            artifacts/
+      - run: npm run typecheck
+      - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
