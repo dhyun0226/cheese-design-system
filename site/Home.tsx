@@ -1,114 +1,14 @@
-import { useState } from "react";
 import {
-  Avatar,
-  Badge,
   Button,
   ChevronRight,
   Combobox,
   DateField,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
   Field,
   Input,
-  Progress,
 } from "@cheese/react";
 import { ArrowUpRight } from "lucide-react";
 import Logo from "./Logo";
 import HeroTaskDemo from "./HeroTaskDemo";
-
-export function EvaluationPreview() {
-  const [submitted, setSubmitted] = useState(false);
-  return (
-    <div className="product-preview">
-      <div className="product-top">
-        <span className="product-name">
-          <Logo />
-          cheese workspace
-        </span>
-        <Avatar alt="가상 사용자 김치즈" fallback="치즈" />
-      </div>
-      <div className="product-content">
-        <div className="product-heading">
-          <div>
-            <span className="eyebrow">PEOPLE & GROWTH</span>
-            <h2>함께 돌아보는 한 해.</h2>
-            <p>2026 하반기 성과 평가</p>
-          </div>
-          <Badge tone="brand">진행 중</Badge>
-        </div>
-        <div className="product-stats">
-          <div>
-            <span>평가 대상</span>
-            <strong>
-              24<span>명</span>
-            </strong>
-          </div>
-          <div>
-            <span>제출 완료</span>
-            <strong>
-              {submitted ? 19 : 18}
-              <span>명</span>
-            </strong>
-          </div>
-          <div>
-            <span>마감까지</span>
-            <strong>
-              7<span>일</span>
-            </strong>
-          </div>
-        </div>
-        <div className="product-progress">
-          <span>팀 평가 진행률</span>
-          <strong>{submitted ? 79 : 75}%</strong>
-        </div>
-        <Progress label="팀 평가 진행률" value={submitted ? 79 : 75} />
-        <div className="product-task">
-          <Avatar alt="본인 평가" fallback="나" />
-          <div>
-            <strong>나의 성과 돌아보기</strong>
-            <p>
-              {submitted
-                ? "검토가 완료되었습니다."
-                : "작성한 평가를 검토하고 제출해 주세요."}
-            </p>
-          </div>
-          <DialogRoot>
-            <DialogTrigger asChild>
-              <Button variant="weak" size="sm">
-                {submitted ? "다시 보기" : "검토하기"}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogTitle>평가 제출 전 확인</DialogTitle>
-              <DialogDescription>
-                실제 사내 데이터가 아닌 디자인 시스템 데모입니다. 제출하면 이
-                화면의 예제 상태만 변경됩니다.
-              </DialogDescription>
-              <div className="cheese-dialog-actions">
-                <DialogClose asChild>
-                  <Button variant="weak">취소</Button>
-                </DialogClose>
-                <DialogClose asChild>
-                  <Button variant="accent" onClick={() => setSubmitted(true)}>
-                    예제 제출
-                  </Button>
-                </DialogClose>
-              </div>
-            </DialogContent>
-          </DialogRoot>
-        </div>
-      </div>
-      <div className="product-bottom">
-        <span className="status-dot" />
-        실제 CHEESE 컴포넌트로 만든 화면
-      </div>
-    </div>
-  );
-}
 
 export default function Home({ exampleCount }: { exampleCount: number }) {
   return (
@@ -156,25 +56,6 @@ export default function Home({ exampleCount }: { exampleCount: number }) {
           <dd>색상 · 서체 · 간격</dd>
         </div>
       </dl>
-      <section className="home-showcase" aria-labelledby="showcase-title">
-        <div className="showcase-copy">
-          <span className="eyebrow">PUT IT TOGETHER</span>
-          <h2 id="showcase-title">
-            부품을 연결하면,
-            <br />
-            업무가 보입니다.
-          </h2>
-          <p>
-            입력, 진행 상태, 확인 대화창을 조합한 평가 화면입니다. 직접 눌러
-            보고, 화면을 이루는 컴포넌트를 살펴보세요.
-          </p>
-          <a className="text-link" href="#/patterns">
-            업무 화면 예제 보기
-            <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
-          </a>
-        </div>
-        <EvaluationPreview />
-      </section>
       <section className="home-section" aria-labelledby="home-components-title">
         <div className="section-heading">
           <div>
@@ -267,7 +148,12 @@ export default function Home({ exampleCount }: { exampleCount: number }) {
             "컴포넌트",
             `${exampleCount}개의 React 실행 예제와 사용 가이드`,
           ],
-          ["patterns", "03", "업무 화면 예제", "컴포넌트로 연결한 업무 흐름"],
+          [
+            "business-patterns",
+            "03",
+            "패턴과 템플릿",
+            "반복 업무와 페이지 구조의 공통 기준",
+          ],
         ].map(([path, number, title, description]) => (
           <a key={path} href={"#/" + path}>
             <span className="path-number">{number}</span>

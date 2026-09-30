@@ -271,7 +271,9 @@ test("responsive visual checks and local fonts", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1080 });
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
-  await expect(page.locator(".product-preview")).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "문서 시작점" }),
+  ).toBeVisible();
   const fonts = await page
     .locator(".cheese-button")
     .evaluateAll((els) => els.map((el) => getComputedStyle(el).fontFamily));

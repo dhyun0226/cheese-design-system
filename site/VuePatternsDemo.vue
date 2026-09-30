@@ -520,27 +520,15 @@ onBeforeUnmount(() => {
       </Card>
     </div>
 
-    <section
-      class="business-pattern-section"
-      aria-labelledby="vue-products-heading"
-    >
+    <section class="business-pattern-section" aria-labelledby="vue-products-heading">
       <div class="page-heading">
-        <h2 id="vue-products-heading">제품 안에서 이어지는 패턴</h2>
+        <h2 id="vue-products-heading">서비스에 연결할 때</h2>
+        <p>실제 데이터, 서버 권한, 저장과 감사 정책은 도입하는 서비스가 연결합니다.</p>
       </div>
       <div class="business-product-links">
-        <a href="./#/examples/evaluation"
-          ><span><strong>인사평가</strong><span>평가 초안과 검토</span></span
-          ><span aria-hidden="true">↗</span></a
-        >
-        <a href="./#/examples/employees"
-          ><span><strong>직원 관리</strong><span>검색과 일괄 처리</span></span
-          ><span aria-hidden="true">↗</span></a
-        >
-        <a href="./#/examples/auditions"
-          ><span
-            ><strong>오디션 관리</strong><span>지원자와 심사 이력</span></span
-          ><span aria-hidden="true">↗</span></a
-        >
+        <div><span><strong>데이터</strong><span>원천 시스템과 API</span></span></div>
+        <div><span><strong>권한</strong><span>서버 검증과 감사</span></span></div>
+        <div><span><strong>운영</strong><span>저장·실패·복구</span></span></div>
       </div>
     </section>
   </main>

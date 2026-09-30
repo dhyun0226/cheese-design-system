@@ -393,27 +393,3 @@ for (const framework of ["react", "vue"] as const) {
     ).not.toBeChecked();
   });
 }
-
-for (const product of ["evaluation", "employees", "auditions"] as const) {
-  test(`${product} product composes the shared application shell and summary components`, async ({
-    page,
-  }) => {
-    await page.goto(`/#/examples/${product}`);
-    const shell = page.locator('.cheese-app-shell[data-variant="application"]');
-    await expect(shell).toBeVisible();
-    await expect(shell.locator(".cheese-workspace-navigation")).toBeVisible();
-    await expect(shell.locator(".cheese-user-identity").first()).toBeVisible();
-    await expect(shell.locator(".cheese-stat-group").first()).toBeVisible();
-    expect(await shell.locator(".cheese-stat-card").count()).toBeGreaterThan(1);
-    await expect(shell.locator(".cheese-section-header").first()).toBeVisible();
-    if (product !== "evaluation") {
-      const collection = shell.locator(".cheese-record-collection");
-      await expect(collection).toBeVisible();
-      await expect(collection.locator(".cheese-filter-bar")).toBeVisible();
-      await expect(collection.locator(".cheese-data-table")).toBeVisible();
-      await expect(collection.getByRole("searchbox")).toHaveCount(1);
-    }
-    await page.setViewportSize({ width: 320, height: 760 });
-    await expectNoOverflow(page);
-  });
-}

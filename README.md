@@ -8,7 +8,6 @@ STARSHIP Entertainment 공식 제품이 아니며, 실제 직원·평가 데이�
 변경 근거와 남은 범위: [0.2 기술 점검](docs/REVIEW.md).
 운영 투입까지의 우선순위와 완료 기준: [상용화 과제](docs/PRODUCTION-READINESS.md).
 패턴·템플릿 재정비의 변경·검증 범위: [검증 기록](docs/COMPOSITION-VALIDATION.md).
-업무 홈 레이아웃과 후속 결함 수정·검증 결과: [2026-09-29 전체 점검](docs/GROUPWARE-AUDIT-2026-09-29.md).
 
 ## 현재 범위
 
@@ -18,7 +17,7 @@ STARSHIP Entertainment 공식 제품이 아니며, 실제 직원·평가 데이�
 - SearchInput, ErrorSummary, AttachmentList와 DataTable의 외부 query 제어를 추가했습니다. 검색 조건 복원 → 수정 → 오류 이동 → 저장 실패·재시도 → 목록 복귀를 [React 업무 흐름](https://dhyun0226.github.io/cheese-design-system/#/workflows)과 [Vue 업무 흐름](https://dhyun0226.github.io/cheese-design-system/workflow-vue.html)에서 체험합니다. 계약과 남은 과제는 [업무 흐름 패턴](docs/WORKFLOW-PATTERNS.md)에 정리했습니다.
 - Vue도 신규 컴포넌트를 공유 CSS + Reka/v-model 기반으로 제공하며 별도 Vue 통합 페이지에서 직접 실행합니다. 기존 전체 카탈로그의 React/Vue 고수준 API가 완전히 동일하다는 의미는 아닙니다.
 - **패턴·템플릿 카탈로그 35종(공개 구성요소 36개)**을 제공합니다. 구현 관점에서는 여러 기본 요소를 합친 composite component지만, 문서에서는 반복되는 업무 동작을 `패턴`, 페이지 뼈대를 `템플릿`으로 구분합니다. NavigationList, UserIdentity, SectionHeader, StatCard, StatGroup, RecordCollection을 포함하며 React/Vue 패키지에서 직접 import합니다. [조합 기준과 재사용 경로](docs/COMPOSITION-MODEL.md), [기존 API](docs/GROUPWARE-PATTERNS.md), [그룹웨어 연결 계약](docs/GROUPWARE-FOUNDATION.md)을 참고하세요.
-- 제품 적용 예제는 `#/examples`에서 인사평가·직원 관리·오디션 지원자 관리로 구분합니다. 직원/지원자 데이터와 처리 규칙은 가상이며, 실제 인증·API·DB를 연결한 서비스는 아닙니다.
+- 문서 사이트는 디자인 토큰, 기본 컴포넌트, 공통 패턴과 템플릿에 집중합니다. 특정 회사의 업무 절차를 가정한 완성 제품 화면은 포함하지 않습니다.
 - 브랜드 강조색은 Cheese Gold이며 기본 표면과 텍스트는 중립색입니다. 오류·성공 상태에는 의미별 색상을 제한적으로 사용합니다. 트리·달력·체크·메뉴 아이콘은 Lucide SVG로 통일하고 Pretendard를 적용합니다.
 - Calendar/DatePicker는 React DayPicker 9, Vue Calendar는 Reka + internationalized/date 기반입니다. 한국어·날짜 제한·키보드·기간 선택을 실제 예제로 확인합니다.
 - 입력, 에러 연결, 포커스 관리, 트리 키보드 탐색, 상태 전환, 접근성 자동검사, 모바일 레이아웃을 테스트합니다.

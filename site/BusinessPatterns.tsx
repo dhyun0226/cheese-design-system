@@ -111,9 +111,9 @@ const people = [
   },
 ];
 const products = [
-  { id: "evaluation", name: "인사평가", description: "평가 초안과 검토" },
-  { id: "employees", name: "직원 관리", description: "검색과 일괄 처리" },
-  { id: "auditions", name: "오디션 관리", description: "지원자와 심사 이력" },
+  { id: "evaluation", name: "작성·검토 흐름", description: "초안과 단계 전환" },
+  { id: "employees", name: "목록 관리", description: "검색과 일괄 처리" },
+  { id: "auditions", name: "접수·심사 흐름", description: "상태와 처리 이력" },
 ];
 
 function useDemoDelay() {
@@ -648,13 +648,12 @@ function ProductLinks({
       {products
         .filter((product) => ids.includes(product.id))
         .map((product) => (
-          <a key={product.id} href={`#/examples/${product.id}`}>
+          <div key={product.id}>
             <span>
               <strong>{product.name}</strong>
               <span>{product.description}</span>
             </span>
-            <ArrowUpRight aria-hidden="true" />
-          </a>
+          </div>
         ))}
     </div>
   );
@@ -737,11 +736,15 @@ export default function BusinessPatterns({ id }: { id?: string }) {
         aria-labelledby="pattern-products-heading"
       >
         <div className="doc-section-heading">
-          <h2 id="pattern-products-heading">제품 적용 예제</h2>
+          <h2 id="pattern-products-heading">적용할 수 있는 업무 유형</h2>
           <a className="text-link" href="#/business-patterns">
             모든 패턴과 템플릿 <ChevronRight aria-hidden="true" />
           </a>
         </div>
+        <p className="cheese-help">
+          아래 항목은 완성 제품이 아니라 이 패턴을 적용할 수 있는 일반적인 업무
+          유형입니다. 실제 데이터와 처리 규칙은 사용하는 서비스가 결정합니다.
+        </p>
         <ProductLinks ids={detail.products} />
       </section>
     </article>

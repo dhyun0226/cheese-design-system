@@ -57,7 +57,8 @@
   gap: 12px;
   margin-top: 24px;
 }
-.foundation-product-links > a {
+.foundation-product-links > a,
+.foundation-product-links > div {
   text-decoration: none;
   min-width: 0;
 }

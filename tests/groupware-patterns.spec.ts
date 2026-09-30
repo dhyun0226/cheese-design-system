@@ -58,7 +58,7 @@ async function noPageOverflow(page: Page) {
     .toBe(true);
 }
 
-test("unified composition catalog exposes 35 components, existing pattern navigation and product links", async ({
+test("unified composition catalog exposes 35 components, pattern navigation and service boundaries", async ({
   page,
 }) => {
   await page.goto("/#/business-patterns");
@@ -96,11 +96,12 @@ test("unified composition catalog exposes 35 components, existing pattern naviga
   await sidebar.locator('a[href="#/business-patterns"]').click();
   const products = catalog.locator("footer");
   await expect(
-    products.getByRole("heading", { name: "제품에서 조합하기", exact: true }),
+    products.getByRole("heading", {
+      name: "제품의 책임은 분리합니다",
+      exact: true,
+    }),
   ).toBeVisible();
-  for (const id of ["evaluation", "employees", "auditions"]) {
-    await expect(products.locator(`a[href="#/examples/${id}"]`)).toBeVisible();
-  }
+  await expect(products.locator('a[href^="#/examples"]')).toHaveCount(0);
   await page.goto("/#/business-patterns/people-picker");
   await page
     .getByRole("main")

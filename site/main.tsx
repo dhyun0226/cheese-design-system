@@ -33,20 +33,15 @@ import "@cheese/css";
 import "./site.css";
 import { entries, groups, type Entry } from "./catalog";
 import VueDemoSource from "./VueDemo.vue?raw";
-import Home, { EvaluationPreview } from "./Home";
+import Home from "./Home";
 import Logo from "./Logo";
 import WorkflowDemo from "./WorkflowDemo";
-import EvaluationProductDemo from "./EvaluationProductDemo";
-import ProductExamples from "./ProductExamples";
 import BusinessPatterns, { businessPatterns } from "./BusinessPatterns";
 import { foundationPatterns } from "./foundation-catalog";
 import CompositionCatalog from "./CompositionCatalog";
 import { compositeEntries, compositionCategories } from "./composition-catalog";
 const CompositionDetails = React.lazy(() => import("./CompositionDetails"));
 const FoundationPatterns = React.lazy(() => import("./FoundationPatterns"));
-const ManagementProductDemo = React.lazy(
-  () => import("./ManagementProductDemo"),
-);
 import { useRoute } from "./use-route";
 import { DateField } from "@cheese/react";
 const modules = import.meta.glob<{ default: React.ComponentType }>(
@@ -169,7 +164,6 @@ function Sidebar({
                 ["", "소개"],
                 ["getting-started", "시작하기"],
                 ["foundations", "디자인 원칙"],
-                ["patterns", "업무 화면 설계"],
                 ["workflows", "저장과 복구"],
                 ["readiness", "도입 체크리스트"],
               ].map(([id, label]) => (
@@ -324,35 +318,6 @@ function Sidebar({
           );
         })}
       </section>
-      {!query && (
-        <>
-          <section
-            className="nav-section"
-            aria-labelledby={`${navId}-examples`}
-          >
-            <div className="nav-caption" id={`${navId}-examples`}>
-              업무 화면
-            </div>
-            <div className="nav-intro">
-              {[
-                ["examples", "업무 홈"],
-                ["examples/evaluation", "인사평가"],
-                ["examples/employees", "조직·구성원"],
-                ["examples/auditions", "오디션 운영"],
-              ].map(([id, label]) => (
-                <a
-                  key={id}
-                  href={"#/" + id}
-                  aria-current={route === id ? "page" : undefined}
-                  onClick={onNavigate}
-                >
-                  {label}
-                </a>
-              ))}
-            </div>
-          </section>
-        </>
-      )}
       {query &&
         !entries.some((entry) =>
           (entry.name + " " + entry.description)
@@ -621,9 +586,9 @@ function ComponentPage({ entry }: { entry: Entry }) {
               <small>목록으로</small>전체 컴포넌트
             </span>
           </a>
-          <a href="#/patterns">
+          <a href="#/business-patterns">
             <span>
-              <small>함께 살펴보기</small>업무 화면에서 사용하기
+              <small>함께 살펴보기</small>공통 패턴으로 조합하기
             </span>
             <ArrowUpRight className="cheese-inline-icon" aria-hidden="true" />
           </a>
@@ -878,135 +843,6 @@ function Foundations() {
     </>
   );
 }
-function Patterns() {
-  const [error, setError] = useState(""),
-    [saved, setSaved] = useState(false);
-  return (
-    <>
-      <PageHeading
-        eyebrow="PRODUCT PATTERN"
-        title="작은 부품에서, 하나의 업무로."
-        description="실제 컴포넌트를 조합한 인사평가 설정 예제입니다. 모든 데이터는 가상입니다."
-      />
-      <section className="doc-section">
-        <h2>목록에서 저장까지 연결하기</h2>
-        <p>
-          필터 조건을 유지하면서 업무를 수정하고, 오류 요약·저장 실패 복구·첨부
-          관리를 체험하세요.
-        </p>
-        <a className="cheese-button" href="#/workflows">
-          저장과 복구 예제 열기
-        </a>
-      </section>
-      <div className="pattern-layout">
-        <Card>
-          <h2>평가 기본 설정</h2>
-          <p className="cheese-help">
-            제출 전 필수 항목과 공개 범위를 확인하세요.
-          </p>
-          <form
-            className="cheese-stack"
-            noValidate
-            onSubmit={(e) => {
-              e.preventDefault();
-              const name = new FormData(e.currentTarget).get("name") as string;
-              if (!name.trim()) {
-                setError("평가 이름을 입력해 주세요.");
-                setSaved(false);
-                e.currentTarget
-                  .querySelector<HTMLInputElement>("input[name=name]")
-                  ?.focus();
-                return;
-              }
-              if (!e.currentTarget.checkValidity()) {
-                setSaved(false);
-                e.currentTarget.querySelector<HTMLElement>(":invalid")?.focus();
-                return;
-              }
-              setError("");
-              setSaved(true);
-            }}
-          >
-            <Field label="평가 이름" required error={error}>
-              <Input
-                name="name"
-                placeholder="예: 2026 하반기 평가"
-                onChange={() => {
-                  setError("");
-                  setSaved(false);
-                }}
-              />
-            </Field>
-            <div className="form-columns">
-              <Select
-                label="대상 조직"
-                name="team"
-                defaultValue="all"
-                onValueChange={() => setSaved(false)}
-                options={[
-                  { value: "all", label: "전체 조직" },
-                  { value: "people", label: "피플팀" },
-                  { value: "tech", label: "개발팀" },
-                ]}
-              />
-              <DateField
-                label="마감일"
-                name="deadline"
-                required
-                defaultValue="2026-10-30"
-                onValueChange={() => setSaved(false)}
-              />
-            </div>
-            <Checkbox
-              label="마감 3일 전 알림 발송"
-              defaultChecked
-              onCheckedChange={() => setSaved(false)}
-            />
-            <Switch
-              label="제출 후 본인 수정 허용"
-              onCheckedChange={() => setSaved(false)}
-            />
-            <div className="form-actions">
-              <Button
-                type="reset"
-                variant="weak"
-                onClick={() => {
-                  setSaved(false);
-                  setError("");
-                }}
-              >
-                초기화
-              </Button>
-              <Button type="submit" variant="accent">
-                설정 저장
-              </Button>
-            </div>
-            {saved && (
-              <Alert>
-                예제 설정이 저장되었습니다. 외부로 전송되지 않습니다.
-              </Alert>
-            )}
-          </form>
-        </Card>
-        <aside className="pattern-guide" aria-label="업무 화면 연결 가이드">
-          <span className="eyebrow">PATTERN NOTES</span>
-          <h3>실무 연결 포인트</h3>
-          <ol>
-            <li>직원·조직 정보는 원천 시스템에서 가져옵니다.</li>
-            <li>클라이언트와 서버 양쪽에서 입력을 검증합니다.</li>
-            <li>권한 확인과 변경 이력은 서버에 기록합니다.</li>
-            <li>실패하더라도 사용자가 작성한 내용은 유지합니다.</li>
-          </ol>
-          <Badge>UI demonstration · No backend</Badge>
-        </aside>
-      </div>
-      <section className="doc-section">
-        <h2>완성된 화면에서 확인하기</h2>
-        <EvaluationPreview />
-      </section>
-    </>
-  );
-}
 function Readiness() {
   return (
     <>
@@ -1164,12 +1000,7 @@ function App() {
             "getting-started": "시작하기",
             components: "컴포넌트",
             foundations: "디자인 원칙",
-            patterns: "업무 화면 예제",
             workflows: "저장과 복구",
-            examples: "업무 홈",
-            "examples/evaluation": "인사평가",
-            "examples/employees": "조직·구성원",
-            "examples/auditions": "오디션 운영",
             "business-patterns": "패턴과 템플릿",
             readiness: "도입 체크리스트",
           } as Record<string, string>
@@ -1181,34 +1012,6 @@ function App() {
     }
     main.current?.focus();
   }, [route, entry]);
-  if (route === "examples") {
-    return (
-      <div className="cheese-root">
-        <ProductExamples />
-      </div>
-    );
-  }
-  if (route === "examples/evaluation") {
-    return (
-      <div className="cheese-root">
-        <EvaluationProductDemo />
-      </div>
-    );
-  }
-  if (route === "examples/employees" || route === "examples/auditions") {
-    return (
-      <div className="cheese-root">
-        <React.Suspense
-          fallback={<p role="status">업무 화면을 불러오고 있습니다.</p>}
-        >
-          <ManagementProductDemo
-            key={route}
-            kind={route === "examples/employees" ? "employees" : "auditions"}
-          />
-        </React.Suspense>
-      </div>
-    );
-  }
   return (
     <div className="cheese-root site-app">
       <a
@@ -1232,7 +1035,6 @@ function App() {
             ["getting-started", "가이드"],
             ["components", "컴포넌트"],
             ["business-patterns", "패턴"],
-            ["examples", "예제"],
           ].map(([path, label]) => (
             <a
               key={path}
@@ -1243,14 +1045,12 @@ function App() {
                   [
                     "",
                     "foundations",
-                    "patterns",
                     "workflows",
                     "readiness",
                   ].includes(route)) ||
                 (path === "components" && !!entry) ||
                 (path === "business-patterns" &&
-                  route.startsWith("business-patterns/")) ||
-                (path === "examples" && route.startsWith("examples/"))
+                  route.startsWith("business-patterns/"))
                   ? "page"
                   : undefined
               }
@@ -1312,8 +1112,6 @@ function App() {
             <GettingStarted />
           ) : route === "foundations" ? (
             <Foundations />
-          ) : route === "patterns" ? (
-            <Patterns />
           ) : route === "business-patterns" ? (
             <CompositionCatalog />
           ) : compositeEntries.some(

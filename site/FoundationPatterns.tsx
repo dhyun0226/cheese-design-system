@@ -1464,23 +1464,22 @@ export default function FoundationPatterns({ id }: { id: string }) {
         className="foundation-doc-section"
         aria-labelledby="foundation-products-title"
       >
-        <h2 id="foundation-products-title">조합된 제품 화면 살펴보기</h2>
+        <h2 id="foundation-products-title">서비스에 연결할 때</h2>
         <p className="foundation-prose">
-          개별 기능의 정답을 정하지 않고, 같은 구성요소를 서로 다른 업무에
-          조합합니다. 실제 데이터와 정책은 제품에서 연결하세요.
+          이 구성요소는 화면의 공통 구조만 제공합니다. 도입할 때 실제 데이터,
+          권한, 저장, 감사와 오류 처리 정책을 서비스에서 연결하세요.
         </p>
         <div className="foundation-product-links">
           {[
-            { id: "evaluation", label: "인사평가" },
-            { id: "employees", label: "직원 관리" },
-            { id: "auditions", label: "오디션 지원자 관리" },
-          ].map((product) => (
-            <a key={product.id} href={`#/examples/${product.id}`}>
+            { id: "data", label: "실제 데이터 연결" },
+            { id: "permission", label: "서버 권한 검증" },
+            { id: "operation", label: "저장·감사·복구" },
+          ].map((item) => (
+            <div key={item.id}>
               <Card>
-                <span>{product.label}</span>
-                <ArrowUpRight aria-hidden="true" />
+                <span>{item.label}</span>
               </Card>
-            </a>
+            </div>
           ))}
         </div>
       </section>

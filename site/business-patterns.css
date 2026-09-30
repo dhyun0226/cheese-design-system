@@ -107,7 +107,8 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
 }
-.business-product-links > a {
+.business-product-links > a,
+.business-product-links > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -121,14 +122,16 @@
   background: var(--cheese-surface);
 }
 .business-product-links strong,
-.business-product-links > a > span > span {
+.business-product-links > a > span > span,
+.business-product-links > div > span > span {
   display: block;
 }
 .business-product-links strong {
   font-size: 14px;
   font-weight: var(--cheese-font-weight-semibold);
 }
-.business-product-links > a > span > span {
+.business-product-links > a > span > span,
+.business-product-links > div > span > span {
   margin-top: 6px;
   color: var(--cheese-text-secondary);
   font-size: 12px;

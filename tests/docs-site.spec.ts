@@ -120,7 +120,7 @@ test("home task demo stays accessible before and after its one-time result trans
   );
 });
 
-test("home guides visitors into the docs and its evaluation example updates after submission", async ({
+test("home guides visitors to foundations, components and shared patterns", async ({
   page,
 }) => {
   await page.goto("/");
@@ -136,35 +136,17 @@ test("home guides visitors into the docs and its evaluation example updates afte
   await expect(page).toHaveURL(/#\/$/);
   await expect(page.locator(".home-hero")).toBeVisible();
 
-  const showcase = page.locator(".home-showcase");
-  const showcaseBox = await showcase.boundingBox();
-  const componentsBox = await page.locator(".explore-grid").boundingBox();
-  expect(showcaseBox!.y).toBeLessThan(componentsBox!.y);
-  const progress = showcase.getByRole("progressbar", {
-    name: "팀 평가 진행률",
-  });
-  const submitted = showcase
-    .locator(".product-stats > div")
-    .filter({ hasText: "제출 완료" })
-    .locator("strong");
-  await expect(progress).toHaveAttribute("aria-valuenow", "75");
-  await expect(submitted).toHaveText(/^18\s*명$/);
-  await showcase.getByRole("button", { name: "검토하기", exact: true }).click();
-  const dialog = page.getByRole("dialog", {
-    name: "평가 제출 전 확인",
-    exact: true,
-  });
-  await expect(dialog).toBeVisible();
-  await dialog.getByRole("button", { name: "예제 제출", exact: true }).click();
-  await expect(dialog).not.toBeVisible();
-  await expect(progress).toHaveAttribute("aria-valuenow", "79");
-  await expect(submitted).toHaveText(/^19\s*명$/);
-  await expect(showcase.locator(".product-task")).toContainText(
-    "검토가 완료되었습니다.",
-  );
+  const paths = page.getByRole("navigation", { name: "문서 시작점" });
   await expect(
-    showcase.getByRole("button", { name: "다시 보기", exact: true }),
-  ).toBeVisible();
+    paths.getByRole("link", { name: /디자인 원칙/ }),
+  ).toHaveAttribute("href", "#/foundations");
+  await expect(
+    paths.getByRole("link", { name: /컴포넌트/ }),
+  ).toHaveAttribute("href", "#/components");
+  await expect(
+    paths.getByRole("link", { name: /패턴과 템플릿/ }),
+  ).toHaveAttribute("href", "#/business-patterns");
+  await expect(page.locator('a[href^="#/examples"]')).toHaveCount(0);
 });
 
 test("component navigation keeps the title, selection and section links in sync", async ({
@@ -240,9 +222,8 @@ test("desktop sidebar keeps every documentation area available", async ({
   const sidebar = page.getByRole("complementary", { name: "문서 사이드바" });
   await expect(sidebar.locator(".nav-caption")).toContainText([
     "가이드",
-    "컴포넌트",
-    "패턴과 템플릿",
-    "업무 화면",
+    "컴포넌트 72",
+    "패턴과 템플릿 35",
   ]);
   await expect(
     sidebar.getByRole("link", { name: "소개", exact: true }),
@@ -254,9 +235,8 @@ test("desktop sidebar keeps every documentation area available", async ({
   await page.goto("/#/business-patterns");
   await expect(sidebar.locator(".nav-caption")).toContainText([
     "가이드",
-    "컴포넌트",
-    "패턴과 템플릿",
-    "업무 화면",
+    "컴포넌트 72",
+    "패턴과 템플릿 35",
   ]);
   await expect(sidebar.getByRole("textbox", { name: "패턴 검색" })).toHaveCount(
     0,

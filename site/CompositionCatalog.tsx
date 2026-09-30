@@ -98,11 +98,11 @@ export default function CompositionCatalog() {
           <small>반복 동작 · 페이지 구조</small>
         </div>
         <ArrowRight aria-hidden="true" />
-        <a href="#/examples/employees">
+        <div>
           <span>03</span>
-          <strong>제품 화면</strong>
-          <small>데이터 · 업무 규칙 · 서비스</small>
-        </a>
+          <strong>서비스에서 연결</strong>
+          <small>실제 데이터 · 권한 · 업무 규칙</small>
+        </div>
       </div>
       <div className="composition-catalog-tools">
         <SearchInput
@@ -188,22 +188,11 @@ export default function CompositionCatalog() {
       )}
       <footer className="composition-catalog-footer">
         <div>
-          <h2>제품에서 조합하기</h2>
-          <p>같은 컴포넌트에 서로 다른 데이터와 동작을 연결한 화면입니다.</p>
-        </div>
-        <div className="composition-example-links">
-          <a href="#/examples/evaluation">
-            인사평가
-            <ArrowUpRight aria-hidden="true" />
-          </a>
-          <a href="#/examples/employees">
-            직원 관리
-            <ArrowUpRight aria-hidden="true" />
-          </a>
-          <a href="#/examples/auditions">
-            오디션 관리
-            <ArrowUpRight aria-hidden="true" />
-          </a>
+          <h2>제품의 책임은 분리합니다</h2>
+          <p>
+            패턴은 화면 구조와 상호작용을 제공합니다. 실제 데이터, 권한, 저장과
+            감사 정책은 도입하는 서비스에서 연결합니다.
+          </p>
         </div>
       </footer>
     </article>
